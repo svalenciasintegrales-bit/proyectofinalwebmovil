@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>MOCKUPS - InmoConecta Caracoli</title>
+<link rel="stylesheet" href="pdf-comun.css">
+<style>
+  .par { display: flex; gap: 10mm; justify-content: center; margin-top: 4mm; }
+  .cel { width: 84mm; text-align: center; }
+  .cel img { width: 84mm; display: block; }
+  .pie { text-align: left; margin-top: 2mm; font-size: 9pt; line-height: 1.35; }
+  .pie .t { color: #111; font-weight: bold; font-size: 10.5pt; }
+  .pie .t span { color: #E3141B; margin-right: 4pt; }
+  .pie .rq { display: inline-block; margin-top: 2pt; font-size: 8pt; background: #FDE8E8; color: #8B0000; border-radius: 6pt; padding: 0 6pt; font-weight: bold; }
+  .web .pie { max-width: 250mm; margin: 2mm auto 0; }
+  .p-vertical.web .fig img { max-height: 225mm; }
+  .p-horizontal.web .fig img { max-height: 150mm; }
+  .paleta { display: flex; gap: 4mm; flex-wrap: wrap; margin: 1mm 0 3mm; }
+  .sw { width: 27mm; font-size: 8pt; color: #333; }
+  .sw div { height: 8mm; border-radius: 3mm; border: 1px solid #ddd; margin-bottom: 1.5mm; }
+  .tipos { display: flex; gap: 8mm; margin-bottom: 4mm; }
+  .tipos > div { flex: 1; border: 1px solid #BFBFBF; border-radius: 3mm; padding: 2.5mm 4mm; }
+  #indice td, #indice th { padding: 1.6pt 4pt; font-size: 8pt; }
+</style>
+</head>
+<body>
+
+<section class="pagina p-vertical">
+  <div class="portada">
+    <img class="logo" src="../../../web-angular/public/img/logo.png" alt="Caracoli">
+    <div class="doc">MOCKUPS</div>
+    <div class="sis">Sistema InmoConecta</div>
+    <div class="linea"></div>
+    <div class="dato">App Android del cliente · Panel web de la inmobiliaria</div>
+    <div class="dato">Cliente: <b>Caracoli Inmobiliaria</b>, Cra 3 # 11-89 Centro, Cartago, Valle del Cauca</div>
+    <div class="dato">Proyecto integrador de Móvil I y Desarrollo Web 2</div>
+    <div class="dato">Ingeniería de Software · Institución Universitaria Visión de las Américas</div>
+    <div class="integrantes"><b>Integrantes:</b><div></div><div></div><div></div></div>
+    <div class="fecha">Cartago, noviembre de 2026</div>
+  </div>
+</section>
+
+<section class="pagina p-vertical">
+  <h2>1. Guía visual</h2>
+  <p>Los mockups son de <b>alta fidelidad</b>: usan los colores, las tipografías, los textos y las fotos reales de Caracoli que están en el código (<code>Theme.kt</code>, <code>styles.css</code> y las plantillas de cada pantalla). Los datos de ejemplo son los de <code>backend/datos-prueba.js</code>: 6 inmuebles (CAR-101 a CAR-106), 6 clientes y 12 solicitudes.</p>
+  <h3>Paleta de colores</h3>
+  <div class="paleta">
+    <div class="sw"><div style="background:#E3141B"></div><b>#E3141B</b><br>Rojo Caracoli (principal)</div>
+    <div class="sw"><div style="background:#8B0000"></div><b>#8B0000</b><br>Rojo oscuro</div>
+    <div class="sw"><div style="background:#111111"></div><b>#111111</b><br>Negro (arriendo, menú)</div>
+    <div class="sw"><div style="background:#4A4A4A"></div><b>#4A4A4A</b><br>Gris de texto</div>
+    <div class="sw"><div style="background:#F4F4F4"></div><b>#F4F4F4</b><br>Gris claro (fondos)</div>
+    <div class="sw"><div style="background:#FFFFFF"></div><b>#FFFFFF</b><br>Blanco</div>
+  </div>
+  <div class="paleta">
+    <div class="sw"><div style="background:#FDF1DF"></div><b style="color:#B45309">Pendiente</b><br>#FDF1DF / #B45309</div>
+    <div class="sw"><div style="background:#E6EDFD"></div><b style="color:#1D4ED8">Confirmada</b><br>#E6EDFD / #1D4ED8</div>
+    <div class="sw"><div style="background:#E3F5EA"></div><b style="color:#15803D">Realizada</b><br>#E3F5EA / #15803D</div>
+    <div class="sw"><div style="background:#EEEEEE"></div><b style="color:#6B7280">Cancelada</b><br>#EEEEEE / #6B7280</div>
+    <div class="sw"><div style="background:#FDE8E8"></div><b style="color:#E3141B">Error al enviar</b><br>#FDE8E8 / #E3141B</div>
+    <div class="sw"><div style="background:#FFF3D6"></div><b style="color:#8A4B00">Sin conexión</b><br>#FFF3D6 / #8A4B00</div>
+  </div>
+  <h3>Tipografía e iconos</h3>
+  <div class="tipos">
+    <div><div style="font-family:Georgia,serif;font-weight:bold;font-size:18pt;color:#111">Georgia · Títulos</div><div style="font-size:9pt">Títulos de pantallas, precios y tarjetas (en Android: Serif Bold).</div></div>
+    <div><div style="font-family:'DM Sans','Segoe UI',Arial;font-size:16pt;color:#111">DM Sans · Texto</div><div style="font-size:9pt">Texto, botones y tablas. En los mockups se ve con Segoe UI, que es la fuente de respaldo del panel.</div></div>
+  </div>
+  <p style="font-size:9.5pt">Iconos con estilo Material (Android) y Bootstrap Icons (panel). Las animaciones Lottie de la bienvenida se representan con una ilustración fija.</p>
+  <h3>Índice de pantallas</h3>
+  <table class="compacta" id="indice" style="font-size:8pt">
+    <tr><th style="width:14mm">N.º</th><th style="width:22mm">Interfaz</th><th>Pantalla</th><th style="width:44mm">Requerimientos</th></tr>
+  </table>
+</section>
+
+<section class="pagina p-horizontal">
+  <div class="fig-tit"><span class="num">Figura 1.</span><span class="t">Mapa de navegación de la app</span></div>
+  <div class="fig"><img src="../png/mockups/navegacion/01-mapa-app.png"></div>
+</section>
+<section class="pagina p-horizontal">
+  <div class="fig-tit"><span class="num">Figura 2.</span><span class="t">Mapa de navegación del panel web</span></div>
+  <div class="fig"><img src="../png/mockups/navegacion/02-mapa-panel.png"></div>
+</section>
+
+<div id="android"></div>
+<div id="web"></div>
+
+<script>
+var APP = [
+  ['01-onboarding', 'Bienvenida', 'Primera página de la bienvenida: logo, ilustración, texto sobre Cartago, indicador de página 1 de 3 y botón "Siguiente". Solo aparece la primera vez.', '7.1'],
+  ['02-inicio', 'Inicio (catálogo)', 'Saludo con el nombre guardado, buscador, "Código del letrero", "Actualizar", filtro Todos / Venta / Arriendo, contador de disponibles y tarjetas con foto, etiqueta SE VENDE / SE ARRIENDA y favorito. Arriba: favoritos, solicitudes y ajustes.', '7.2 · 7.3 · 7.4 · 9.2'],
+  ['03-codigo-letrero', 'Código del letrero', 'Diálogo para escribir el código que aparece en el letrero del inmueble (ej. CAR-102) y abrir su detalle.', '7.6'],
+  ['04-detalle', 'Detalle del inmueble', 'Foto, precio, área, habitaciones, baños, descripción, botones "Agendar visita" y "Pedir información" y simulador de cuota (30 %, 20 años, 12 % E.A.).', '7.5 · 9.1 · 8.1 · 8.2'],
+  ['05-agendar-visita', 'Agendar visita', 'Formulario con nombre y celular ya llenos, fecha, chips de hora, comentario opcional y botón "Confirmar visita".', '8.2 · 8.5'],
+  ['06-visita-agendada', '¡Visita agendada!', 'Diálogo de confirmación cuando la API guarda la solicitud. Lleva a "Mis solicitudes".', '8.2'],
+  ['07-mis-solicitudes', 'Mis solicitudes', 'Solicitudes con su estado: por enviar (guardada sin conexión), error al enviar (Reintentar / Eliminar), pendiente y confirmada con la "Respuesta de Caracoli".', '8.3 · 8.4 · 7.7'],
+  ['08-favoritos', 'Mis favoritos', 'Inmuebles marcados con el corazón, guardados en el celular.', '9.2'],
+  ['09-ajustes', 'Ajustes', 'Mis datos, dirección del servidor con prueba de conexión, modo oscuro y datos de contacto de la inmobiliaria.', '8.5 · 9.3'],
+  ['10-inicio-sin-conexion', 'Inicio sin conexión', 'Variante sin internet: aviso del catálogo guardado en Room y filtro "Venta" aplicado.', '7.7 · 7.4']
+];
+var WEB = [
+  ['01-login', 'Login', 'Acceso exclusivo para el equipo: usuario, contraseña y botón "Entrar".', '1.1 · 1.2', 'h'],
+  ['02-tablero', 'Tablero', 'Saludo con pendientes, 6 indicadores, actividad de 14 días, estado de solicitudes, agenda de visitas, últimas solicitudes, inmuebles más solicitados, el más pedido y portafolio.', '2.1 · 2.2 · 2.3 · 2.4', 'v'],
+  ['03-inmuebles', 'Inmuebles', 'Tabla con foto, código, inmueble, operación, precio y estado; búsqueda, filtros y acciones (foto, editar, eliminar).', '3.2 · 3.3 · 3.4 · 3.5', 'h'],
+  ['04-nuevo-inmueble', 'Nuevo inmueble', 'Modal de creación con validaciones: el ejemplo muestra el error 409 de código repetido.', '3.1', 'h'],
+  ['05-solicitudes', 'Solicitudes', 'Filtros por tipo y estado, y tabla con cliente, inmueble, detalle, respuesta, estado y acciones según el estado.', '4.1 · 4.2 · 4.4 · 4.5', 'v'],
+  ['06-responder-solicitud', 'Responder solicitud', 'Modal con el resumen de la solicitud, el nuevo estado (solo transiciones permitidas) y la respuesta que verá el cliente en la app.', '4.3', 'h'],
+  ['07-clientes', 'Clientes', 'Clientes registrados desde la app o a mano, con editar y eliminar.', '5.1 · 5.2 · 5.3 · 5.4', 'h'],
+  ['08-reportes', 'Reportes', 'Solicitudes por rango de fechas con totales, descarga a Excel (CSV) e impresión a PDF. Solo administrador.', '6.1 · 6.2', 'h'],
+  ['09-usuarios', 'Usuarios', 'Cuentas del panel con rol y permisos; no se puede borrar la propia cuenta. Solo administrador.', '1.4 · 1.5 · 1.6', 'h'],
+  ['10-no-encontrado', 'Página no encontrada', 'Ruta inexistente (**) con botón para volver al inicio.', '1.2', 'h']
+];
+
+function pie(num, t, d, r) {
+  return '<div class="pie"><div class="t"><span>' + num + '</span>' + t + '</div>' + d + '<br><span class="rq">Req. ' + r + '</span></div>';
+}
+
+// indice
+var ind = document.getElementById('indice'), n = 0, filas = '';
+APP.forEach(function (a) { n++; filas += '<tr><td>A-' + String(n).padStart(2, '0') + '</td><td>App</td><td>' + a[1] + '</td><td>' + a[3] + '</td></tr>'; });
+n = 0;
+WEB.forEach(function (w) { n++; filas += '<tr><td>W-' + String(n).padStart(2, '0') + '</td><td>Panel web</td><td>' + w[1] + '</td><td>' + w[3] + '</td></tr>'; });
+ind.insertAdjacentHTML('beforeend', filas);
+
+// android: 2 por pagina
+var h = '';
+for (var i = 0; i < APP.length; i += 2) {
+  h += '<section class="pagina p-vertical">' + (i === 0 ? '<h2>2. App Android del cliente</h2>' : '') + '<div class="par">';
+  [APP[i], APP[i + 1]].forEach(function (a, k) {
+    if (!a) return;
+    h += '<div class="cel"><img src="../png/mockups/android/' + a[0] + '.png">' + pie('A-' + String(i + k + 1).padStart(2, '0'), a[1], a[2], a[3]) + '</div>';
+  });
+  h += '</div></section>';
+}
+document.getElementById('android').outerHTML = h;
+
+// web: una por pagina
+h = '';
+WEB.forEach(function (w, k) {
+  h += '<section class="pagina web ' + (w[4] === 'v' ? 'p-vertical' : 'p-horizontal') + '">' + (k === 0 ? '<h2>3. Panel web de la inmobiliaria</h2>' : '') +
+    '<div class="fig"><img src="../png/mockups/web/' + w[0] + '.png"></div>' + pie('W-' + String(k + 1).padStart(2, '0'), w[1], w[2], w[3]) + '</section>';
+});
+document.getElementById('web').outerHTML = h;
+</script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="tam" content="1440x2000">
+  <meta name="escala" content="1.5">
+  <title>Tablero | Panel InmoConecta</title>
+  <link rel="stylesheet" href="bootstrap-lite.css">
+  <link rel="stylesheet" href="panel.css">
+  <link rel="stylesheet" href="c-tablero.css">
+  <style>
+    .svg-grafica { display: block; }
+    .tabla td { padding-top: 0.7rem; padding-bottom: 0.7rem; }
+  </style>
+</head>
+<body data-pagina="tablero">
+  <div class="app-container">
+    <aside id="nav"></aside>
+    <main class="main-content">
+      <header id="header"></header>
+      <div class="content-wrapper">
+        <div class="tablero">
+
+          <!-- ===== BIENVENIDA ===== -->
+          <section class="bienvenida">
+            <div class="bienvenida-texto">
+              <span class="sobretitulo text-white opacity-75">Caracoli Inmobiliaria · Centro de control</span>
+              <h2>Buenos días, Administrador</h2>
+              <p>Tienes <b>5 solicitudes</b> esperando respuesta desde la app de clientes.</p>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <a class="btn btn-light fw-bold"><i data-i="bandeja" class="me-2"></i>Atender solicitudes</a>
+                <a class="btn btn-borde-blanco"><i data-i="mas" class="me-2"></i>Publicar inmueble</a>
+              </div>
+            </div>
+            <img src="../../../../../web-angular/public/img/simbolo.png" alt="" class="bienvenida-simbolo">
+          </section>
+
+          <!-- ===== INDICADORES ===== -->
+          <section class="kpis">
+            <div class="kpi">
+              <div class="kpi-icono rojo"><i data-i="bandeja"></i></div>
+              <div>
+                <div class="kpi-titulo">Solicitudes pendientes</div>
+                <div class="kpi-valor">5</div>
+                <div class="kpi-detalle"><i data-i="flechaDiag"></i>2 llegaron hoy</div>
+              </div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-icono azul"><i data-i="calendarioCheck"></i></div>
+              <div>
+                <div class="kpi-titulo">Visitas próximos 7 días</div>
+                <div class="kpi-valor">4</div>
+                <div class="kpi-detalle">Próxima: 06 Nov · 2:00 p.m.</div>
+              </div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-icono negro"><i data-i="edificios"></i></div>
+              <div>
+                <div class="kpi-titulo">Inmuebles disponibles</div>
+                <div class="kpi-valor">5<small> / 6</small></div>
+                <div class="kpi-detalle">1 arrendados o vendidos</div>
+              </div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-icono verde"><i data-i="dinero"></i></div>
+              <div>
+                <div class="kpi-titulo">Portafolio en venta</div>
+                <div class="kpi-valor">$825<small> M</small></div>
+                <div class="kpi-detalle">3 inmuebles disponibles</div>
+              </div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-icono ambar"><i data-i="personas"></i></div>
+              <div>
+                <div class="kpi-titulo">Clientes registrados</div>
+                <div class="kpi-valor">6</div>
+                <div class="kpi-detalle"><i data-i="flechaDiag"></i>3 nuevos esta semana</div>
+              </div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-icono rojo-osc"><i data-i="velocimetro"></i></div>
+              <div class="flex-grow-1">
+                <div class="kpi-titulo">Tasa de atención</div>
+                <div class="kpi-valor">58<small>%</small></div>
+                <div class="barra"><span style="width: 58%"></span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== GRAFICAS PRINCIPALES ===== -->
+          <section class="row g-4 mb-4">
+            <div class="col-xl-8">
+              <div class="tarjeta h-100">
+                <div class="tarjeta-titulo">
+                  <div>
+                    <h3>Actividad de la app</h3>
+                    <p>Solicitudes recibidas en los últimos 14 días</p>
+                  </div>
+                  <span class="chip">12 en total</span>
+                </div>
+                <div class="grafica" id="g-actividad"></div>
+              </div>
+            </div>
+            <div class="col-xl-4">
+              <div class="tarjeta h-100">
+                <div class="tarjeta-titulo">
+                  <div>
+                    <h3>Estado de solicitudes</h3>
+                    <p>Cómo va la atención a clientes</p>
+                  </div>
+                </div>
+                <div class="grafica dona" id="g-estados">
+                  <div class="dona-centro"><b>58%</b><span>atendidas</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== AGENDA Y ULTIMAS SOLICITUDES ===== -->
+          <section class="row g-4 mb-4">
+            <div class="col-xl-5">
+              <div class="tarjeta h-100">
+                <div class="tarjeta-titulo">
+                  <div>
+                    <h3>Agenda de visitas</h3>
+                    <p>Próximas visitas a los inmuebles</p>
+                  </div>
+                  <a class="enlace">Ver todo <i data-i="adelante"></i></a>
+                </div>
+                <div class="agenda">
+                  <div class="cita">
+                    <div class="dia"><b>06</b><span>Nov</span></div>
+                    <div class="cita-texto">
+                      <div class="fw-bold">Casa campestre con piscina</div>
+                      <small class="text-muted"><i data-i="reloj" class="me-1"></i>2:00 p.m. · <i data-i="persona" class="ms-1 me-1"></i>Valentina Ospina</small>
+                    </div>
+                    <span class="estado estado-confirmada">confirmada</span>
+                  </div>
+                  <div class="cita">
+                    <div class="dia"><b>07</b><span>Nov</span></div>
+                    <div class="cita-texto">
+                      <div class="fw-bold">Casa nueva para estrenar</div>
+                      <small class="text-muted"><i data-i="reloj" class="me-1"></i>10:00 a.m. · <i data-i="persona" class="ms-1 me-1"></i>Laura Gomez</small>
+                    </div>
+                    <span class="estado estado-pendiente">pendiente</span>
+                  </div>
+                  <div class="cita">
+                    <div class="dia"><b>08</b><span>Nov</span></div>
+                    <div class="cita-texto">
+                      <div class="fw-bold">Apartamento con balcon</div>
+                      <small class="text-muted"><i data-i="reloj" class="me-1"></i>3:00 p.m. · <i data-i="persona" class="ms-1 me-1"></i>Andres Rios</small>
+                    </div>
+                    <span class="estado estado-confirmada">confirmada</span>
+                  </div>
+                  <div class="cita">
+                    <div class="dia"><b>10</b><span>Nov</span></div>
+                    <div class="cita-texto">
+                      <div class="fw-bold">Lote para construir</div>
+                      <small class="text-muted"><i data-i="reloj" class="me-1"></i>9:00 a.m. · <i data-i="persona" class="ms-1 me-1"></i>Jorge Castaño</small>
+                    </div>
+                    <span class="estado estado-pendiente">pendiente</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-7">
+              <div class="tarjeta h-100">
+                <div class="tarjeta-titulo">
+                  <div>
+                    <h3>Últimas solicitudes</h3>
+                    <p>Lo que piden los clientes desde la app</p>
+                  </div>
+                  <a class="enlace">Atender <i data-i="adelante"></i></a>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-middle mb-0 tabla">
+                    <tbody>
+                      <tr>
+                        <td class="ps-0"><span class="tipo tipo-info"><i data-i="chat"></i></span></td>
+                        <td><div class="fw-bold">Jorge Castaño</div><small class="text-muted">Pide información · CAR-101</small></td>
+                        <td class="mensaje"><small>¿Cuánto es la administración?</small></td>
+                        <td class="text-end pe-0"><span class="estado estado-pendiente">pendiente</span></td>
+                      </tr>
+                      <tr>
+                        <td class="ps-0"><span class="tipo tipo-info"><i data-i="chat"></i></span></td>
+                        <td><div class="fw-bold">Carlos Mejia</div><small class="text-muted">Pide información · CAR-106</small></td>
+                        <td class="mensaje"><small>¿Tiene escrituras al día?</small></td>
+                        <td class="text-end pe-0"><span class="estado estado-realizada">realizada</span></td>
+                      </tr>
+                      <tr>
+                        <td class="ps-0"><span class="tipo tipo-info"><i data-i="chat"></i></span></td>
+                        <td><div class="fw-bold">Daniela Restrepo</div><small class="text-muted">Pide información · CAR-102</small></td>
+                        <td class="mensaje"><small>¿Incluye parqueadero?</small></td>
+                        <td class="text-end pe-0"><span class="estado estado-pendiente">pendiente</span></td>
+                      </tr>
+                      <tr>
+                        <td class="ps-0"><span class="tipo tipo-visita"><i data-i="evento"></i></span></td>
+                        <td><div class="fw-bold">Valentina Ospina</div><small class="text-muted">Agenda visita · CAR-104</small></td>
+                        <td class="mensaje"><small>Quiero conocer la piscina</small></td>
+                        <td class="text-end pe-0"><span class="estado estado-confirmada">confirmada</span></td>
+                      </tr>
+                      <tr>
+                        <td class="ps-0"><span class="tipo tipo-visita"><i data-i="evento"></i></span></td>
+                        <td><div class="fw-bold">Laura Gomez</div><small class="text-muted">Agenda visita · CAR-105</small></td>
+                        <td class="mensaje"><small>—</small></td>
+                        <td class="text-end pe-0"><span class="estado estado-cancelada">cancelada</span></td>
+                      </tr>
+                      <tr>
+                        <td class="ps-0"><span class="tipo tipo-visita"><i data-i="evento"></i></span></td>
+                        <td><div class="fw-bold">Andres Rios</div><small class="text-muted">Agenda visita · CAR-101</small></td>
+                        <td class="mensaje"><small>—</small></td>
+                        <td class="text-end pe-0"><span class="estado estado-realizada">realizada</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== INMUEBLES ===== -->
+          <section class="row g-4">
+            <div class="col-xl-5">
+              <div class="tarjeta h-100">
+                <div class="tarjeta-titulo">
+                  <div>
+                    <h3>Inmuebles más solicitados</h3>
+                    <p>Número de solicitudes por inmueble</p>
+                  </div>
+                </div>
+                <div class="grafica corta" id="g-top"></div>
+              </div>
+            </div>
+            <div class="col-xl-4">
+              <div class="tarjeta destacado h-100">
+                <img src="../../../../../backend/upload/inmuebles/car-101.jpg" alt="Casa nueva para estrenar">
+                <div class="destacado-capa">
+                  <span class="etiqueta mb-2"><i data-i="fuego" class="me-1"></i>El más pedido</span>
+                  <h3>Casa nueva para estrenar</h3>
+                  <p class="mb-1">CAR-101 · Centro, Cartago</p>
+                  <div class="d-flex justify-content-between align-items-end">
+                    <b class="precio">$250,000,000</b>
+                    <span class="pedidos">4 solicitudes</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3">
+              <div class="tarjeta h-100">
+                <div class="tarjeta-titulo">
+                  <div>
+                    <h3>Portafolio</h3>
+                    <p>Venta y arriendo</p>
+                  </div>
+                </div>
+                <div class="grafica corta dona" id="g-portafolio">
+                  <div class="dona-centro"><b>6</b><span>inmuebles</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../../iconos.js"></script>
+  <script src="layout.js"></script>
+  <script src="graficas.js"></script>
+  <script>
+    // datos calculados igual que tablero.ts con las 12 solicitudes de datos-prueba.js (hoy = 05/11/2026)
+    GR.apiladas(document.getElementById('g-actividad'), {
+      labels: ['23/10', '24/10', '25/10', '26/10', '27/10', '28/10', '29/10', '30/10', '31/10', '01/11', '02/11', '03/11', '04/11', '05/11'],
+      series: [
+        { label: 'Visitas', color: '#e3141b', data: [0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 2, 0] },
+        { label: 'Información', color: '#111111', data: [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 2] }
+      ],
+      max: 2, paso: 1, maxBar: 22, radio: 4
+    });
+    GR.dona(document.getElementById('g-estados'), {
+      labels: ['Pendientes', 'Confirmadas', 'Realizadas', 'Canceladas'],
+      data: [5, 3, 3, 1],
+      colores: ['#d97706', '#2563eb', '#16a34a', '#9ca3af'],
+      corte: 0.72
+    });
+    GR.horizontales(document.getElementById('g-top'), {
+      labels: ['CAR-101', 'CAR-106', 'CAR-104', 'CAR-102', 'CAR-105'],
+      data: [4, 2, 2, 2, 1],
+      colores: ['#e3141b', '#ec4a50', '#f27c80', '#f7adb0', '#fbd5d6'],
+      max: 4, paso: 1, maxBar: 26, radio: 6
+    });
+    GR.dona(document.getElementById('g-portafolio'), {
+      labels: ['En venta', 'En arriendo'],
+      data: [3, 3],
+      colores: ['#e3141b', '#111111'],
+      corte: 0.72
+    });
+  </script>
+</body>
+</html>

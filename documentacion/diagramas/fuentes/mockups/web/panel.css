@@ -1,0 +1,363 @@
+/* =====================================================================
+   panel.css -> estilos del panel administrativo para los mockups.
+   Copia de web-angular/src/styles.css + estructura (main, nav, header).
+   Cambio para el mockup: el menu lateral va en position:absolute (no fixed)
+   y la altura del lienzo es fija (la pone layout.js con <meta name="tam">).
+   ===================================================================== */
+
+/* ---------- styles.css (global) ---------- */
+:root {
+  --cr-rojo: #e3141b;
+  --cr-rojo-osc: #8b0000;
+  --cr-rojo-hover: #c10f15;
+  --cr-negro: #111111;
+  --cr-gris: #4a4a4a;
+  --cr-gris-claro: #f4f4f4;
+  --cr-linea: #e5e5e5;
+  --cr-fondo-panel: #f4f5f7;
+  --cr-verde: #16a34a;
+  --cr-azul: #2563eb;
+  --cr-ambar: #d97706;
+  --cr-serif: Georgia, 'Times New Roman', serif;
+  --cr-sans: 'DM Sans', 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+  font-family: var(--cr-sans);
+  color: var(--cr-negro);
+  background: #fff;
+}
+
+h1, h2, h3, .titulo {
+  font-family: var(--cr-serif);
+  font-weight: 700;
+  color: var(--cr-negro);
+}
+
+.btn-rojo { background: var(--cr-rojo); border: 2px solid var(--cr-rojo); color: #fff; font-weight: 700; }
+.btn-negro { background: var(--cr-negro); border: 2px solid var(--cr-negro); color: #fff; font-weight: 700; }
+.btn-borde-blanco { border: 2px solid #fff; color: #fff; font-weight: 700; }
+.text-rojo { color: var(--cr-rojo) !important; }
+
+.etiqueta {
+  display: inline-block;
+  background: var(--cr-rojo);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: 3px;
+}
+
+.sobretitulo {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cr-rojo);
+}
+
+.custom-alert {
+  background: #eef9f1;
+  border: 1px solid #c3e8cd;
+  border-radius: 6px;
+}
+
+/* ---------- main.css ---------- */
+.app-container {
+  position: relative;
+  display: flex;
+  width: 1440px;
+  background: var(--cr-fondo-panel);
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  margin-left: 272px;
+}
+
+.content-wrapper {
+  padding: 1.75rem 2rem 3rem;
+}
+
+/* ---------- nav.css ---------- */
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 272px;
+  background: linear-gradient(180deg, #151515 0%, #0b0b0b 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  z-index: 1050;
+  overflow: hidden;
+}
+
+.sidebar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--cr-rojo), var(--cr-rojo-osc));
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.3rem 1.25rem 1rem 1.5rem;
+  min-height: 96px;
+}
+
+.logo-completo { height: 64px; width: auto; }
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 1rem 0.5rem 1.25rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.sidebar .avatar {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--cr-rojo), var(--cr-rojo-osc));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.usuario-texto { min-width: 0; }
+
+.usuario-nombre {
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usuario-rol {
+  font-size: 0.78rem;
+  color: #9a9a9a;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+.menu {
+  flex: 1;
+  overflow: hidden;
+  padding: 0.25rem 0.9rem 1rem 1.15rem;
+}
+
+.seccion {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6f6f6f;
+  padding: 1.1rem 0.75rem 0.45rem;
+  white-space: nowrap;
+}
+
+.menu a,
+.canal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.68rem 0.8rem;
+  border-radius: 8px;
+  color: #c9c9c9;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.94rem;
+  margin-bottom: 3px;
+  white-space: nowrap;
+}
+
+.menu a i,
+.canal i {
+  font-size: 1.1rem;
+  width: 22px;
+  justify-content: center;
+  flex: none;
+}
+
+.menu a.activo {
+  background: linear-gradient(90deg, var(--cr-rojo) 0%, #b5101a 100%);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(227, 20, 27, 0.35);
+}
+
+.contador {
+  margin-left: auto;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 11px;
+  background: #fff;
+  color: var(--cr-rojo);
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu a:not(.activo) .contador {
+  background: var(--cr-rojo);
+  color: #fff;
+}
+
+.canal { color: #8a8a8a; }
+
+.en-linea {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.pie {
+  padding: 0.75rem 0.9rem 1rem 1.15rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.pie button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: none;
+  border: 0;
+  color: #9a9a9a;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.pie button i {
+  width: 22px;
+  justify-content: center;
+  font-size: 1.05rem;
+}
+
+/* ---------- header.css ---------- */
+.encabezado {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid var(--cr-linea);
+  position: relative;
+  z-index: 20;
+}
+
+.titulo-pagina { min-width: 0; }
+
+.ruta {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cr-rojo);
+}
+
+.ruta i { font-size: 0.6rem; margin: 0 .1rem; }
+
+.titulo-pagina h1 {
+  font-size: 1.6rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.titulo-pagina p {
+  margin: 0;
+  color: var(--cr-gris);
+  font-size: 0.9rem;
+}
+
+.acciones {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.fecha {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--cr-gris-claro);
+  border-radius: 8px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cr-gris);
+  text-transform: capitalize;
+}
+
+.campana {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--cr-gris-claro);
+  color: var(--cr-negro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  text-decoration: none;
+}
+
+.burbuja {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 21px;
+  height: 21px;
+  border-radius: 11px;
+  background: var(--cr-rojo);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid #fff;
+}
+
+/* ---------- ayudas del mockup ---------- */
+.btn i[data-i] { vertical-align: -0.125em; }
+.btn-sm i[data-i] { font-size: 1rem; }

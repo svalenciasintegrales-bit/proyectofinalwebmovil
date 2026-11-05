@@ -1,0 +1,107 @@
+/* comun.css -> estilo de los diagramas UML (clases y casos de uso) de InmoConecta / Caracoli */
+:root {
+  --rojo: #E3141B;
+  --rojo-osc: #8B0000;
+  --negro: #111111;
+  --gris: #4A4A4A;
+  --gris-claro: #F4F4F4;
+  --linea: #BFBFBF;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #fff; }
+body { font-family: 'DM Sans', 'Segoe UI', Arial, sans-serif; color: var(--negro); }
+
+.lienzo { position: relative; overflow: hidden; background: #fff; }
+
+/* ------- encabezado del diagrama ------- */
+.diag-cab { position: absolute; left: 32px; top: 22px; right: 32px; display: flex; align-items: center; gap: 16px; z-index: 3; }
+.diag-cab img { height: 46px; }
+.diag-cab .t { font-family: Georgia, serif; font-weight: bold; font-size: 28px; color: var(--negro); line-height: 1.1; }
+.diag-cab .s { font-size: 14px; color: var(--gris); margin-top: 3px; }
+.diag-cab .barra { width: 5px; align-self: stretch; background: var(--rojo); border-radius: 3px; }
+.diag-cab .der { margin-left: auto; text-align: right; font-size: 12px; color: var(--gris); }
+
+/* ------- capas ------- */
+.uml-svg { position: absolute; left: 0; top: 0; z-index: 1; overflow: visible; }
+.uml-paquete, .uml-frontera { position: absolute; z-index: 0; }
+.uml-clase, .uml-nota, .uml-actor, .uml-cu { position: absolute; z-index: 2; }
+
+/* ------- clase ------- */
+.uml-clase { background: #fff; border: 1.5px solid #333; border-radius: 4px; font-size: 12.5px; box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+.uml-clase .cab { text-align: center; padding: 6px 8px 7px; border-bottom: 1.5px solid #333; border-radius: 3px 3px 0 0; }
+.uml-clase .est { font-size: 11px; font-style: italic; opacity: .9; }
+.uml-clase .nom { font-weight: 700; font-size: 14.5px; }
+.uml-clase .nom.abs { font-style: italic; }
+.uml-clase .sec { padding: 5px 9px; border-bottom: 1px solid #999; min-height: 12px; }
+.uml-clase .sec:last-child { border-bottom: 0; }
+.uml-clase .fila { white-space: pre; line-height: 1.5; font-family: Consolas, 'Cascadia Mono', monospace; font-size: 11.6px; }
+.uml-clase .vis { color: var(--rojo); font-weight: 700; }
+.uml-clase .tipo { color: #6b7280; }
+
+.tono-rojo  { background: var(--rojo); color: #fff; }
+.tono-negro { background: var(--negro); color: #fff; }
+.tono-gris  { background: #ECECEC; color: var(--negro); }
+.tono-azul  { background: #E6EDFD; color: #1D3F99; }
+.tono-verde { background: #E3F5EA; color: #14532D; }
+.tono-ambar { background: #FDF1DF; color: #8A4B00; }
+.tono-rosa  { background: #FDE8E8; color: var(--rojo-osc); }
+.uml-enum { border-style: solid; }
+
+/* ------- nota ------- */
+.uml-nota { background: #FFFBEA; border: 1.2px solid #C9B458; padding: 8px 12px 9px; font-size: 12px; line-height: 1.45; color: #3b3b3b;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%); }
+.uml-nota::after { content: ''; position: absolute; right: 0; top: 0; width: 14px; height: 14px; background: #E9DC9C; }
+.uml-nota b { color: var(--negro); }
+.uml-nota ul { margin: 3px 0 0; padding-left: 16px; }
+
+/* ------- paquete / capa ------- */
+.uml-paquete { border: 1.5px dashed #9a9a9a; border-radius: 10px; }
+.uml-paquete .pq-tit { position: absolute; left: 14px; top: -13px; background: #fff; padding: 2px 10px; font-weight: 700; font-size: 13px; border-radius: 6px; border: 1.2px solid #9a9a9a; }
+.tono-p-gris  { background: #FAFAFA; }
+.tono-p-rojo  { background: #FFF6F6; border-color: #E9A3A5; }
+.tono-p-rojo .pq-tit { color: var(--rojo); border-color: #E9A3A5; }
+.tono-p-azul  { background: #F5F8FF; border-color: #A9BEEB; }
+.tono-p-azul .pq-tit { color: #1D4ED8; border-color: #A9BEEB; }
+.tono-p-verde { background: #F4FBF6; border-color: #9FD3B0; }
+.tono-p-verde .pq-tit { color: #15803D; border-color: #9FD3B0; }
+.tono-p-ambar { background: #FFFAF1; border-color: #E7C48C; }
+.tono-p-ambar .pq-tit { color: #B45309; border-color: #E7C48C; }
+.tono-p-negro { background: #F7F7F7; border-color: #777; }
+
+/* ------- relaciones ------- */
+.rel { stroke: #333; stroke-width: 1.5; }
+.rel-linea { stroke: #555; stroke-width: 1.4; }
+.rel-include, .rel-extend { stroke: #555; }
+.mult { font-size: 12px; font-weight: 700; fill: var(--rojo-osc); font-family: Consolas, monospace; }
+.etq { font-size: 11.5px; fill: #333; font-family: 'Segoe UI', Arial; }
+.etq-est { font-style: italic; fill: #444; }
+.etq-fondo { fill: #fff; opacity: .95; }
+
+/* ------- casos de uso ------- */
+.uml-frontera { border: 2px solid #333; border-radius: 6px; background: #fff; }
+.uml-frontera .fr-tit { position: absolute; left: 0; right: 0; top: 0; padding: 9px 14px; font-weight: 700; font-size: 15px; background: var(--negro); color: #fff; border-radius: 4px 4px 0 0; }
+.uml-actor { width: 120px; text-align: center; }
+.uml-actor svg { display: block; margin: 0 auto; stroke: #222; stroke-width: 2.6; fill: none; stroke-linecap: round; }
+.uml-actor svg circle { fill: #fff; }
+.uml-actor .act-nom { font-weight: 700; font-size: 13.5px; margin-top: 4px; line-height: 1.2; }
+.uml-actor .act-nom small { display: block; font-weight: 400; color: var(--gris); font-size: 11.5px; }
+.uml-cu { border: 1.6px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; padding: 6px 18px; font-size: 13px; line-height: 1.25; }
+.uml-cu .cu-cod { display: block; font-weight: 800; font-size: 11px; color: var(--rojo); letter-spacing: .5px; }
+.tono-cu-normal { background: #fff; }
+.tono-cu-rojo { background: #FFF1F1; border-color: var(--rojo); }
+.tono-cu-gris { background: #F4F4F4; border-style: dashed; }
+.tono-cu-azul { background: #F1F5FF; border-color: #1D4ED8; }
+
+/* ------- leyenda ------- */
+.leyenda { position: absolute; z-index: 3; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--gris); }
+.leyenda b { color: var(--negro); }
+.leyenda .it { display: flex; align-items: center; gap: 8px; margin: 3px 0; }
+.leyenda svg { flex: none; }
+
+/* ------- mapa de navegacion (miniaturas de pantallas) ------- */
+.pant { position: absolute; z-index: 2; background: #fff; border: 1.5px solid #333; border-radius: 10px; padding: 6px; box-shadow: 0 3px 10px rgba(0,0,0,.12); text-align: center; }
+.pant img { display: block; width: 100%; border-radius: 6px; object-fit: cover; object-position: top; }
+.pant .cap { font-size: 12.5px; font-weight: 700; margin-top: 5px; line-height: 1.2; }
+.pant .cap small { display: block; font-weight: 400; color: var(--gris); font-size: 11px; }
+.pant.var { border-style: dashed; }

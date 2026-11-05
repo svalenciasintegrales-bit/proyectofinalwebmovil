@@ -1,0 +1,167 @@
+/* copia de web-angular/src/app/modulos/reportes/reportes.css (estilos del componente) */
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  background: #fff;
+  border: 1px solid var(--cr-linea);
+  border-radius: 12px;
+  padding: 0.35rem;
+}
+
+.pestanas button {
+  border: 0;
+  background: none;
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+  font-weight: 700;
+  color: var(--cr-gris);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pestanas button.activo {
+  background: var(--cr-negro);
+  color: #fff;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid var(--cr-linea);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.encabezado-reporte {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.encabezado-reporte img {
+  height: 64px;
+}
+
+.encabezado-reporte h2 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.encabezado-reporte p {
+  margin: 0;
+  color: var(--cr-gris);
+}
+
+.totales {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.total {
+  flex: 1 1 110px;
+  background: #fff;
+  border: 1px solid var(--cr-linea);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.total.ancho {
+  flex: 2 1 200px;
+}
+
+.total b {
+  font-family: var(--cr-serif);
+  font-size: 1.6rem;
+  line-height: 1.1;
+}
+
+.total span {
+  font-size: 0.8rem;
+  color: var(--cr-gris);
+  font-weight: 700;
+}
+
+.total.principal {
+  background: var(--cr-rojo);
+  border-color: var(--cr-rojo);
+  color: #fff;
+}
+
+.total.principal span {
+  color: #ffe1e2;
+}
+
+.tarjeta {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--cr-linea);
+  overflow: hidden;
+}
+
+thead th {
+  background: #fafafa;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cr-gris);
+}
+
+.estado {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.estado-pendiente { background: #fdf1df; color: #b45309; }
+.estado-confirmada { background: #e6edfd; color: #1d4ed8; }
+.estado-realizada { background: #e3f5ea; color: #15803d; }
+.estado-cancelada { background: #eeeeee; color: #6b7280; }
+
+.cantidad {
+  display: inline-block;
+  min-width: 32px;
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  background: #fde8e8;
+  color: var(--cr-rojo);
+}
+
+.aviso {
+  background: #fff;
+  border: 1px solid var(--cr-linea);
+  border-radius: 14px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.aviso i {
+  font-size: 2.6rem;
+  color: var(--cr-rojo);
+}
+
+.aviso h3 {
+  font-size: 1.3rem;
+  margin-top: 0.6rem;
+}

@@ -1,0 +1,118 @@
+/* copia de web-angular/src/app/modulos/solicitudes/solicitudes.css (estilos del componente) */
+.barra-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.filtro-grupo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  background: #fff;
+  border: 1px solid var(--cr-linea);
+  border-radius: 12px;
+  padding: 0.35rem;
+}
+
+.filtro-grupo button {
+  border: 0;
+  background: none;
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--cr-gris);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.filtro-grupo button b {
+  background: var(--cr-gris-claro);
+  color: var(--cr-negro);
+  border-radius: 10px;
+  padding: 0 0.45rem;
+  font-size: 0.75rem;
+}
+
+.filtro-grupo button.activo {
+  background: var(--cr-negro);
+  color: #fff;
+}
+
+.filtro-grupo button.activo b {
+  background: var(--cr-rojo);
+  color: #fff;
+}
+
+.tarjeta {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--cr-linea);
+  box-shadow: 0 6px 18px rgba(17, 17, 17, 0.04);
+  overflow: hidden;
+}
+
+thead th {
+  background: #fafafa;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cr-gris);
+  border-bottom: 1px solid var(--cr-linea);
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+}
+
+td {
+  border-color: var(--cr-linea);
+}
+
+.detalle {
+  max-width: 230px;
+}
+
+.tipo {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tipo-visita { background: #fde8e8; color: var(--cr-rojo); }
+.tipo-info { background: #ececec; color: var(--cr-negro); }
+
+.estado {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.estado-pendiente { background: #fdf1df; color: #b45309; }
+.estado-confirmada { background: #e6edfd; color: #1d4ed8; }
+.estado-realizada { background: #e3f5ea; color: #15803d; }
+.estado-cancelada { background: #eeeeee; color: #6b7280; }
+
+.resumen {
+  background: var(--cr-gris-claro);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.pregunta {
+  margin-top: 0.5rem;
+  font-style: italic;
+  border-left: 3px solid var(--cr-rojo);
+  padding-left: 0.6rem;
+}

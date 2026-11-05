@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="1800x1140">
+<title>Diagrama de clases - Dominio</title>
+<link rel="stylesheet" href="../comun.css">
+<script src="../uml.js"></script>
+</head>
+<body>
+<div id="lienzo" class="lienzo" style="width:1800px;height:1140px">
+  <div class="diag-cab">
+    <div class="barra"></div>
+    <img src="../../../../web-angular/public/img/logo.png" alt="">
+    <div>
+      <div class="t">Diagrama de clases · Modelo de dominio</div>
+      <div class="s">Colecciones de MongoDB (base InmoConecta) definidas con Mongoose en backend/models · una sola fuente de verdad para la app y el panel</div>
+    </div>
+    <div class="der">Sistema InmoConecta<br>Caracoli Inmobiliaria</div>
+  </div>
+</div>
+<script>
+// ---------------- clases del dominio ----------------
+clase('Inmueble', { x: 40, y: 130, w: 360, est: '«Schema» colección Inmuebles', tono: 'rojo',
+  attrs: ['- _id: ObjectId', '- codigo: String  {único, ej. CAR-102}', '- titulo: String', '- tipo: TipoInmueble',
+    '- operacion: Operacion', '- precio: Number  {> 0}', '- barrio: String', '- ciudad: String', '- area: Number',
+    '- habitaciones: Number', '- banos: Number', '- descripcion: String', '- imagen: String',
+    '- estado: EstadoInmueble = disponible', '- fecha: Date = Date.now', '- createdAt: Date', '- updatedAt: Date'],
+  mets: ['+ save(): Inmueble', '+ getInmuebles(last, operacion): Inmueble[]', '+ getInmuebleCodigo(codigo): Inmueble',
+    '+ search(texto): Inmueble[]', '+ update(id, datos): Inmueble', '+ upload(id, file0): Inmueble', '+ delete(id): Inmueble'] });
+
+clase('Cita', { x: 690, y: 160, w: 400, est: '«Schema» colección Citas (solicitud)', tono: 'rojo',
+  attrs: ['- _id: ObjectId', '- inmueble_id: ObjectId', '- cliente_id: ObjectId', '- tipo: TipoCita = visita',
+    '- fecha_cita: Date  {solo visita, ≥ hoy}', '- hora: String  {solo visita}', '- observaciones: String',
+    '- respuesta: String', '- estado: EstadoCita = pendiente', '- fecha: Date = Date.now', '- createdAt: Date', '- updatedAt: Date'],
+  mets: ['+ save(): Cita', '+ getCitas(estado, last): Cita[]', '+ getCitasInmueble(id): Cita[]', '+ getCitasCliente(id): Cita[]',
+    '+ update(id, estado, respuesta): Cita', '+ delete(id): Cita', '- hoy(): Date  {hora de Colombia}'] });
+
+clase('Cliente', { x: 1390, y: 160, w: 360, est: '«Schema» colección Clientes', tono: 'rojo',
+  attrs: ['- _id: ObjectId', '- nombre: String  {obligatorio}', '- telefono: String  {obligatorio}', '- correo: String  {email válido}',
+    '- fecha: Date = Date.now', '- createdAt: Date', '- updatedAt: Date'],
+  mets: ['+ save(): Cliente', '+ getClientes(last): Cliente[]', '+ getCliente(id): Cliente', '+ update(id, datos): Cliente', '+ delete(id): Cliente'] });
+
+clase('Usuario', { x: 1390, y: 640, w: 360, est: '«Schema» colección Usuarios', tono: 'negro',
+  attrs: ['- _id: ObjectId', '- nombre: String', '- usuario: String  {único}', '- contrasena: String  {sal:sha256}',
+    '- rol: Rol = asesor', '- fecha: Date = Date.now', '- createdAt: Date', '- updatedAt: Date'],
+  mets: ['+ save(): Usuario', '+ getUsuarios(): Usuario[]  {sin contrasena}', '+ login(usuario, contrasena): Usuario',
+    '+ delete(id, actual): Usuario', '- encriptar(contrasena): String', '- comprobar(contrasena, guardada): Boolean'] });
+
+// ---------------- enumeraciones ----------------
+enumeracion('TipoInmueble', { x: 40, y: 790, w: 170, valores: ['casa', 'apartamento', 'local', 'lote', 'finca'] });
+enumeracion('Operacion', { x: 230, y: 790, w: 170, valores: ['venta', 'arriendo'] });
+enumeracion('EstadoInmueble', { x: 230, y: 935, w: 170, valores: ['disponible', 'arrendado', 'vendido'] });
+enumeracion('TipoCita', { x: 690, y: 690, w: 170, valores: ['visita', 'informacion'] });
+enumeracion('EstadoCita', { x: 890, y: 690, w: 200, valores: ['pendiente', 'confirmada', 'realizada  {final}', 'cancelada  {final}'] });
+enumeracion('Rol', { x: 1390, y: 1010, w: 170, valores: ['administrador', 'asesor'] });
+
+// ---------------- notas ----------------
+nota('nTransiciones', { x: 690, y: 880, w: 400, html:
+  '<b>Transiciones de EstadoCita</b> (citacontroller.TRANSICIONES)<ul>' +
+  '<li>pendiente → confirmada · realizada · cancelada</li>' +
+  '<li>confirmada → realizada · cancelada</li>' +
+  '<li>realizada y cancelada son finales</li>' +
+  '<li>una <i>visita</i> pendiente no pasa directo a realizada</li></ul>' +
+  'Cambio no permitido → <b>409</b>. Solo se modifican <i>estado</i> y <i>respuesta</i>.' });
+
+nota('nReglas', { x: 1120, y: 880, w: 240, html:
+  '<b>Reglas de negocio (servidor)</b><ul>' +
+  '<li>R1 código único → 409</li><li>R2 precio &gt; 0</li><li>R3 visita con fecha ≥ hoy y hora; información con mensaje</li>' +
+  '<li>R4 solo inmuebles <i>disponible</i>s y clientes existentes</li><li>R5 sin dos abiertas del mismo tipo e inmueble → 409</li>' +
+  '<li>R7 no se borra inmueble ni cliente con solicitudes → 409</li></ul>' });
+
+nota('nUsuario', { x: 1580, y: 1010, w: 170, html:
+  'No se borra el último <i>administrador</i> ni el usuario de la sesión (409).' });
+
+nota('nRef', { x: 450, y: 520, w: 200, html:
+  'Relación guardada a mano con <b>Schema.ObjectId</b> (sin <i>populate</i>): se consulta con dos búsquedas.' });
+
+// ---------------- relaciones ----------------
+rel('Cita', 'Inmueble', { tipo: 'navegable', desde: 'l', hasta: 'r', fd: 0.2, recta: 'h', m1: '0..*', m2: '1', etiqueta: 'inmueble_id', tl: 0.5, dy: -12 });
+rel('Cita', 'Cliente', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.2, recta: 'h', m1: '0..*', m2: '1', etiqueta: 'cliente_id', tl: 0.5, dy: -12 });
+
+rel('Inmueble', 'TipoInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.24, fh: 0.5, orto: true });
+rel('Inmueble', 'Operacion', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.76, fh: 0.5, orto: true });
+rel('Operacion', 'EstadoInmueble', { tipo: 'nota', desde: 'b', hasta: 't' });
+rel('Cita', 'TipoCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.21, fh: 0.5, orto: true });
+rel('Cita', 'EstadoCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.75, fh: 0.5, orto: true });
+rel('Usuario', 'Rol', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.24, fh: 0.5, orto: true });
+rel('EstadoCita', 'nTransiciones', { tipo: 'nota', desde: 'b', hasta: 't', fh: 0.75 });
+rel('nRef', 'Cita', { tipo: 'nota', desde: 'r', hasta: 'l', fh: 0.5 });
+rel('Usuario', 'nUsuario', { tipo: 'nota', desde: 'b', hasta: 't', fd: 0.78 });
+
+dibujar();
+</script>
+</body>
+</html>

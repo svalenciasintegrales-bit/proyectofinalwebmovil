@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="tam" content="1440x1110">
+  <meta name="escala" content="1.5">
+  <title>Reportes | Panel InmoConecta</title>
+  <link rel="stylesheet" href="bootstrap-lite.css">
+  <link rel="stylesheet" href="panel.css">
+  <link rel="stylesheet" href="c-reportes.css">
+  <style>
+    /* campo type="date" como lo dibuja Chrome en español */
+    .fecha-campo { width: 190px; display: flex; align-items: center; justify-content: space-between; }
+    .fecha-campo i { color: #212529; }
+  </style>
+</head>
+<body data-pagina="reportes">
+  <div class="app-container">
+    <aside id="nav"></aside>
+    <main class="main-content">
+      <header id="header"></header>
+      <div class="content-wrapper">
+
+        <!-- pestañas y acciones -->
+        <div class="barra no-imprimir">
+          <div class="pestanas">
+            <button class="activo"><i data-i="bandeja"></i>Solicitudes por fechas</button>
+            <button><i data-i="edificios"></i>Inventario de inmuebles</button>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-success"><i data-i="documento" class="me-2"></i>Descargar Excel</button>
+            <button class="btn btn-negro"><i data-i="imprimir" class="me-2"></i>Imprimir / PDF</button>
+          </div>
+        </div>
+
+        <!-- ===== REPORTE 1: SOLICITUDES POR FECHAS ===== -->
+        <div class="reporte">
+          <div class="filtros no-imprimir">
+            <div>
+              <label class="form-label small fw-bold">Desde</label>
+              <div class="form-control fecha-campo">01/11/2026 <i data-i="calendario"></i></div>
+            </div>
+            <div>
+              <label class="form-label small fw-bold">Hasta</label>
+              <div class="form-control fecha-campo">05/11/2026 <i data-i="calendario"></i></div>
+            </div>
+            <button class="btn btn-rojo align-self-end"><i data-i="grafico" class="me-2"></i>Generar reporte</button>
+          </div>
+
+          <div>
+            <div class="encabezado-reporte">
+              <img src="../../../../../web-angular/public/img/logo.png" alt="Caracoli Inmobiliaria">
+              <div>
+                <h2>Reporte de solicitudes</h2>
+                <p>Del 2026-11-01 al 2026-11-05 · Generado el 5/11/2026</p>
+              </div>
+            </div>
+
+            <div class="totales">
+              <div class="total principal"><b>8</b><span>Solicitudes</span></div>
+              <div class="total"><b>4</b><span>Visitas</span></div>
+              <div class="total"><b>4</b><span>Información</span></div>
+              <div class="total"><b>5</b><span>Pendientes</span></div>
+              <div class="total"><b>2</b><span>Confirmadas</span></div>
+              <div class="total"><b>1</b><span>Realizadas</span></div>
+              <div class="total"><b>0</b><span>Canceladas</span></div>
+            </div>
+
+            <div class="tarjeta">
+              <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                  <thead>
+                    <tr><th class="ps-3">Fecha</th><th>Tipo</th><th>Cliente</th><th>Inmueble</th><th>Detalle</th><th>Estado</th></tr>
+                  </thead>
+                  <tbody>
+                <tr>
+                  <td class="ps-3 text-nowrap">03/11/2026</td>
+                  <td>Información</td>
+                  <td>Jorge Castaño<br><small class="text-muted">3186667788</small></td>
+                  <td class="text-nowrap">CAR-101<br><small class="text-muted">Casa nueva para estrenar</small></td>
+                  <td class="small">
+                    <span class="text-muted">¿Cuánto es la administración?</span>
+                  </td>
+                  <td><span class="estado estado-pendiente">pendiente</span></td>
+                </tr>
+                <tr>
+                  <td class="ps-3 text-nowrap">05/11/2026</td>
+                  <td>Información</td>
+                  <td>Daniela Restrepo<br><small class="text-muted">3012223344</small></td>
+                  <td class="text-nowrap">CAR-102<br><small class="text-muted">Apartamento con balcon</small></td>
+                  <td class="small">
+                    <span class="text-muted">¿Incluye parqueadero?</span>
+                  </td>
+                  <td><span class="estado estado-pendiente">pendiente</span></td>
+                </tr>
+                <tr>
+                  <td class="ps-3 text-nowrap">03/11/2026</td>
+                  <td>Visita</td>
+                  <td>Valentina Ospina<br><small class="text-muted">3157778899</small></td>
+                  <td class="text-nowrap">CAR-104<br><small class="text-muted">Casa campestre con piscina</small></td>
+                  <td class="small">
+                    <span>06/11/2026 · 2:00 p.m.<br></span><span class="text-muted">Quiero conocer la piscina</span>
+                  </td>
+                  <td><span class="estado estado-confirmada">confirmada</span></td>
+                </tr>
+                <tr>
+                  <td class="ps-3 text-nowrap">02/11/2026</td>
+                  <td>Información</td>
+                  <td>Daniela Restrepo<br><small class="text-muted">3012223344</small></td>
+                  <td class="text-nowrap">CAR-103<br><small class="text-muted">Local comercial esquinero</small></td>
+                  <td class="small">
+                    <span class="text-muted">¿Qué uso de suelo tiene el local?</span>
+                  </td>
+                  <td><span class="estado estado-realizada">realizada</span></td>
+                </tr>
+                <tr>
+                  <td class="ps-3 text-nowrap">04/11/2026</td>
+                  <td>Visita</td>
+                  <td>Jorge Castaño<br><small class="text-muted">3186667788</small></td>
+                  <td class="text-nowrap">CAR-106<br><small class="text-muted">Lote para construir</small></td>
+                  <td class="small">
+                    <span>10/11/2026 · 9:00 a.m.<br></span><span class="text-muted">Voy con un maestro de obra</span>
+                  </td>
+                  <td><span class="estado estado-pendiente">pendiente</span></td>
+                </tr>
+                <tr>
+                  <td class="ps-3 text-nowrap">05/11/2026</td>
+                  <td>Información</td>
+                  <td>Valentina Ospina<br><small class="text-muted">3157778899</small></td>
+                  <td class="text-nowrap">CAR-101<br><small class="text-muted">Casa nueva para estrenar</small></td>
+                  <td class="small">
+                    <span class="text-muted">¿Aceptan crédito hipotecario con el Fondo Nacional del Ahorro?</span>
+                  </td>
+                  <td><span class="estado estado-pendiente">pendiente</span></td>
+                </tr>
+                <tr>
+                  <td class="ps-3 text-nowrap">01/11/2026</td>
+                  <td>Visita</td>
+                  <td>Andres Rios<br><small class="text-muted">3109876543</small></td>
+                  <td class="text-nowrap">CAR-102<br><small class="text-muted">Apartamento con balcon</small></td>
+                  <td class="small">
+                    <span>08/11/2026 · 3:00 p.m.<br></span><span class="text-muted"></span>
+                  </td>
+                  <td><span class="estado estado-confirmada">confirmada</span></td>
+                </tr>
+                <tr>
+                  <td class="ps-3 text-nowrap">04/11/2026</td>
+                  <td>Visita</td>
+                  <td>Laura Gomez<br><small class="text-muted">3001234567</small></td>
+                  <td class="text-nowrap">CAR-101<br><small class="text-muted">Casa nueva para estrenar</small></td>
+                  <td class="small">
+                    <span>07/11/2026 · 10:00 a.m.<br></span><span class="text-muted">Quiero ver la cocina y el segundo piso</span>
+                  </td>
+                  <td><span class="estado estado-pendiente">pendiente</span></td>
+                </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <script src="../../iconos.js"></script>
+  <script src="layout.js"></script>
+</body>
+</html>

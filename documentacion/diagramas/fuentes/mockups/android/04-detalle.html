@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="500x1000">
+<title>Android - Detalle del inmueble</title>
+<link rel="stylesheet" href="android.css">
+<script src="../../iconos.js"></script>
+<script src="android.js"></script>
+<style>
+  /* la lista esta desplazada hacia arriba (como si el cliente hubiera hecho scroll)
+     para que se vea el simulador de cuota */
+  .scroll { margin-top: -206px; }
+  .foto-detalle { position: relative; height: 280px; background: #1B1B1B url('../../../../../backend/upload/inmuebles/car-101.jpg') center/cover no-repeat; }
+  .foto-detalle .etiqueta-op { bottom: 14px; }
+  .bloque { padding: 16px; }
+  .precio-g { font-family: var(--serif); font-weight: bold; color: var(--rojo); font-size: 30px; line-height: 40px; }
+  .datos3 { display: flex; gap: 8px; }
+  .dato { flex: 1; background: var(--tarjeta); border-radius: 12px; padding: 10px; text-align: center; }
+  .dato b { display: block; color: var(--rojo); font-size: 18px; line-height: 24px; }
+  .dato span { font-size: 12px; line-height: 16px; letter-spacing: .4px; }
+  .btn.alto i, .btn-borde.alto i { margin-right: 8px; }
+  .simulador { margin: 16px; padding: 16px; }
+  .numeros { display: flex; gap: 6px; }
+  .numeros .campo { flex: 1; }
+  .numeros .etiqueta { font-size: 11px; }
+  .cuota { font-family: var(--serif); font-weight: bold; color: var(--rojo); font-size: 26px; line-height: 34px; }
+</style>
+</head>
+<body>
+<div class="dispositivo"><div class="pantalla">
+  <div class="estado"></div>
+  <div class="appbar">
+    <span class="icono-btn nav"><i data-i="atras" data-s="24"></i></span>
+    <div class="titulo">CAR-101</div>
+    <span class="icono-btn" style="color:var(--rojo)"><i data-i="corazon" data-s="24"></i></span>
+  </div>
+  <div class="contenido"><div class="scroll">
+    <div class="foto-detalle"><span class="etiqueta-op venta">SE VENDE</span></div>
+    <div class="bloque">
+      <h1 class="headline">Casa nueva para estrenar</h1>
+      <div class="lugar-linea body"><i data-i="lugar" data-s="18" style="color:var(--rojo)"></i>&nbsp;Centro, Cartago · Código CAR-101</div>
+      <div style="height:8px"></div>
+      <div class="precio-g">$250.000.000</div>
+      <div style="height:14px"></div>
+      <div class="datos3">
+        <div class="dato"><b>120 m²</b><span>Área</span></div>
+        <div class="dato"><b>3</b><span>Habitaciones</span></div>
+        <div class="dato"><b>2</b><span>Baños</span></div>
+      </div>
+      <div style="height:16px"></div>
+      <h2 class="title-l">Descripción</h2>
+      <p class="body">Casa nueva de dos niveles con cocina integral con isla, baños con división en vidrio, habitaciones con clóset y buena iluminación natural.</p>
+      <div style="height:18px"></div>
+      <span class="btn alto"><i data-i="calendario" data-s="24"></i>Agendar visita</span>
+      <div style="height:8px"></div>
+      <span class="btn-borde alto"><i data-i="correo" data-s="24"></i>Pedir información</span>
+    </div>
+
+    <div class="tarjeta simulador en-tarjeta">
+      <h2 class="title-l">Simulador de cuota</h2>
+      <div style="font-size:14px;line-height:20px;letter-spacing:.25px">¿Cuánto pagarías al mes con un crédito?</div>
+      <div style="height:10px"></div>
+      <div class="numeros">
+        <div class="campo"><span class="etiqueta">Inicial %</span><div class="caja">30</div></div>
+        <div class="campo"><span class="etiqueta">Años</span><div class="caja">20</div></div>
+        <div class="campo"><span class="etiqueta">Tasa % E.A.</span><div class="caja">12</div></div>
+      </div>
+      <div style="height:12px"></div>
+      <div style="font-size:14px;line-height:20px;letter-spacing:.25px">Cuota mensual aproximada</div>
+      <!-- cuotaMensual(250000000, 30.0, 20, 12.0) de InmuebleViewModel.kt = 1852590 -->
+      <div class="cuota">$1.852.590</div>
+      <div style="font-size:12px;line-height:16px;letter-spacing:.4px">Valor de referencia. La cuota real depende del banco.</div>
+    </div>
+    <div style="height:24px"></div>
+  </div></div>
+  <div class="gestos"></div>
+</div></div>
+</body>
+</html>
