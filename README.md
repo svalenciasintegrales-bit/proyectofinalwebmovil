@@ -149,3 +149,9 @@ pendiente ──► confirmada ──► realizada
   - Para sacar una copia: `mongodump --db InmoConecta --out respaldo/`.
   - Para recuperarla: `mongorestore respaldo/`.
   - Las fotos están en `backend/upload/inmuebles`.
+
+## 9. Mejora futura (adicional)
+- **Letrero con código QR:** el cliente escanearía el letrero y la app abriría el inmueble directamente.
+  - Se propuso al inicio, en `documentacion/ADICIONAL - Propuesta comercial inicial (con QR).pdf`.
+  - No se implementó porque la lectura de QR con la cámara no se vio en clase.
+  - Hoy se cubre con la búsqueda por el **código del letrero** (ej. CAR-102), que hace lo mismo escribiendo el código.
