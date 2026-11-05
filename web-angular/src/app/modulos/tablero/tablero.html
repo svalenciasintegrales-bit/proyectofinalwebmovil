@@ -1,0 +1,207 @@
+<div class="text-center py-5" *ngIf="cargando">
+  <div class="spinner-border text-danger" role="status"></div>
+  <p class="text-muted mt-2">Cargando el tablero...</p>
+</div>
+
+<div *ngIf="!cargando" class="tablero">
+
+  <!-- ===== BIENVENIDA ===== -->
+  <section class="bienvenida">
+    <div class="bienvenida-texto">
+      <span class="sobretitulo text-white opacity-75">Caracoli Inmobiliaria · Centro de control</span>
+      <h2>{{ saludo }}, {{ nombre }}</h2>
+      <p *ngIf="kpi.pendientes > 0">Tienes <b>{{ kpi.pendientes }} solicitudes</b> esperando respuesta desde la app de clientes.</p>
+      <p *ngIf="kpi.pendientes === 0">Estás al día: no hay solicitudes pendientes.</p>
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        <a class="btn btn-light fw-bold" routerLink="/panel/solicitudes"><i class="bi bi-inbox me-2"></i>Atender solicitudes</a>
+        <a class="btn btn-borde-blanco" routerLink="/panel/inmuebles"><i class="bi bi-plus-lg me-2"></i>Publicar inmueble</a>
+      </div>
+    </div>
+    <img src="img/simbolo.png" alt="" class="bienvenida-simbolo">
+  </section>
+
+  <!-- ===== INDICADORES ===== -->
+  <section class="kpis">
+    <div class="kpi">
+      <div class="kpi-icono rojo"><i class="bi bi-inbox-fill"></i></div>
+      <div>
+        <div class="kpi-titulo">Solicitudes pendientes</div>
+        <div class="kpi-valor">{{ kpi.pendientes }}</div>
+        <div class="kpi-detalle"><i class="bi bi-arrow-up-right"></i>{{ kpi.nuevasHoy }} llegaron hoy</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icono azul"><i class="bi bi-calendar-check-fill"></i></div>
+      <div>
+        <div class="kpi-titulo">Visitas próximos 7 días</div>
+        <div class="kpi-valor">{{ kpi.visitasProximas }}</div>
+        <div class="kpi-detalle" *ngIf="kpi.proximaVisita">Próxima: {{ kpi.proximaVisita.fecha_cita | date:'dd MMM':'UTC' }} · {{ kpi.proximaVisita.hora }}</div>
+        <div class="kpi-detalle" *ngIf="!kpi.proximaVisita">Sin visitas agendadas</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icono negro"><i class="bi bi-buildings-fill"></i></div>
+      <div>
+        <div class="kpi-titulo">Inmuebles disponibles</div>
+        <div class="kpi-valor">{{ kpi.disponibles }}<small> / {{ kpi.totalInmuebles }}</small></div>
+        <div class="kpi-detalle">{{ kpi.noDisponibles }} arrendados o vendidos</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icono verde"><i class="bi bi-cash-stack"></i></div>
+      <div>
+        <div class="kpi-titulo">Portafolio en venta</div>
+        <div class="kpi-valor">${{ millones(kpi.valorVenta) | number }}<small> M</small></div>
+        <div class="kpi-detalle">{{ kpi.enVenta }} inmuebles disponibles</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icono ambar"><i class="bi bi-people-fill"></i></div>
+      <div>
+        <div class="kpi-titulo">Clientes registrados</div>
+        <div class="kpi-valor">{{ kpi.clientes }}</div>
+        <div class="kpi-detalle"><i class="bi bi-arrow-up-right"></i>{{ kpi.clientesSemana }} nuevos esta semana</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icono rojo-osc"><i class="bi bi-speedometer2"></i></div>
+      <div class="flex-grow-1">
+        <div class="kpi-titulo">Tasa de atención</div>
+        <div class="kpi-valor">{{ kpi.atencion }}<small>%</small></div>
+        <div class="barra"><span [style.width.%]="kpi.atencion"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GRAFICAS PRINCIPALES ===== -->
+  <section class="row g-4 mb-4">
+    <div class="col-xl-8">
+      <div class="tarjeta h-100">
+        <div class="tarjeta-titulo">
+          <div>
+            <h3>Actividad de la app</h3>
+            <p>Solicitudes recibidas en los últimos 14 días</p>
+          </div>
+          <span class="chip">{{ solicitudes.length }} en total</span>
+        </div>
+        <div class="grafica"><canvas baseChart [data]="actividadData" [options]="actividadOptions" [type]="'bar'"></canvas></div>
+      </div>
+    </div>
+    <div class="col-xl-4">
+      <div class="tarjeta h-100">
+        <div class="tarjeta-titulo">
+          <div>
+            <h3>Estado de solicitudes</h3>
+            <p>Cómo va la atención a clientes</p>
+          </div>
+        </div>
+        <div class="grafica dona">
+          <canvas baseChart [data]="estadosData" [options]="donaOptions" [type]="'doughnut'"></canvas>
+          <div class="dona-centro"><b>{{ kpi.atencion }}%</b><span>atendidas</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== AGENDA Y ULTIMAS SOLICITUDES ===== -->
+  <section class="row g-4 mb-4">
+    <div class="col-xl-5">
+      <div class="tarjeta h-100">
+        <div class="tarjeta-titulo">
+          <div>
+            <h3>Agenda de visitas</h3>
+            <p>Próximas visitas a los inmuebles</p>
+          </div>
+          <a routerLink="/panel/solicitudes" class="enlace">Ver todo <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="agenda" *ngIf="agenda.length > 0">
+          <div class="cita" *ngFor="let a of agenda">
+            <div class="dia">
+              <b>{{ a.fecha_cita | date:'dd':'UTC' }}</b>
+              <span>{{ a.fecha_cita | date:'MMM':'UTC' }}</span>
+            </div>
+            <div class="cita-texto">
+              <div class="fw-bold">{{ inmuebleDe(a.inmueble_id)?.titulo || 'Inmueble' }}</div>
+              <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ a.hora }} · <i class="bi bi-person ms-1 me-1"></i>{{ clienteDe(a.cliente_id)?.nombre || 'Cliente' }}</small>
+            </div>
+            <span class="estado" [ngClass]="colorEstado(a.estado)">{{ a.estado }}</span>
+          </div>
+        </div>
+        <div class="vacio" *ngIf="agenda.length === 0"><i class="bi bi-calendar-x"></i>No hay visitas próximas</div>
+      </div>
+    </div>
+    <div class="col-xl-7">
+      <div class="tarjeta h-100">
+        <div class="tarjeta-titulo">
+          <div>
+            <h3>Últimas solicitudes</h3>
+            <p>Lo que piden los clientes desde la app</p>
+          </div>
+          <a routerLink="/panel/solicitudes" class="enlace">Atender <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0 tabla">
+            <tbody>
+              <tr *ngFor="let s of ultimas">
+                <td class="ps-0">
+                  <span class="tipo" [ngClass]="s.tipo === 'informacion' ? 'tipo-info' : 'tipo-visita'">
+                    <i class="bi" [ngClass]="s.tipo === 'informacion' ? 'bi-chat-left-text-fill' : 'bi-calendar-event-fill'"></i>
+                  </span>
+                </td>
+                <td>
+                  <div class="fw-bold">{{ clienteDe(s.cliente_id)?.nombre || 'Cliente' }}</div>
+                  <small class="text-muted">{{ s.tipo === 'informacion' ? 'Pide información' : 'Agenda visita' }} · {{ inmuebleDe(s.inmueble_id)?.codigo }}</small>
+                </td>
+                <td class="mensaje d-none d-md-table-cell"><small>{{ s.observaciones || '—' }}</small></td>
+                <td class="text-end pe-0"><span class="estado" [ngClass]="colorEstado(s.estado)">{{ s.estado }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== INMUEBLES ===== -->
+  <section class="row g-4">
+    <div class="col-xl-5">
+      <div class="tarjeta h-100">
+        <div class="tarjeta-titulo">
+          <div>
+            <h3>Inmuebles más solicitados</h3>
+            <p>Número de solicitudes por inmueble</p>
+          </div>
+        </div>
+        <div class="grafica corta"><canvas baseChart [data]="topData" [options]="topOptions" [type]="'bar'"></canvas></div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+      <div class="tarjeta destacado h-100" *ngIf="destacado">
+        <img *ngIf="destacado.imagen" [src]="sinmueble.urlFoto(destacado.imagen)" [alt]="destacado.titulo">
+        <div class="destacado-capa">
+          <span class="etiqueta mb-2"><i class="bi bi-fire me-1"></i>El más pedido</span>
+          <h3>{{ destacado.titulo }}</h3>
+          <p class="mb-1">{{ destacado.codigo }} · {{ destacado.barrio }}, {{ destacado.ciudad }}</p>
+          <div class="d-flex justify-content-between align-items-end">
+            <b class="precio">${{ destacado.precio | number:'1.0-0' }}</b>
+            <span class="pedidos">{{ destacadoTotal }} solicitudes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="tarjeta h-100">
+        <div class="tarjeta-titulo">
+          <div>
+            <h3>Portafolio</h3>
+            <p>Venta y arriendo</p>
+          </div>
+        </div>
+        <div class="grafica corta dona">
+          <canvas baseChart [data]="portafolioData" [options]="donaOptions" [type]="'doughnut'"></canvas>
+          <div class="dona-centro"><b>{{ kpi.totalInmuebles }}</b><span>inmuebles</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,24 @@
+# dependencias (se instalan con npm install)
+node_modules/
+
+# secretos y configuracion local
+.env
+android/local.properties
+
+# compilaciones y temporales
+web-angular/dist/
+web-angular/.angular/
+android/.gradle/
+android/.kotlin/
+android/build/
+android/app/build/
+android/.idea/
+*.iml
+*.log
+.DS_Store
+Thumbs.db
+~$*
+
+# configuracion del editor
+.claude/
+.vscode/

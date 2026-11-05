@@ -1,0 +1,62 @@
+<aside class="sidebar" [class.active]="isSidebarActive" [class.colapsado]="isCollapsed">
+    <!-- marca -->
+    <div class="marca">
+        <img src="img/logo-blanco.png" alt="Caracoli Inmobiliaria" class="logo-completo">
+        <img src="img/simbolo.png" alt="Caracoli" class="logo-simbolo">
+        <button class="btn-cerrar d-lg-none" (click)="onToggleSidebar()" aria-label="Cerrar menú">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <!-- usuario -->
+    <div class="usuario">
+        <div class="avatar">{{ iniciales() }}</div>
+        <div class="usuario-texto">
+            <div class="usuario-nombre">{{ nombre }}</div>
+            <div class="usuario-rol"><span class="punto"></span>{{ esAdministrador ? 'Administrador' : 'Asesor' }}</div>
+        </div>
+    </div>
+
+    <nav class="menu">
+        <div class="seccion">Principal</div>
+        <a routerLink="/panel/tablero" routerLinkActive="activo" (click)="cerrarEnCelular()" title="Tablero">
+            <i class="bi bi-grid-1x2-fill"></i><span>Tablero</span>
+        </a>
+
+        <div class="seccion">Gestión comercial</div>
+        <a routerLink="/panel/inmuebles" routerLinkActive="activo" (click)="cerrarEnCelular()" title="Inmuebles">
+            <i class="bi bi-buildings-fill"></i><span>Inmuebles</span>
+        </a>
+        <a routerLink="/panel/solicitudes" routerLinkActive="activo" (click)="cerrarEnCelular()" title="Solicitudes">
+            <i class="bi bi-inbox-fill"></i><span>Solicitudes</span>
+            <b class="contador" *ngIf="pendientes > 0">{{ pendientes }}</b>
+        </a>
+        <a routerLink="/panel/clientes" routerLinkActive="activo" (click)="cerrarEnCelular()" title="Clientes">
+            <i class="bi bi-people-fill"></i><span>Clientes</span>
+        </a>
+
+        <ng-container *ngIf="esAdministrador">
+            <div class="seccion">Administración</div>
+            <a routerLink="/panel/reportes" routerLinkActive="activo" (click)="cerrarEnCelular()" title="Reportes">
+                <i class="bi bi-file-earmark-bar-graph-fill"></i><span>Reportes</span>
+            </a>
+            <a routerLink="/panel/usuarios" routerLinkActive="activo" (click)="cerrarEnCelular()" title="Usuarios">
+                <i class="bi bi-person-gear"></i><span>Usuarios</span>
+            </a>
+        </ng-container>
+
+        <div class="seccion">Canales</div>
+        <div class="canal" title="App móvil de clientes">
+            <i class="bi bi-phone-fill"></i><span>App de clientes</span><em class="en-linea">En línea</em>
+        </div>
+    </nav>
+
+    <div class="pie">
+        <button class="btn-colapsar d-none d-lg-flex" (click)="toggleCollapse.emit()" [title]="isCollapsed ? 'Expandir menú' : 'Contraer menú'">
+            <i class="bi" [ngClass]="isCollapsed ? 'bi-chevron-double-right' : 'bi-chevron-double-left'"></i><span>Contraer menú</span>
+        </button>
+        <button class="btn-salir" (click)="cerrarSesion()" title="Cerrar sesión">
+            <i class="bi bi-box-arrow-left"></i><span>Cerrar sesión</span>
+        </button>
+    </div>
+</aside>

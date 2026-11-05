@@ -1,0 +1,15 @@
+<div class="app-container" [class.colapsado]="isCollapsed">
+    <app-nav [isSidebarActive]="isSidebarActive" [isCollapsed]="isCollapsed"
+        (toggleSidebar)="toggleSidebar()" (toggleCollapse)="toggleCollapse()"></app-nav>
+
+    <!-- fondo oscuro en celular cuando el menu esta abierto -->
+    <div class="sidebar-overlay d-lg-none" *ngIf="isSidebarActive" (click)="toggleSidebar()"></div>
+
+    <main class="main-content">
+        <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+
+        <div class="content-wrapper">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+</div>

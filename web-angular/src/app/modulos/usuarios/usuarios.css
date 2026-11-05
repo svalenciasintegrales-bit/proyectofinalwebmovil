@@ -1,0 +1,75 @@
+.tarjeta {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--cr-linea);
+  box-shadow: 0 6px 18px rgba(17, 17, 17, 0.04);
+  overflow: hidden;
+}
+
+thead th {
+  background: #fafafa;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cr-gris);
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #ececec;
+  color: var(--cr-negro);
+  font-weight: 800;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar.admin {
+  background: linear-gradient(135deg, var(--cr-rojo), var(--cr-rojo-osc));
+  color: #fff;
+}
+
+.rol {
+  display: inline-block;
+  padding: 0.3rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: #ececec;
+  color: var(--cr-negro);
+}
+
+.rol.admin {
+  background: #fde8e8;
+  color: var(--cr-rojo);
+}
+
+.tu {
+  font-size: 0.7rem;
+  background: var(--cr-negro);
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.1rem 0.45rem;
+  margin-left: 0.3rem;
+}
+
+.aviso {
+  background: #fff;
+  border: 1px solid var(--cr-linea);
+  border-radius: 14px;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.aviso i {
+  font-size: 2.6rem;
+  color: var(--cr-rojo);
+}
+
+.aviso h3 {
+  font-size: 1.3rem;
+  margin-top: 0.6rem;
+}

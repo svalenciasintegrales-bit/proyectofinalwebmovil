@@ -1,0 +1,140 @@
+<!-- filtros -->
+<div class="barra-filtros">
+  <div class="filtro-grupo">
+    <button [class.activo]="tipo === ''" (click)="tipo = ''">Todas <b>{{ solicitudes.length }}</b></button>
+    <button [class.activo]="tipo === 'visita'" (click)="tipo = 'visita'"><i class="bi bi-calendar-event"></i>Visitas <b>{{ contar('visita') }}</b></button>
+    <button [class.activo]="tipo === 'informacion'" (click)="tipo = 'informacion'"><i class="bi bi-chat-left-text"></i>Información <b>{{ contar('informacion') }}</b></button>
+  </div>
+  <div class="filtro-grupo estados">
+    <button [class.activo]="estado === ''" (click)="filtrar('')">Todos los estados</button>
+    <button *ngFor="let e of estados" [class.activo]="estado === e" (click)="filtrar(e)">{{ e | titlecase }}</button>
+  </div>
+</div>
+
+<div *ngIf="mensaje" class="alert custom-alert" role="alert">
+  <i class="bi bi-check-circle-fill me-2 text-success"></i><strong>{{ mensaje }}</strong>
+</div>
+
+<div *ngIf="errorTabla" class="alert alert-danger py-2" role="alert">
+  <i class="bi bi-exclamation-circle me-2"></i>{{ errorTabla }}
+</div>
+
+<div class="tarjeta">
+  <div class="table-responsive">
+    <table class="table align-middle table-hover mb-0">
+      <thead>
+        <tr>
+          <th class="ps-3">Solicitud</th>
+          <th>Cliente</th>
+          <th>Inmueble</th>
+          <th>Detalle</th>
+          <th>Respuesta</th>
+          <th>Estado</th>
+          <th class="text-end pe-3">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of visibles()">
+          <td class="ps-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="tipo" [ngClass]="s.tipo === 'informacion' ? 'tipo-info' : 'tipo-visita'">
+                <i class="bi" [ngClass]="s.tipo === 'informacion' ? 'bi-chat-left-text-fill' : 'bi-calendar-event-fill'"></i>
+              </span>
+              <div>
+                <div class="fw-bold">{{ s.tipo === 'informacion' ? 'Información' : 'Visita' }}</div>
+                <small class="text-muted">{{ s.fecha | date:'dd/MM/yyyy HH:mm' }}</small>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="fw-bold">{{ clienteDe(s.cliente_id)?.nombre || 'Cliente borrado' }}</div>
+            <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ clienteDe(s.cliente_id)?.telefono }}</small>
+          </td>
+          <td>
+            <div class="fw-bold text-nowrap">{{ inmuebleDe(s.inmueble_id)?.codigo || '—' }}</div>
+            <small class="text-muted">{{ inmuebleDe(s.inmueble_id)?.titulo || 'Inmueble borrado' }}</small>
+          </td>
+          <td class="detalle">
+            <div *ngIf="s.tipo !== 'informacion'" class="fw-bold text-nowrap">
+              <i class="bi bi-calendar3 me-1 text-rojo"></i>{{ s.fecha_cita | date:'dd/MM/yyyy':'UTC' }} · {{ s.hora }}
+            </div>
+            <small class="text-muted">{{ s.observaciones || 'Sin mensaje' }}</small>
+          </td>
+          <td class="detalle">
+            <small *ngIf="s.respuesta">{{ s.respuesta }}</small>
+            <small *ngIf="!s.respuesta" class="text-muted fst-italic">Sin responder</small>
+          </td>
+          <td><span class="estado" [ngClass]="colorEstado(s.estado)">{{ s.estado }}</span></td>
+          <td class="text-end pe-3 text-nowrap">
+            <button class="btn btn-sm btn-rojo me-1" title="Responder" data-bs-toggle="modal" data-bs-target="#respuestaModal" (click)="abrirRespuesta(s)">
+              <i class="bi bi-reply-fill"></i>
+            </button>
+            <button class="btn btn-sm btn-light me-1" title="Marcar como realizada" *ngIf="s.estado === 'confirmada'" (click)="cambiarEstado(s, 'realizada')">
+              <i class="bi bi-check2-all text-success"></i>
+            </button>
+            <button class="btn btn-sm btn-light me-1" title="Cancelar" *ngIf="s.estado === 'pendiente' || s.estado === 'confirmada'" (click)="cambiarEstado(s, 'cancelada')">
+              <i class="bi bi-x-lg text-secondary"></i>
+            </button>
+            <button class="btn btn-sm btn-light text-danger" title="Eliminar" (click)="eliminar(s)">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="visibles().length === 0">
+          <td colspan="7" class="text-center text-muted py-5">
+            <i class="bi bi-inbox display-6 d-block mb-2 opacity-50"></i>
+            No hay solicitudes con este filtro.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ventana para responder la solicitud -->
+<div class="modal fade" id="respuestaModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold"><i class="bi bi-reply-fill text-rojo me-2"></i>Responder solicitud</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" id="btnCerrarRespuesta"></button>
+      </div>
+      <div class="modal-body" *ngIf="seleccionada">
+        <div class="resumen mb-3">
+          <div class="fw-bold">{{ clienteDe(seleccionada.cliente_id)?.nombre }} · {{ clienteDe(seleccionada.cliente_id)?.telefono }}</div>
+          <small class="text-muted">
+            {{ seleccionada.tipo === 'informacion' ? 'Pide información sobre' : 'Quiere visitar' }}
+            {{ inmuebleDe(seleccionada.inmueble_id)?.codigo }} - {{ inmuebleDe(seleccionada.inmueble_id)?.titulo }}
+            <span *ngIf="seleccionada.tipo !== 'informacion'"> el {{ seleccionada.fecha_cita | date:'dd/MM/yyyy':'UTC' }} a las {{ seleccionada.hora }}</span>
+          </small>
+          <div class="pregunta" *ngIf="seleccionada.observaciones">“{{ seleccionada.observaciones }}”</div>
+        </div>
+        <div *ngIf="error" class="alert alert-danger py-2">{{ error }}</div>
+        <form>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Nuevo estado</label>
+            <select class="form-select" name="estado" [(ngModel)]="objRespuesta.estado">
+              <!-- solo los cambios de estado permitidos (el servidor tambien lo revisa) -->
+              <option *ngFor="let e of opcionesEstado(seleccionada)" [value]="e">{{ e | titlecase }}{{ e === seleccionada?.estado ? ' (actual)' : '' }}</option>
+            </select>
+          </div>
+          <div class="mb-1">
+            <label class="form-label small fw-bold">Respuesta para el cliente <span class="text-danger">*</span></label>
+            <textarea class="form-control" name="respuesta" rows="3" [(ngModel)]="objRespuesta.respuesta"
+              placeholder="Ej: Su visita quedó confirmada, lo esperamos en la entrada del inmueble."
+              [ngClass]="{'is-invalid': validarFormulario && !objRespuesta.respuesta.trim()}"></textarea>
+            <div class="invalid-feedback">Escribe la respuesta para el cliente.</div>
+          </div>
+          <small class="text-muted"><i class="bi bi-phone me-1"></i>El cliente verá esta respuesta en la app.</small>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-rojo px-4" (click)="guardarRespuesta()" [disabled]="enviando">
+          <span *ngIf="enviando" class="spinner-border spinner-border-sm me-2"></span>
+          <i *ngIf="!enviando" class="bi bi-send-fill me-2"></i>{{ enviando ? 'Enviando...' : 'Enviar respuesta' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

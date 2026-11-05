@@ -1,0 +1,163 @@
+/* =====================================================================
+   styles.css -> ESTILOS GLOBALES con la marca de Caracoli Inmobiliaria
+   Rojo Caracoli, rojo oscuro, negro y gris; titulos en Georgia (serif)
+   ===================================================================== */
+
+:root {
+  --cr-rojo: #e3141b;
+  /* rojo principal del logo */
+  --cr-rojo-osc: #8b0000;
+  /* rojo oscuro de la sombra del logo */
+  --cr-rojo-hover: #c10f15;
+  --cr-negro: #111111;
+  --cr-gris: #4a4a4a;
+  /* gris de "INMOBILIARIA" */
+  --cr-gris-claro: #f4f4f4;
+  --cr-linea: #e5e5e5;
+  --cr-fondo-panel: #f4f5f7;
+  /* fondo gris del panel administrativo */
+  --cr-verde: #16a34a;
+  --cr-azul: #2563eb;
+  --cr-ambar: #d97706;
+  --cr-serif: Georgia, 'Times New Roman', serif;
+  --cr-sans: 'DM Sans', 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+  font-family: var(--cr-sans);
+  color: var(--cr-negro);
+  background: #fff;
+}
+
+h1, h2, h3, .titulo {
+  font-family: var(--cr-serif);
+  font-weight: 700;
+  color: var(--cr-negro);
+}
+
+/* botones de la marca */
+.btn-rojo {
+  background: var(--cr-rojo);
+  border: 2px solid var(--cr-rojo);
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-rojo:hover,
+.btn-rojo:focus {
+  background: var(--cr-rojo-hover);
+  border-color: var(--cr-rojo-hover);
+  color: #fff;
+}
+
+.btn-negro {
+  background: var(--cr-negro);
+  border: 2px solid var(--cr-negro);
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-negro:hover {
+  background: #2b2b2b;
+  color: #fff;
+}
+
+.btn-borde-blanco {
+  border: 2px solid #fff;
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-borde-blanco:hover {
+  background: #fff;
+  color: var(--cr-rojo);
+}
+
+.text-rojo { color: var(--cr-rojo); }
+.bg-rojo { background: var(--cr-rojo); }
+.bg-gris { background: var(--cr-gris-claro); }
+
+/* etiqueta roja tipo "SERVICIO" de los videos de Caracoli */
+.etiqueta {
+  display: inline-block;
+  background: var(--cr-rojo);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: 3px;
+}
+
+/* subtitulo pequeño en rojo con letras separadas */
+.sobretitulo {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cr-rojo);
+}
+
+/* raya roja diagonal (detalle de la marca) */
+.raya {
+  display: inline-block;
+  width: 46px;
+  height: 4px;
+  background: var(--cr-rojo);
+  transform: skewX(-30deg);
+}
+
+/* palabra resaltada con caja roja (como "propiedad ideal" en el video) */
+.resaltado {
+  background: var(--cr-rojo);
+  color: #fff;
+  padding: 0 0.3em;
+  font-style: italic;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.badge-venta {
+  background: var(--cr-rojo);
+}
+
+.badge-arriendo {
+  background: var(--cr-negro);
+}
+
+/* al imprimir un reporte solo sale el reporte (sin menu, encabezado ni botones) */
+@media print {
+  app-nav,
+  app-header,
+  .no-imprimir,
+  .sidebar-overlay {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+
+  .content-wrapper {
+    padding: 0 !important;
+  }
+
+  body,
+  .app-container {
+    background: #fff !important;
+  }
+}
+
+/* mensaje que aparece y se va (igual que en minimarket) */
+.custom-alert {
+  background: #eef9f1;
+  border: 1px solid #c3e8cd;
+  border-radius: 6px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--cr-rojo);
+  box-shadow: 0 0 0 0.2rem rgba(227, 20, 27, 0.15);
+}

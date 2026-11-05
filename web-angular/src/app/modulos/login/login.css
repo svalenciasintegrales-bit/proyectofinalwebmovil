@@ -1,0 +1,23 @@
+.fondo {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(120deg, rgba(10,10,10,0.88), rgba(139,0,0,0.75)), url("/img/llaves.jpg") center / cover;
+}
+
+.caja {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 6px;
+  border-top: 6px solid var(--cr-rojo);
+  padding: 2.2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.logo {
+  height: 120px;
+  width: auto;
+}

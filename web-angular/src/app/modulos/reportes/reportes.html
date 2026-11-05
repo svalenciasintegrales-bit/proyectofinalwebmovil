@@ -1,0 +1,122 @@
+<div class="aviso" *ngIf="!esAdministrador">
+  <i class="bi bi-shield-lock-fill"></i>
+  <h3>Solo el administrador puede ver los reportes</h3>
+  <p class="text-muted mb-0">Inicia sesión con una cuenta de administrador.</p>
+</div>
+
+<div *ngIf="esAdministrador">
+  <!-- pestañas y acciones -->
+  <div class="barra no-imprimir">
+    <div class="pestanas">
+      <button [class.activo]="pestana === 'solicitudes'" (click)="pestana = 'solicitudes'"><i class="bi bi-inbox"></i>Solicitudes por fechas</button>
+      <button [class.activo]="pestana === 'inventario'" (click)="pestana = 'inventario'"><i class="bi bi-buildings"></i>Inventario de inmuebles</button>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-success" (click)="descargar()" [disabled]="pestana === 'solicitudes' && !generado">
+        <i class="bi bi-file-earmark-excel me-2"></i>Descargar Excel
+      </button>
+      <button class="btn btn-negro" (click)="imprimir()"><i class="bi bi-printer me-2"></i>Imprimir / PDF</button>
+    </div>
+  </div>
+
+  <!-- ===== REPORTE 1: SOLICITUDES POR FECHAS ===== -->
+  <div class="reporte" *ngIf="pestana === 'solicitudes'">
+    <div class="filtros no-imprimir">
+      <div>
+        <label class="form-label small fw-bold">Desde</label>
+        <input type="date" class="form-control" name="desde" [(ngModel)]="desde">
+      </div>
+      <div>
+        <label class="form-label small fw-bold">Hasta</label>
+        <input type="date" class="form-control" name="hasta" [(ngModel)]="hasta">
+      </div>
+      <button class="btn btn-rojo align-self-end" (click)="generar()"><i class="bi bi-bar-chart-line me-2"></i>Generar reporte</button>
+    </div>
+    <div *ngIf="error" class="alert alert-danger py-2 no-imprimir"><i class="bi bi-exclamation-circle me-2"></i>{{ error }}</div>
+
+    <div *ngIf="generado">
+      <div class="encabezado-reporte">
+        <img src="img/logo.png" alt="Caracoli Inmobiliaria">
+        <div>
+          <h2>Reporte de solicitudes</h2>
+          <p>Del {{ desde }} al {{ hasta }} · Generado el {{ hoyTexto }}</p>
+        </div>
+      </div>
+
+      <div class="totales">
+        <div class="total principal"><b>{{ totales.total }}</b><span>Solicitudes</span></div>
+        <div class="total"><b>{{ totales.visitas }}</b><span>Visitas</span></div>
+        <div class="total"><b>{{ totales.informacion }}</b><span>Información</span></div>
+        <div class="total"><b>{{ totales.pendiente }}</b><span>Pendientes</span></div>
+        <div class="total"><b>{{ totales.confirmada }}</b><span>Confirmadas</span></div>
+        <div class="total"><b>{{ totales.realizada }}</b><span>Realizadas</span></div>
+        <div class="total"><b>{{ totales.cancelada }}</b><span>Canceladas</span></div>
+      </div>
+
+      <div class="tarjeta">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr><th class="ps-3">Fecha</th><th>Tipo</th><th>Cliente</th><th>Inmueble</th><th>Detalle</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of filas">
+                <td class="ps-3 text-nowrap">{{ s.fecha | date:'dd/MM/yyyy' }}</td>
+                <td>{{ s.tipo === 'informacion' ? 'Información' : 'Visita' }}</td>
+                <td>{{ clienteDe(s.cliente_id)?.nombre }}<br><small class="text-muted">{{ clienteDe(s.cliente_id)?.telefono }}</small></td>
+                <td class="text-nowrap">{{ inmuebleDe(s.inmueble_id)?.codigo }}<br><small class="text-muted">{{ inmuebleDe(s.inmueble_id)?.titulo }}</small></td>
+                <td class="small">
+                  <span *ngIf="s.tipo !== 'informacion'">{{ s.fecha_cita | date:'dd/MM/yyyy':'UTC' }} · {{ s.hora }}<br></span>
+                  <span class="text-muted">{{ s.observaciones }}</span>
+                </td>
+                <td><span class="estado" [ngClass]="colorEstado(s.estado)">{{ s.estado }}</span></td>
+              </tr>
+              <tr *ngIf="filas.length === 0">
+                <td colspan="6" class="text-center text-muted py-4">No hay solicitudes en este rango de fechas.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REPORTE 2: INVENTARIO ===== -->
+  <div class="reporte" *ngIf="pestana === 'inventario'">
+    <div class="encabezado-reporte">
+      <img src="img/logo.png" alt="Caracoli Inmobiliaria">
+      <div>
+        <h2>Reporte de inventario</h2>
+        <p>Portafolio de inmuebles y número de solicitudes de cada uno</p>
+      </div>
+    </div>
+
+    <div class="totales">
+      <div class="total principal"><b>{{ resumen.total }}</b><span>Inmuebles</span></div>
+      <div class="total"><b>{{ resumen.disponibles }}</b><span>Disponibles</span></div>
+      <div class="total"><b>{{ resumen.arrendados }}</b><span>Arrendados</span></div>
+      <div class="total"><b>{{ resumen.vendidos }}</b><span>Vendidos</span></div>
+      <div class="total ancho"><b>${{ resumen.valorVenta | number:'1.0-0' }}</b><span>Valor en venta</span></div>
+    </div>
+
+    <div class="tarjeta">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr><th class="ps-3">Código</th><th>Inmueble</th><th>Operación</th><th class="text-end">Precio</th><th>Estado</th><th class="text-center pe-3">Solicitudes</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let f of inventario">
+              <td class="ps-3 fw-bold text-nowrap">{{ f.inmueble.codigo }}</td>
+              <td>{{ f.inmueble.titulo }}<br><small class="text-muted">{{ f.inmueble.tipo | titlecase }} · {{ f.inmueble.barrio }}, {{ f.inmueble.ciudad }}</small></td>
+              <td>{{ f.inmueble.operacion | titlecase }}</td>
+              <td class="text-end text-nowrap">${{ f.inmueble.precio | number:'1.0-0' }}</td>
+              <td><span class="estado" [ngClass]="colorEstado(f.inmueble.estado)">{{ f.inmueble.estado }}</span></td>
+              <td class="text-center pe-3"><b class="cantidad">{{ f.solicitudes }}</b></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

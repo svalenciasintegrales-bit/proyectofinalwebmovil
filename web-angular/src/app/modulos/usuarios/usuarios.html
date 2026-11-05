@@ -1,0 +1,116 @@
+<!-- solo el administrador puede gestionar usuarios -->
+<div class="aviso" *ngIf="!esAdministrador">
+  <i class="bi bi-shield-lock-fill"></i>
+  <h3>Solo el administrador puede gestionar los usuarios</h3>
+  <p class="text-muted mb-0">Inicia sesión con una cuenta de administrador para crear o eliminar usuarios del panel.</p>
+</div>
+
+<div *ngIf="esAdministrador">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <p class="text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Cada persona del equipo entra con su propia cuenta. Las contraseñas se guardan encriptadas.</p>
+    <button class="btn btn-rojo" data-bs-toggle="modal" data-bs-target="#usuarioModal" (click)="nuevo()">
+      <i class="bi bi-person-plus me-2"></i>Nuevo usuario
+    </button>
+  </div>
+
+  <div *ngIf="mensaje" class="alert custom-alert" role="alert">
+    <i class="bi bi-check-circle-fill me-2 text-success"></i><strong>{{ mensaje }}</strong>
+  </div>
+  <div *ngIf="errorTabla" class="alert alert-danger py-2" role="alert">
+    <i class="bi bi-exclamation-circle me-2"></i>{{ errorTabla }}
+  </div>
+
+  <div class="tarjeta">
+    <div class="table-responsive">
+      <table class="table align-middle table-hover mb-0">
+        <thead>
+          <tr>
+            <th class="ps-3">Usuario</th>
+            <th>Rol</th>
+            <th>Permisos</th>
+            <th>Creado</th>
+            <th class="text-end pe-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of usuarios">
+            <td class="ps-3">
+              <div class="d-flex align-items-center gap-2">
+                <span class="avatar" [class.admin]="u.rol === 'administrador'">{{ iniciales(u.nombre) }}</span>
+                <div>
+                  <div class="fw-bold">{{ u.nombre }} <span class="tu" *ngIf="u._id === idActual">Tú</span></div>
+                  <small class="text-muted">&#64;{{ u.usuario }}</small>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="rol" [class.admin]="u.rol === 'administrador'">{{ u.rol === 'administrador' ? 'Administrador' : 'Asesor' }}</span>
+            </td>
+            <td class="text-muted small">
+              {{ u.rol === 'administrador' ? 'Todo el panel: usuarios y reportes incluidos' : 'Inmuebles, solicitudes y clientes' }}
+            </td>
+            <td class="text-muted">{{ u.fecha | date:'dd/MM/yyyy' }}</td>
+            <td class="text-end pe-3">
+              <button class="btn btn-sm btn-light text-danger" title="Eliminar" (click)="eliminar(u)" [disabled]="u._id === idActual">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="usuarios.length === 0">
+            <td colspan="5" class="text-center text-muted py-5">No hay usuarios registrados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="usuarioModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Nuevo usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" id="btnCerrarUsuario"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="error" class="alert alert-danger py-2">{{ error }}</div>
+        <form>
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Nombre completo <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="nombre" [(ngModel)]="objUsuario.nombre"
+              [ngClass]="{'is-invalid': validarFormulario && !objUsuario.nombre}">
+            <div class="invalid-feedback">Escribe el nombre.</div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label class="form-label small fw-bold">Usuario <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="usuario" [(ngModel)]="objUsuario.usuario" autocomplete="off"
+                [ngClass]="{'is-invalid': validarFormulario && !objUsuario.usuario}">
+              <div class="invalid-feedback">Escribe el usuario.</div>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-bold">Contraseña <span class="text-danger">*</span></label>
+              <input type="password" class="form-control" name="contrasena" [(ngModel)]="objUsuario.contrasena" autocomplete="new-password"
+                [ngClass]="{'is-invalid': validarFormulario && (!objUsuario.contrasena || objUsuario.contrasena.length < 4)}">
+              <div class="invalid-feedback">Mínimo 4 caracteres.</div>
+            </div>
+          </div>
+          <div>
+            <label class="form-label small fw-bold">Rol</label>
+            <select class="form-select" name="rol" [(ngModel)]="objUsuario.rol">
+              <option value="asesor">Asesor: inmuebles, solicitudes y clientes</option>
+              <option value="administrador">Administrador: todo el panel</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-rojo px-4" (click)="guardar()" [disabled]="enviando">
+          <span *ngIf="enviando" class="spinner-border spinner-border-sm me-2"></span>
+          <i *ngIf="!enviando" class="bi bi-save me-2"></i>{{ enviando ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

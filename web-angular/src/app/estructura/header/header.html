@@ -1,0 +1,22 @@
+<header class="encabezado">
+    <button class="btn-menu d-lg-none" (click)="onToggleSidebar()" aria-label="Abrir menú">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <div class="titulo-pagina">
+        <div class="ruta">Panel <i class="bi bi-chevron-right"></i> {{ titulo }}</div>
+        <h1>{{ titulo }}</h1>
+        <p class="d-none d-md-block">{{ descripcion }}</p>
+    </div>
+
+    <div class="acciones">
+        <div class="fecha d-none d-xl-flex"><i class="bi bi-calendar3"></i>{{ hoy }}</div>
+        <a class="campana" routerLink="/panel/solicitudes" [title]="pendientes + ' solicitudes pendientes'">
+            <i class="bi bi-bell-fill"></i>
+            <span class="burbuja" *ngIf="pendientes > 0">{{ pendientes }}</span>
+        </a>
+        <a class="btn btn-rojo btn-sm d-none d-sm-inline-flex align-items-center gap-2" routerLink="/panel/inmuebles">
+            <i class="bi bi-plus-lg"></i>Publicar inmueble
+        </a>
+    </div>
+</header>

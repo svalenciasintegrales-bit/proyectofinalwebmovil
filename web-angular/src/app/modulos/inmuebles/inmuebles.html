@@ -1,0 +1,189 @@
+<div class="no-imprimir">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <p class="text-muted mb-0"><i class="bi bi-info-circle me-1"></i>Lo que publiques aquí se muestra en la app de clientes. El código (ej: CAR-102) es el que va en el letrero del inmueble.</p>
+    </div>
+    <button class="btn btn-rojo" data-bs-toggle="modal" data-bs-target="#inmuebleModal" (click)="nuevo()">
+      <i class="bi bi-plus-lg me-2"></i>Nuevo inmueble
+    </button>
+  </div>
+
+  <div *ngIf="mensaje" class="alert custom-alert" role="alert">
+    <i class="bi bi-check-circle-fill me-2 text-success"></i><strong>{{ mensaje }}</strong>
+  </div>
+
+  <div *ngIf="errorTabla" class="alert alert-danger py-2" role="alert">
+    <i class="bi bi-exclamation-circle me-2"></i>{{ errorTabla }}
+  </div>
+
+  <!-- buscador y filtros -->
+  <div class="filtros">
+    <div class="buscar">
+      <i class="bi bi-search"></i>
+      <input type="text" class="form-control" name="texto" [(ngModel)]="texto" placeholder="Buscar por código, título o barrio">
+    </div>
+    <select class="form-select" name="filtroOperacion" [(ngModel)]="filtroOperacion">
+      <option value="">Venta y arriendo</option>
+      <option value="venta">Venta</option>
+      <option value="arriendo">Arriendo</option>
+    </select>
+    <select class="form-select" name="filtroEstado" [(ngModel)]="filtroEstado">
+      <option value="">Todos los estados</option>
+      <option value="disponible">Disponible</option>
+      <option value="arrendado">Arrendado</option>
+      <option value="vendido">Vendido</option>
+    </select>
+    <button class="btn btn-light" (click)="limpiarFiltros()" title="Limpiar filtros"><i class="bi bi-x-circle"></i></button>
+    <span class="conteo">{{ visibles().length }} de {{ inmuebles.length }}</span>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table align-middle table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-3">Foto</th>
+            <th>Código</th>
+            <th>Inmueble</th>
+            <th>Operación</th>
+            <th>Precio</th>
+            <th>Estado</th>
+            <th class="text-end pe-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let inm of visibles()">
+            <td class="ps-3">
+              <img *ngIf="inm.imagen" [src]="sinmueble.urlFoto(inm.imagen)" class="mini" [alt]="inm.titulo">
+              <div *ngIf="!inm.imagen" class="mini sin-foto"><i class="bi bi-image"></i></div>
+            </td>
+            <td class="fw-bold text-nowrap">{{ inm.codigo }}</td>
+            <td>
+              <div class="fw-bold">{{ inm.titulo }}</div>
+              <small class="text-muted">{{ inm.tipo | titlecase }} · {{ inm.barrio }}</small>
+            </td>
+            <td><span class="badge" [ngClass]="inm.operacion === 'venta' ? 'venta' : 'arriendo'">{{ inm.operacion }}</span></td>
+            <td class="fw-bold">${{ inm.precio | number:'1.0-0' }}</td>
+            <td>
+              <span class="badge" [ngClass]="inm.estado === 'disponible' ? 'bg-success' : 'bg-secondary'">{{ inm.estado }}</span>
+            </td>
+            <td class="text-end pe-3 text-nowrap">
+              <!-- subir foto: el boton abre el input file escondido -->
+              <label class="btn btn-sm btn-light me-1" title="Subir foto">
+                <i class="bi bi-camera"></i>
+                <input type="file" accept=".png,.jpg,.jpeg,.gif,.webp" hidden (change)="subirFoto($event, inm)">
+              </label>
+              <button class="btn btn-sm btn-light me-1" title="Editar" data-bs-toggle="modal" data-bs-target="#inmuebleModal" (click)="editar(inm)">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button class="btn btn-sm btn-light text-danger" title="Eliminar" (click)="eliminar(inm)">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="visibles().length === 0">
+            <td colspan="7" class="text-center text-muted py-5">No hay inmuebles con esa búsqueda.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- modal para crear o editar -->
+<div class="modal fade no-imprimir" id="inmuebleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">{{ editingId ? 'Editar' : 'Nuevo' }} inmueble</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" id="btnCerrarModal"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="error" class="alert alert-danger py-2">{{ error }}</div>
+        <form class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">Código <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="codigo" [(ngModel)]="objInmueble.codigo" placeholder="CAR-107"
+              [ngClass]="{'is-invalid': validarFormulario && errorCampo('codigo')}">
+            <div class="invalid-feedback">{{ errorCampo('codigo') }}</div>
+          </div>
+          <div class="col-md-9">
+            <label class="form-label small fw-bold">Título <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" name="titulo" [(ngModel)]="objInmueble.titulo"
+              [ngClass]="{'is-invalid': validarFormulario && errorCampo('titulo')}">
+            <div class="invalid-feedback">{{ errorCampo('titulo') }}</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-bold">Tipo</label>
+            <select class="form-select" name="tipo" [(ngModel)]="objInmueble.tipo">
+              <option value="casa">Casa</option>
+              <option value="apartamento">Apartamento</option>
+              <option value="local">Local</option>
+              <option value="lote">Lote</option>
+              <option value="finca">Finca</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-bold">Operación</label>
+            <select class="form-select" name="operacion" [(ngModel)]="objInmueble.operacion">
+              <option value="venta">Venta</option>
+              <option value="arriendo">Arriendo</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-bold">Precio ($) <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" name="precio" [(ngModel)]="objInmueble.precio" min="1"
+              [ngClass]="{'is-invalid': validarFormulario && errorCampo('precio')}">
+            <div class="invalid-feedback">{{ errorCampo('precio') }}</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-bold">Barrio</label>
+            <input type="text" class="form-control" name="barrio" [(ngModel)]="objInmueble.barrio">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-bold">Ciudad</label>
+            <input type="text" class="form-control" name="ciudad" [(ngModel)]="objInmueble.ciudad">
+          </div>
+          <div class="col-4">
+            <label class="form-label small fw-bold">Área (m²)</label>
+            <input type="number" class="form-control" name="area" [(ngModel)]="objInmueble.area" min="0"
+              [ngClass]="{'is-invalid': validarFormulario && errorCampo('area')}">
+            <div class="invalid-feedback">{{ errorCampo('area') }}</div>
+          </div>
+          <div class="col-4">
+            <label class="form-label small fw-bold">Habitaciones</label>
+            <input type="number" class="form-control" name="habitaciones" [(ngModel)]="objInmueble.habitaciones" min="0"
+              [ngClass]="{'is-invalid': validarFormulario && errorCampo('habitaciones')}">
+            <div class="invalid-feedback">{{ errorCampo('habitaciones') }}</div>
+          </div>
+          <div class="col-4">
+            <label class="form-label small fw-bold">Baños</label>
+            <input type="number" class="form-control" name="banos" [(ngModel)]="objInmueble.banos" min="0"
+              [ngClass]="{'is-invalid': validarFormulario && errorCampo('banos')}">
+            <div class="invalid-feedback">{{ errorCampo('banos') }}</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-bold">Descripción</label>
+            <textarea class="form-control" name="descripcion" rows="3" [(ngModel)]="objInmueble.descripcion"></textarea>
+          </div>
+          <div class="col-md-4" *ngIf="editingId">
+            <label class="form-label small fw-bold">Estado</label>
+            <select class="form-select" name="estado" [(ngModel)]="objInmueble.estado">
+              <option value="disponible">Disponible</option>
+              <option value="arrendado">Arrendado</option>
+              <option value="vendido">Vendido</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-rojo px-4" (click)="guardar()" [disabled]="enviando">
+          <span *ngIf="enviando" class="spinner-border spinner-border-sm me-2"></span>
+          <i *ngIf="!enviando" class="bi bi-save me-2"></i>{{ enviando ? 'Guardando...' : (editingId ? 'Actualizar' : 'Guardar') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

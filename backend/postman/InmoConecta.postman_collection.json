@@ -1,0 +1,1685 @@
+{
+  "info": {
+    "name": "InmoConecta API - Caracoli Inmobiliaria",
+    "description": "API del proyecto InmoConecta (Node.js + Express + MongoDB). La usan el panel web del administrador (Angular) y la app de clientes (Android).\n\nOrden: ejecutar las carpetas de arriba hacia abajo. Los ids que se crean quedan en las variables de la coleccion.\nAntes de correrla: mongosh datos-prueba.js y npm start.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "url",
+      "value": "http://localhost:3900/api"
+    },
+    {
+      "key": "id_admin",
+      "value": ""
+    },
+    {
+      "key": "id_usuario",
+      "value": ""
+    },
+    {
+      "key": "id_inmueble",
+      "value": ""
+    },
+    {
+      "key": "id_cliente",
+      "value": ""
+    },
+    {
+      "key": "id_cita",
+      "value": ""
+    },
+    {
+      "key": "id_info",
+      "value": ""
+    },
+    {
+      "key": "imagen",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Pruebas",
+      "item": [
+        {
+          "name": "Probando inmuebles",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{url}}/inmueble/probando"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Test inmuebles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/inmueble/test"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Probando clientes",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{url}}/cliente/probando"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Probando citas",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{url}}/cita/probando"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Probando usuarios",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{url}}/usuario/probando"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Usuarios y login (panel web)",
+      "item": [
+        {
+          "name": "01. Login administrador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/login",
+            "description": "Devuelve el usuario con su rol. La contraseña se compara encriptada.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"usuario\": \"admin\",\n    \"contrasena\": \"caracoli2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "var json = pm.response.json(); if (json.status === 'success') { pm.collectionVariables.set('id_admin', json.usuario._id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02. Login asesor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"usuario\": \"asesor\",\n    \"contrasena\": \"asesor2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03. Login incorrecto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"usuario\": \"admin\",\n    \"contrasena\": \"clave123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04. Crear usuario (asesor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-usuario",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Ana Ruiz\",\n    \"usuario\": \"ana\",\n    \"contrasena\": \"ana2026\",\n    \"rol\": \"asesor\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "var json = pm.response.json(); if (json.status === 'success') { pm.collectionVariables.set('id_usuario', json.usuario._id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05. Crear usuario repetido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-usuario",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Ana Ruiz\",\n    \"usuario\": \"ana\",\n    \"contrasena\": \"ana2026\",\n    \"rol\": \"asesor\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06. Crear usuario con contraseña corta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-usuario",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Pedro\",\n    \"usuario\": \"pedro\",\n    \"contrasena\": \"12\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07. Listar usuarios (sin contraseñas)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/usuarios"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08. Eliminarse a si mismo (no se permite)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{url}}/usuario/{{id_admin}}?actual={{id_admin}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Inmuebles (panel web)",
+      "item": [
+        {
+          "name": "01. Guardar inmueble",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-inmueble",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"CAR-107\",\n    \"titulo\": \"Casa esquinera remodelada\",\n    \"tipo\": \"casa\",\n    \"operacion\": \"venta\",\n    \"precio\": 320000000,\n    \"barrio\": \"La Esperanza\",\n    \"ciudad\": \"Cartago\",\n    \"area\": 140,\n    \"habitaciones\": 3,\n    \"banos\": 2,\n    \"descripcion\": \"Casa remodelada con garaje.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "var json = pm.response.json(); if (json.status === 'success') { pm.collectionVariables.set('id_inmueble', json.inmueble._id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02. Guardar con codigo repetido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-inmueble",
+            "description": "El codigo va en el letrero: no se puede repetir (tampoco en minusculas).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"car-107\",\n    \"titulo\": \"Otra\",\n    \"operacion\": \"venta\",\n    \"precio\": 1000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03. Guardar sin precio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-inmueble",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"CAR-108\",\n    \"titulo\": \"Sin precio\",\n    \"operacion\": \"venta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03b. Guardar con precio negativo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-inmueble",
+            "description": "Regla: el precio debe ser mayor que 0.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"CAR-109\",\n    \"titulo\": \"Precio malo\",\n    \"operacion\": \"venta\",\n    \"precio\": -5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04. Listar inmuebles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/inmuebles"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05. Ultimos 3 inmuebles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/inmuebles?last=3"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06. Inmuebles en arriendo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/inmuebles?operacion=arriendo"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07. Consultar inmueble",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/inmueble/{{id_inmueble}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07b. Consultar con id invalido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/inmueble/123"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07c. Consultar id que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/inmueble/000000000000000000000000"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08. Consultar por codigo del letrero (lo usa la app)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/inmueble-codigo/car-107"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09. Actualizar inmueble",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/inmueble/{{id_inmueble}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"CAR-107\",\n    \"titulo\": \"Casa esquinera remodelada\",\n    \"operacion\": \"venta\",\n    \"precio\": 300000000,\n    \"estado\": \"disponible\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10. Actualizar con codigo de otro inmueble",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/inmueble/{{id_inmueble}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"CAR-101\",\n    \"titulo\": \"Casa esquinera remodelada\",\n    \"operacion\": \"venta\",\n    \"precio\": 300000000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11. Subir foto (elegir archivo en file0)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{url}}/upload-image/{{id_inmueble}}",
+            "description": "En Postman: Body -> form-data -> key file0 (tipo File) -> elegir una imagen png, jpg, jpeg, gif o webp de maximo 5 MB (Multer).",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file0",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "var json = pm.response.json(); if (json.status === 'success') { pm.collectionVariables.set('imagen', json.inmueble.imagen); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12. Ver foto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/get-image/{{imagen}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13. Buscar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/search/centro"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. App del cliente: solicitudes",
+      "item": [
+        {
+          "name": "01. Registrar cliente (lo hace la app la primera vez)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cliente",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Maria Lopez\",\n    \"telefono\": \"3015556677\",\n    \"correo\": \"maria@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "var json = pm.response.json(); if (json.status === 'success') { pm.collectionVariables.set('id_cliente', json.cliente._id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02. Cliente con correo invalido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cliente",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Maria\",\n    \"telefono\": \"3015556677\",\n    \"correo\": \"maria\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03. Pedir informacion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cita",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"inmueble_id\": \"{{id_inmueble}}\",\n    \"cliente_id\": \"{{id_cliente}}\",\n    \"tipo\": \"informacion\",\n    \"observaciones\": \"¿El precio es negociable?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "var json = pm.response.json(); if (json.status === 'success') { pm.collectionVariables.set('id_info', json.cita._id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04. Pedir informacion sin mensaje",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cita",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"inmueble_id\": \"{{id_inmueble}}\",\n    \"cliente_id\": \"{{id_cliente}}\",\n    \"tipo\": \"informacion\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05. Agendar visita",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cita",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"inmueble_id\": \"{{id_inmueble}}\",\n    \"cliente_id\": \"{{id_cliente}}\",\n    \"tipo\": \"visita\",\n    \"fecha_cita\": \"2027-01-20\",\n    \"hora\": \"10:00 a.m.\",\n    \"observaciones\": \"Quiere ver el garaje\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "var json = pm.response.json(); if (json.status === 'success') { pm.collectionVariables.set('id_cita', json.cita._id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05b. Agendar la misma visita otra vez (duplicada)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cita",
+            "description": "Regla: no puede haber dos solicitudes abiertas del mismo tipo para el mismo inmueble.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"inmueble_id\": \"{{id_inmueble}}\",\n    \"cliente_id\": \"{{id_cliente}}\",\n    \"tipo\": \"visita\",\n    \"fecha_cita\": \"2027-01-21\",\n    \"hora\": \"3:00 p.m.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05c. Agendar visita en una fecha pasada",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cita",
+            "description": "Regla: la visita no puede ser antes de hoy.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"inmueble_id\": \"{{id_inmueble}}\",\n    \"cliente_id\": \"{{id_cliente}}\",\n    \"tipo\": \"visita\",\n    \"fecha_cita\": \"2020-01-10\",\n    \"hora\": \"10:00 a.m.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06. Agendar visita con fecha mala",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cita",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"inmueble_id\": \"{{id_inmueble}}\",\n    \"cliente_id\": \"{{id_cliente}}\",\n    \"tipo\": \"visita\",\n    \"fecha_cita\": \"20/11/2026\",\n    \"hora\": \"10:00 a.m.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07. Mis solicitudes (lo que ve la app)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/citas-cliente/{{id_cliente}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Panel: atender solicitudes",
+      "item": [
+        {
+          "name": "01. Listar solicitudes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/citas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02. Solicitudes pendientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/citas?estado=pendiente"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03. Solicitudes de un inmueble",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/citas-inmueble/{{id_inmueble}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03b. Marcar realizada una visita sin confirmar",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/cita/{{id_cita}}",
+            "description": "Regla: primero se confirma la visita.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"estado\": \"realizada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04. Responder la visita (el cliente la ve en la app)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/cita/{{id_cita}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"estado\": \"confirmada\",\n    \"respuesta\": \"Su visita quedó confirmada. Lo esperamos.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05. Responder la informacion",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/cita/{{id_info}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"estado\": \"realizada\",\n    \"respuesta\": \"Sí, el propietario recibe ofertas.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05b. Devolver una solicitud realizada a pendiente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/cita/{{id_info}}",
+            "description": "Regla: realizada y cancelada son estados finales.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"estado\": \"pendiente\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05c. Estado que no existe",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/cita/{{id_info}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"estado\": \"aprobada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06. Consultar la solicitud respondida",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/cita/{{id_cita}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07. Borrar inmueble con solicitudes (no se permite)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{url}}/inmueble/{{id_inmueble}}",
+            "description": "Para no perder el historial: se cambia el estado a vendido o arrendado."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08. Marcar el inmueble como vendido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/inmueble/{{id_inmueble}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"CAR-107\",\n    \"titulo\": \"Casa esquinera remodelada\",\n    \"operacion\": \"venta\",\n    \"precio\": 300000000,\n    \"estado\": \"vendido\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09. Pedir informacion de un inmueble vendido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cita",
+            "description": "Regla: solo se piden solicitudes de inmuebles disponibles.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"inmueble_id\": \"{{id_inmueble}}\",\n    \"cliente_id\": \"{{id_cliente}}\",\n    \"tipo\": \"informacion\",\n    \"observaciones\": \"¿Sigue disponible?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10. Solicitud con un cliente que no existe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cita",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"inmueble_id\": \"{{id_inmueble}}\",\n    \"cliente_id\": \"000000000000000000000000\",\n    \"tipo\": \"informacion\",\n    \"observaciones\": \"Hola\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. Clientes (panel web)",
+      "item": [
+        {
+          "name": "01. Listar clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/clientes"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02. Consultar cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/cliente/{{id_cliente}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03. Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/cliente/{{id_cliente}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Maria Lopez\",\n    \"telefono\": \"3015556600\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "7. Eliminar (al final)",
+      "item": [
+        {
+          "name": "Eliminar visita",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{url}}/cita/{{id_cita}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar informacion",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{url}}/cita/{{id_info}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar inmueble (ya sin solicitudes)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{url}}/inmueble/{{id_inmueble}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar cliente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{url}}/cliente/{{id_cliente}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{url}}/usuario/{{id_usuario}}?actual={{id_admin}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
