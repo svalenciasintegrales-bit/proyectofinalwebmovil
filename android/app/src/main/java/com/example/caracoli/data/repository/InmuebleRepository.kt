@@ -7,8 +7,8 @@ package com.example.caracoli.data.repository
 import com.example.caracoli.data.local.PreferencesManager
 import com.example.caracoli.data.local.room.InmuebleDao
 import com.example.caracoli.data.local.room.InmuebleEntity
-import com.example.caracoli.data.local.room.aEntidad
-import com.example.caracoli.data.local.room.aModelo
+import com.example.caracoli.data.local.room.inmuebleDesdeTabla
+import com.example.caracoli.data.local.room.inmuebleParaTabla
 import com.example.caracoli.data.remote.ApiClient
 import com.example.caracoli.model.FiltroOperacion
 import com.example.caracoli.model.Inmueble
@@ -32,14 +32,14 @@ class InmuebleRepository(private val manager: PreferencesManager, private val da
             }
             // la copia local se REEMPLAZA completa con lo del servidor (los favoritos de DataStore no se tocan)
             val filas = mutableListOf<InmuebleEntity>()
-            descargados.forEach { filas.add(it.aEntidad()) }
+            descargados.forEach { filas.add(inmuebleParaTabla(it)) }
             dao.reemplazar(filas)
             llenar(descargados)
             true
         } catch (e: Exception) {
             // sin conexion: lo ultimo que se guardo en Room
             val guardados = mutableListOf<Inmueble>()
-            dao.todos().forEach { guardados.add(it.aModelo()) }
+            dao.todos().forEach { guardados.add(inmuebleDesdeTabla(it)) }
             llenar(guardados)
             false
         }

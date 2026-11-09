@@ -150,7 +150,22 @@ pendiente ──► confirmada ──► realizada
   - Para recuperarla: `mongorestore respaldo/`.
   - Las fotos están en `backend/upload/inmuebles`.
 
-## 9. Mejora futura (adicional)
+## 9. Lo que se usó que no se vio en clase (lo pide la rúbrica)
+Todo lo demás sigue lo visto en clase: el proyecto de Node y la biblioteca, el minimarket en Angular, y MiRuta y los demás proyectos de Android.
+
+| Qué | Dónde | Lo que pide la rúbrica |
+|---|---|---|
+| Multer (en vez de connect-multiparty) | `backend/routers/inmuebleroutes.js` | Cargar imágenes con Multer, con formato y tamaño limitados |
+| `.env` con `process.loadEnvFile()` | `backend/index.js` | Configuración por variables de entorno |
+| `validator.isMongoId` | Cada controlador | Revisar identificadores inválidos o inexistentes |
+| Códigos 201, 401 y 409 | Controladores | Códigos HTTP apropiados |
+| `timestamps: true` | `backend/models` | Fechas de creación y actualización |
+| `crypto` (sha256 con sal) | `usuariocontroller.js` | No guardar contraseñas en texto plano |
+| `FormData` | `web-angular/src/app/servicios/inmueble.ts` | Subir y mostrar la imagen |
+| Room | `android/.../data/local/room` | Persistencia local con Room |
+| `HttpURLConnection` y `org.json` | `android/.../data/remote` | Que la app consuma la API compartida |
+
+## 10. Mejora futura (adicional)
 - **Letrero con código QR:** el cliente escanearía el letrero y la app abriría el inmueble directamente.
   - Se propuso al inicio, en `documentacion/ADICIONAL - Propuesta comercial inicial (con QR).pdf`.
   - No se implementó porque la lectura de QR con la cámara no se vio en clase.

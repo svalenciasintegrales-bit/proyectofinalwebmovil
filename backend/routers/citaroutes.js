@@ -6,10 +6,6 @@
 
 var express = require('express'); // cargamos express
 var router = express.Router(); // Router: objeto de express para definir rutas
-var validarId = require('./validarid'); // revisa que el :id tenga formato de MongoDB
-
-// antes de cualquier ruta con :id se revisa el formato del id (si no sirve responde 400)
-router.param('id', validarId);
 
 // traemos el controlador donde esta la logica de citas
 var citaController = require('../controller/citacontroller');

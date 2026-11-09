@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Inmueble } from '../../servicios/inmueble';
-import { mensajeError } from '../../servicios/errores';
 
 // panel: CRUD de inmuebles + subir foto (lo que se publica aqui lo ve el cliente en la app)
 @Component({
@@ -57,15 +56,18 @@ export class Inmuebles implements OnInit {
   // inmuebles que cumplen el buscador (codigo, titulo o barrio) y los filtros elegidos
   visibles() {
     const buscado = this.texto.trim().toLowerCase();
-    return this.inmuebles.filter((i: any) => {
-      const cumpleTexto = !buscado ||
-        String(i.codigo).toLowerCase().includes(buscado) ||
-        String(i.titulo).toLowerCase().includes(buscado) ||
-        String(i.barrio).toLowerCase().includes(buscado);
-      const cumpleOperacion = !this.filtroOperacion || i.operacion === this.filtroOperacion;
-      const cumpleEstado = !this.filtroEstado || i.estado === this.filtroEstado;
-      return cumpleTexto && cumpleOperacion && cumpleEstado;
-    });
+    const lista: any[] = [];
+    for (const i of this.inmuebles) {
+      // indexOf >= 0: el texto buscado aparece dentro del codigo, el titulo o el barrio
+      const cumpleTexto = buscado === '' ||
+        String(i.codigo).toLowerCase().indexOf(buscado) >= 0 ||
+        String(i.titulo).toLowerCase().indexOf(buscado) >= 0 ||
+        String(i.barrio).toLowerCase().indexOf(buscado) >= 0;
+      const cumpleOperacion = this.filtroOperacion === '' || i.operacion === this.filtroOperacion;
+      const cumpleEstado = this.filtroEstado === '' || i.estado === this.filtroEstado;
+      if (cumpleTexto && cumpleOperacion && cumpleEstado) lista.push(i);
+    }
+    return lista;
   }
 
   limpiarFiltros() {
@@ -80,19 +82,23 @@ export class Inmuebles implements OnInit {
     const codigo = String(o.codigo || '').trim().toUpperCase();
     if (campo === 'codigo') {
       if (!codigo) return 'Escribe el código del letrero.';
-      if (!/^[A-Z]{2,4}-\d{2,5}$/.test(codigo)) return 'Usa letras, guion y números (ej: CAR-107).';
+      if (codigo.length < 5 || codigo.indexOf('-') < 1) return 'Escribe el código con guion (ej: CAR-107).';
       if (codigo === this.codigoRepetido) return `Ya existe un inmueble con el código ${codigo}.`;
     }
     if (campo === 'titulo' && !String(o.titulo || '').trim()) return 'Escribe el título.';
     if (campo === 'precio' && !(Number(o.precio) > 0)) return 'El precio debe ser mayor que 0.';
-    if (['area', 'habitaciones', 'banos'].includes(campo) && o[campo] !== '' && o[campo] !== null && Number(o[campo]) < 0) {
+    if ((campo === 'area' || campo === 'habitaciones' || campo === 'banos') && Number(o[campo]) < 0) {
       return 'No puede ser negativo.';
     }
     return '';
   }
 
   formularioValido() {
-    return ['codigo', 'titulo', 'precio', 'area', 'habitaciones', 'banos'].every(c => !this.errorCampo(c));
+    const campos = ['codigo', 'titulo', 'precio', 'area', 'habitaciones', 'banos'];
+    for (const campo of campos) {
+      if (this.errorCampo(campo) !== '') return false;
+    }
+    return true;
   }
 
   guardar() {
@@ -111,7 +117,7 @@ export class Inmuebles implements OnInit {
       // si falla, lo escrito se conserva en el formulario y se muestra el motivo
       error: (err: any) => {
         this.enviando = false;
-        this.error = mensajeError(err);
+        this.error = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
         if (err.status === 409) this.codigoRepetido = String(this.objInmueble.codigo).trim().toUpperCase();
         this.cdr.detectChanges();
       }
@@ -153,7 +159,7 @@ export class Inmuebles implements OnInit {
         },
         // ej: tiene solicitudes -> la api responde 409 y no deja borrarlo
         error: (err: any) => {
-          this.errorTabla = mensajeError(err);
+          this.errorTabla = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
           this.cdr.detectChanges();
         }
       });
@@ -174,7 +180,10 @@ export class Inmuebles implements OnInit {
     if (!archivo) return;
     this.errorTabla = '';
     // se revisa antes de enviar (la api tambien lo revisa con multer)
-    if (!/\.(png|jpe?g|gif|webp)$/i.test(archivo.name)) {
+    const nombre = archivo.name.toLowerCase();
+    const esImagen = nombre.endsWith('.png') || nombre.endsWith('.jpg') || nombre.endsWith('.jpeg') ||
+      nombre.endsWith('.gif') || nombre.endsWith('.webp');
+    if (!esImagen) {
       this.errorTabla = 'La foto debe ser png, jpg, jpeg, gif o webp.';
     } else if (archivo.size > 5 * 1024 * 1024) {
       this.errorTabla = 'La foto pesa más de 5 MB.';
@@ -190,7 +199,7 @@ export class Inmuebles implements OnInit {
         this.mostrarMensaje(`Foto de ${inm.codigo} subida con éxito.`);
       },
       error: (err: any) => {
-        this.errorTabla = mensajeError(err);
+        this.errorTabla = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
         this.cdr.detectChanges();
       }
     });

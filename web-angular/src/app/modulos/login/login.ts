@@ -3,7 +3,6 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Login as LoginService } from '../../servicios/login';
-import { mensajeError } from '../../servicios/errores';
 
 // inicio de sesion del panel administrativo
 @Component({
@@ -60,7 +59,7 @@ export class Login implements OnInit {
       // 401 = usuario o contraseña incorrectos | sin respuesta = la api esta apagada
       error: (err: any) => {
         this.enviando = false;
-        this.error = mensajeError(err);
+        this.error = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
         this.cdr.detectChanges();
       }
     });

@@ -68,8 +68,34 @@ export class Reportes implements OnInit {
     return `${fecha.getFullYear()}-${mes}-${dia}`;
   }
 
-  inmuebleDe(id: string) { return this.inmuebles.find((i: any) => i._id === id); }
-  clienteDe(id: string) { return this.clientes.find((c: any) => c._id === id); }
+  // "relacion manual": buscar en la lista el inmueble o el cliente con ese id
+  inmuebleDe(id: string) {
+    for (const i of this.inmuebles) {
+      if (i._id === id) return i;
+    }
+    return null;
+  }
+
+  clienteDe(id: string) {
+    for (const c of this.clientes) {
+      if (c._id === id) return c;
+    }
+    return null;
+  }
+
+  // ordena la lista de mayor a menor (o de menor a mayor) segun un campo, con dos ciclos for
+  ordenar(lista: any[], campo: string, mayorPrimero: boolean) {
+    for (let a = 0; a < lista.length; a++) {
+      for (let b = a + 1; b < lista.length; b++) {
+        const cambiar = mayorPrimero ? lista[b][campo] > lista[a][campo] : lista[b][campo] < lista[a][campo];
+        if (cambiar) {
+          const temporal = lista[a];
+          lista[a] = lista[b];
+          lista[b] = temporal;
+        }
+      }
+    }
+  }
 
   // ---------- REPORTE 1: SOLICITUDES POR FECHAS ----------
   generar() {
@@ -112,7 +138,7 @@ export class Reportes implements OnInit {
       if (i.estado === 'vendido') r.vendidos++;
       if (i.operacion === 'venta' && i.estado === 'disponible') r.valorVenta += Number(i.precio) || 0;
     }
-    lista.sort((a: any, b: any) => b.solicitudes - a.solicitudes);
+    this.ordenar(lista, 'solicitudes', true); // el mas solicitado primero
     this.inventario = lista;
     this.resumen = r;
   }
@@ -128,12 +154,12 @@ export class Reportes implements OnInit {
       for (const s of this.filas) {
         const c = this.clienteDe(s.cliente_id);
         const i = this.inmuebleDe(s.inmueble_id);
-        lineas.push([
+        lineas.push(this.linea([
           this.textoFecha(new Date(s.fecha)), s.tipo === 'informacion' ? 'Informacion' : 'Visita',
           c?.nombre || '', c?.telefono || '', i?.codigo || '', i?.titulo || '',
           s.fecha_cita ? String(s.fecha_cita).substring(0, 10) : '', s.hora || '',
           s.observaciones || '', s.respuesta || '', s.estado
-        ].map(v => this.celda(v)).join(';'));
+        ]));
       }
       lineas.push('');
       lineas.push(`Total;${this.totales.total};Visitas;${this.totales.visitas};Informacion;${this.totales.informacion}`);
@@ -142,7 +168,7 @@ export class Reportes implements OnInit {
       lineas.push('Codigo;Titulo;Tipo;Operacion;Precio;Barrio;Ciudad;Estado;Solicitudes');
       for (const fila of this.inventario) {
         const i = fila.inmueble;
-        lineas.push([i.codigo, i.titulo, i.tipo, i.operacion, i.precio, i.barrio, i.ciudad, i.estado, fila.solicitudes].map(v => this.celda(v)).join(';'));
+        lineas.push(this.linea([i.codigo, i.titulo, i.tipo, i.operacion, i.precio, i.barrio, i.ciudad, i.estado, fila.solicitudes]));
       }
     }
     const archivo = new Blob(['﻿' + lineas.join('\r\n')], { type: 'text/csv;charset=utf-8' });
@@ -153,10 +179,20 @@ export class Reportes implements OnInit {
     URL.revokeObjectURL(enlace.href);
   }
 
+  // une los valores de una fila del CSV separados por ;
+  linea(valores: any[]) {
+    let texto = '';
+    for (let k = 0; k < valores.length; k++) {
+      if (k > 0) texto += ';';
+      texto += this.celda(valores[k]);
+    }
+    return texto;
+  }
+
   // pone comillas si el texto tiene ; o comillas, para que no se corran las columnas
   celda(valor: any) {
     const texto = String(valor ?? '');
-    if (texto.includes(';') || texto.includes('"') || texto.includes('\n')) {
+    if (texto.indexOf(';') >= 0 || texto.indexOf('"') >= 0 || texto.indexOf('\n') >= 0) {
       return '"' + texto.split('"').join('""') + '"';
     }
     return texto;

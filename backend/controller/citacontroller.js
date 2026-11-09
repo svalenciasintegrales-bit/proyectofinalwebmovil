@@ -198,6 +198,14 @@ var controller = {
     getCitasInmueble: async (req, res) => {
         var inmuebleId = req.params.id;
 
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(inmuebleId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
+
         try {
             const citas = await Cita.find({ inmueble_id: inmuebleId }).sort('fecha_cita'); // de la mas proxima a la mas lejana
 
@@ -225,6 +233,14 @@ var controller = {
     getCitasCliente: async (req, res) => {
         var clienteId = req.params.id;
 
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(clienteId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
+
         try {
             const citas = await Cita.find({ cliente_id: clienteId }).sort('-_id'); // de la mas nueva a la mas vieja
 
@@ -250,6 +266,14 @@ var controller = {
     // ---------------- METODO CONSULTAR UNA CITA POR ID (GET /api/cita/:id) ----------------
     getCita: async (req, res) => {
         var citaId = req.params.id;
+
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(citaId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
 
         try {
             const cita = await Cita.findById(citaId);
@@ -277,6 +301,14 @@ var controller = {
     // se usa sobre todo para cambiar el estado (confirmada, realizada, cancelada)
     update: async (req, res) => {
         var citaId = req.params.id;
+
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(citaId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
         var params = req.body;
 
         try {
@@ -346,6 +378,14 @@ var controller = {
     // ---------------- METODO ELIMINAR CITA (DELETE /api/cita/:id) ----------------
     delete: async (req, res) => {
         var citaId = req.params.id;
+
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(citaId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
 
         try {
             const citaRemoved = await Cita.findOneAndDelete({ _id: citaId });

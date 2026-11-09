@@ -19,16 +19,15 @@ abstract class CaracoliDatabase : RoomDatabase() {
     abstract fun borradorDao(): BorradorDao
 
     companion object {
-        @Volatile
         private var instancia: CaracoliDatabase? = null
 
+        // si ya existe se devuelve; si no, se crea (se llama una sola vez desde MainActivity)
         fun obtener(context: Context): CaracoliDatabase {
-            // si ya existe se devuelve; si no, se crea (synchronized: evita crear dos a la vez)
-            return instancia ?: synchronized(this) {
-                val nueva = Room.databaseBuilder(context.applicationContext, CaracoliDatabase::class.java, "caracoli.db").build()
-                instancia = nueva
-                nueva
-            }
+            val actual = instancia
+            if (actual != null) return actual
+            val nueva = Room.databaseBuilder(context.applicationContext, CaracoliDatabase::class.java, "caracoli.db").build()
+            instancia = nueva
+            return nueva
         }
     }
 }

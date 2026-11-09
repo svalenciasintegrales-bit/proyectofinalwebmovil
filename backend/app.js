@@ -38,16 +38,5 @@ app.use('/api', clienteRoutes);
 app.use('/api', citaRoutes);
 app.use('/api', usuarioRoutes);
 
-// si la ruta no existe se responde 404 en JSON
-app.use((req, res) => {
-    res.status(404).send({ status: 'error', message: 'La ruta ' + req.method + ' ' + req.originalUrl + ' no existe !!!' });
-});
-
-// manejador de errores: si algo falla (ej: llega un JSON mal escrito) se responde sin que se caiga el servidor
-app.use((err, req, res, next) => {
-    console.error(err.message);
-    res.status(err.status || 500).send({ status: 'error', message: err.status == 400 ? 'El JSON enviado no es valido !!!' : 'Error interno del servidor !!!' });
-});
-
 // exportar app para usarla en index.js
 module.exports = app;

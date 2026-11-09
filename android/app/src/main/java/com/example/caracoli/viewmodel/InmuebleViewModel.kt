@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.caracoli.data.repository.InmuebleRepository
 import com.example.caracoli.model.FiltroOperacion
 import com.example.caracoli.model.Inmueble
-import kotlin.math.pow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -67,15 +66,18 @@ class InmuebleViewModel(private val repository: InmuebleRepository) : ViewModel(
         return lista
     }
 
-    // SIMULADOR DE CUOTA: cuota fija mensual de un credito.
-    // tasaAnual = tasa efectiva anual en %. Se pasa a tasa mensual: (1 + EA)^(1/12) - 1
-    // Formula: prestamo * i / (1 - (1 + i)^-meses)
+    // SIMULADOR DE CUOTA: cuota fija mensual de un credito (aproximada).
+    // tasa mensual = tasa anual / 12
+    // Formula: prestamo * i * (1 + i)^meses / ((1 + i)^meses - 1)
     fun cuotaMensual(precio: Long, cuotaInicial: Double, anios: Int, tasaAnual: Double): Long {
         val prestamo = precio * (1 - cuotaInicial / 100)
         val meses = anios * 12
         if (prestamo <= 0 || meses <= 0) return 0
-        val tasaMes = (1 + tasaAnual / 100).pow(1.0 / 12) - 1
+        val tasaMes = tasaAnual / 100 / 12
         if (tasaMes == 0.0) return (prestamo / meses).toLong()
-        return (prestamo * tasaMes / (1 - (1 + tasaMes).pow(-meses.toDouble()))).toLong()
+        // (1 + i)^meses: se multiplica (1 + i) por si mismo, una vez por cada mes
+        var factor = 1.0
+        repeat(meses) { factor = factor * (1 + tasaMes) }
+        return (prestamo * tasaMes * factor / (factor - 1)).toLong()
     }
 }

@@ -18,7 +18,7 @@
         <label for="contrasena">Contraseña</label>
       </div>
       <button type="button" class="btn btn-rojo w-100 btn-lg" (click)="consulta()" [disabled]="enviando">
-        <span *ngIf="enviando" class="spinner-border spinner-border-sm me-2"></span>{{ enviando ? 'Entrando...' : 'Entrar' }}
+        {{ enviando ? 'Entrando...' : 'Entrar' }}
       </button>
     </form>
 

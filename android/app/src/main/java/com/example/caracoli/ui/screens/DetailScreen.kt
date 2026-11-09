@@ -124,7 +124,7 @@ fun DetailScreen(id: String, vm: InmuebleViewModel, prefs: PreferencesViewModel,
                                 Spacer(Modifier.width(6.dp))
                                 CampoNumero("Años", anios, Modifier.weight(1f)) { anios = it }
                                 Spacer(Modifier.width(6.dp))
-                                CampoNumero("Tasa % E.A.", tasa, Modifier.weight(1f)) { tasa = it }
+                                CampoNumero("Tasa % anual", tasa, Modifier.weight(1f)) { tasa = it }
                             }
                             Spacer(Modifier.height(12.dp))
                             // toDoubleOrNull / toIntOrNull: si el texto no es un numero se usa 0

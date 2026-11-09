@@ -63,7 +63,11 @@ fun MisSolicitudesScreen(inmuebleVM: InmuebleViewModel, solicitudVM: SolicitudVi
         LazyColumn(Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp)) {
             item {
                 if (sinConexion) AvisoSinConexion("Sin conexión: estas son las últimas respuestas guardadas en tu celular.")
-                if (cargando) LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
+                if (cargando) {
+                    Box(Modifier.fillMaxWidth().padding(vertical = 8.dp), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
 
             if (!cargando && solicitudes.isEmpty()) {

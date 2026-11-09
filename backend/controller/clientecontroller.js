@@ -117,6 +117,14 @@ var controller = {
     getCliente: async (req, res) => {
         var clienteId = req.params.id;
 
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(clienteId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
+
         try {
             const cliente = await Cliente.findById(clienteId);
 
@@ -142,6 +150,14 @@ var controller = {
     // ---------------- METODO ACTUALIZAR CLIENTE (PUT /api/cliente/:id) ----------------
     update: async (req, res) => {
         var clienteId = req.params.id;
+
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(clienteId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
         var params = req.body;
 
         try {
@@ -186,6 +202,14 @@ var controller = {
     // ---------------- METODO ELIMINAR CLIENTE (DELETE /api/cliente/:id) ----------------
     delete: async (req, res) => {
         var clienteId = req.params.id;
+
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(clienteId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
 
         try {
             // REGLA: si el cliente tiene solicitudes no se borra (se perderia el historial)

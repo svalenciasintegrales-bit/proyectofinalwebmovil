@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Cliente } from '../../servicios/cliente';
-import { mensajeError } from '../../servicios/errores';
 
 // panel: CRUD de clientes
 @Component({
@@ -45,15 +44,19 @@ export class Clientes implements OnInit {
   errorCampo(campo: string): string {
     const o = this.objCliente;
     if (campo === 'nombre' && String(o.nombre || '').trim().length < 3) return 'Escribe el nombre completo (mínimo 3 letras).';
-    if (campo === 'telefono' && !/^\d{7,10}$/.test(String(o.telefono || '').replace(/\s/g, ''))) return 'El teléfono debe tener entre 7 y 10 números.';
-    if (campo === 'correo' && o.correo && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(o.correo)) return 'El correo no es válido (ej: nombre@correo.com).';
+    if (campo === 'telefono') {
+      const telefono = String(o.telefono || '').trim();
+      if (telefono.length < 7 || telefono.length > 10 || isNaN(Number(telefono))) return 'El teléfono debe tener entre 7 y 10 números.';
+    }
+    // el correo es opcional, pero si lo escriben debe tener @ y un punto
+    if (campo === 'correo' && o.correo && (o.correo.indexOf('@') < 1 || o.correo.indexOf('.') < 0)) return 'El correo no es válido (ej: nombre@correo.com).';
     return '';
   }
 
   guardar() {
     this.error = '';
     this.validarFormulario = true;
-    if (['nombre', 'telefono', 'correo'].some(c => this.errorCampo(c)) || this.enviando) return;
+    if (this.errorCampo('nombre') || this.errorCampo('telefono') || this.errorCampo('correo') || this.enviando) return;
 
     this.enviando = true;
     const texto = this.editingId ? 'Cliente actualizado con éxito.' : 'Cliente registrado con éxito.';
@@ -65,7 +68,7 @@ export class Clientes implements OnInit {
       next: (res: any) => this.respuesta(res, texto),
       error: (err: any) => {
         this.enviando = false;
-        this.error = mensajeError(err); // lo escrito se conserva en el formulario
+        this.error = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.'); // lo escrito se conserva en el formulario
         this.cdr.detectChanges();
       }
     });
@@ -100,7 +103,7 @@ export class Clientes implements OnInit {
           this.mostrarMensaje('Cliente eliminado con éxito.');
         },
         error: (err: any) => {
-          this.errorTabla = mensajeError(err);
+          this.errorTabla = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
           this.cdr.detectChanges();
         }
       });

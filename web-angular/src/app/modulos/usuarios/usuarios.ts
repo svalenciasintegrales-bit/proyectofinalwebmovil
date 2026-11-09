@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../servicios/usuario';
-import { mensajeError } from '../../servicios/errores';
 
 // panel: usuarios que pueden entrar al panel (solo el administrador los gestiona)
 @Component({
@@ -62,7 +61,7 @@ export class Usuarios implements OnInit {
       // ej: 409 el usuario ya existe -> se muestra el mensaje y se conserva lo escrito
       error: (err: any) => {
         this.enviando = false;
-        this.error = mensajeError(err);
+        this.error = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
         this.cdr.detectChanges();
       }
     });
@@ -77,7 +76,7 @@ export class Usuarios implements OnInit {
           this.mostrarMensaje('Usuario eliminado con éxito.');
         },
         error: (err: any) => {
-          this.errorTabla = mensajeError(err);
+          this.errorTabla = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
           this.cdr.detectChanges();
         }
       });

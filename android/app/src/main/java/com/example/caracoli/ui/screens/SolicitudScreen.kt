@@ -55,11 +55,8 @@ fun SolicitudScreen(
     // La fecha debe tener el formato AAAA-MM-DD, con mes entre 1 y 12 y dia entre 1 y 31
     val mes = if (fecha.length == 10) fecha.substring(5, 7).toIntOrNull() ?: 0 else 0
     val dia = if (fecha.length == 10) fecha.substring(8, 10).toIntOrNull() ?: 0 else 0
-    val formatoValido = fecha.length == 10 && fecha[4] == '-' && fecha[7] == '-' && mes in 1..12 && dia in 1..31
-    // REGLA (la misma del servidor): la visita no puede ser en un dia que ya paso.
-    // Como el texto es AAAA-MM-DD, comparar los textos sirve para comparar las fechas.
-    val hoy = java.time.LocalDate.now().toString()
-    val fechaValida = formatoValido && fecha >= hoy
+    // Si la fecha ya paso, el servidor la rechaza y su mensaje sale en el dialogo (lo escrito se conserva)
+    val fechaValida = fecha.length == 10 && fecha[4] == '-' && fecha[7] == '-' && mes in 1..12 && dia in 1..31
 
     Scaffold(
         topBar = {
@@ -94,8 +91,7 @@ fun SolicitudScreen(
                         isError = intentoEnviar && !fechaValida, singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth()
                     )
-                    if (intentoEnviar && !formatoValido) Text("Escribe la fecha así: 2026-11-20", color = RojoCaracoli)
-                    else if (intentoEnviar && !fechaValida) Text("La fecha no puede ser anterior a hoy ($hoy)", color = RojoCaracoli)
+                    if (intentoEnviar && !fechaValida) Text("Escribe la fecha así: 2026-11-20", color = RojoCaracoli)
                     Spacer(Modifier.height(12.dp))
                     Text("Hora *", color = if (intentoEnviar && hora.isBlank()) RojoCaracoli else MaterialTheme.colorScheme.onBackground)
                     // LazyRow: las horas en una fila que se desliza; la elegida se pinta de rojo

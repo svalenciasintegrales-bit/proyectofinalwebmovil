@@ -14,16 +14,15 @@ import com.example.caracoli.data.local.room.BorradorDao
 import com.example.caracoli.data.local.room.BorradorEntity
 import com.example.caracoli.data.local.room.SolicitudDao
 import com.example.caracoli.data.local.room.SolicitudEntity
-import com.example.caracoli.data.local.room.aEntidad
-import com.example.caracoli.data.local.room.aModelo
+import com.example.caracoli.data.local.room.borradorDesdeTabla
+import com.example.caracoli.data.local.room.solicitudDesdeTabla
+import com.example.caracoli.data.local.room.solicitudParaTabla
 import com.example.caracoli.data.remote.ApiClient
 import com.example.caracoli.model.Envio
 import com.example.caracoli.model.ResultadoEnvio
 import com.example.caracoli.model.Solicitud
 import java.io.IOException
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -33,9 +32,9 @@ class SolicitudRepository(
     private val solicitudDao: SolicitudDao
 ) {
 
-    // Mutex: si se piden dos envios al tiempo (al abrir la app y al abrir "Mis solicitudes"),
-    // el segundo espera al primero. Asi un mismo borrador no se envia dos veces.
-    private val candado = Mutex()
+    // true mientras se estan enviando los borradores: si se pide otro envio al tiempo
+    // (al abrir la app y al abrir "Mis solicitudes"), el segundo no hace nada y no se envian dos veces
+    private var enviandoPendientes = false
 
     // ---------- ENVIAR UNA SOLICITUD ----------
     suspend fun enviar(inmuebleId: String, tipo: String, nombre: String, telefono: String, mensaje: String, fecha: String, hora: String): Envio {
@@ -51,24 +50,22 @@ class SolicitudRepository(
         val guardado = borrador.copy(localId = borradorDao.insertar(borrador))
 
         // 2. se intenta enviar
-        return candado.withLock {
-            try {
-                val error = enviarAhora(guardado)
-                if (error == null) {
-                    borradorDao.eliminar(guardado) // el servidor la guardo: ya no es borrador
-                    Envio(ResultadoEnvio.ENVIADA, "")
-                } else {
-                    // el servidor la rechazo: el formulario conserva lo escrito para corregirlo
-                    borradorDao.eliminar(guardado)
-                    Envio(ResultadoEnvio.ERROR, error)
-                }
-            } catch (e: IOException) {
-                // sin conexion: el borrador queda "pendiente" en Room y se envia despues
-                Envio(ResultadoEnvio.SIN_CONEXION, "")
-            } catch (e: Exception) {
-                // ej: la direccion del servidor esta mal escrita y responde otra cosa
-                Envio(ResultadoEnvio.SIN_CONEXION, "")
+        return try {
+            val error = enviarAhora(guardado)
+            if (error == null) {
+                borradorDao.eliminar(guardado) // el servidor la guardo: ya no es borrador
+                Envio(ResultadoEnvio.ENVIADA, "")
+            } else {
+                // el servidor la rechazo: el formulario conserva lo escrito para corregirlo
+                borradorDao.eliminar(guardado)
+                Envio(ResultadoEnvio.ERROR, error)
             }
+        } catch (e: IOException) {
+            // sin conexion: el borrador queda "pendiente" en Room y se envia despues
+            Envio(ResultadoEnvio.SIN_CONEXION, "")
+        } catch (e: Exception) {
+            // ej: la direccion del servidor esta mal escrita y responde otra cosa
+            Envio(ResultadoEnvio.SIN_CONEXION, "")
         }
     }
 
@@ -108,7 +105,19 @@ class SolicitudRepository(
 
     // ---------- ENVIAR LOS BORRADORES PENDIENTES ----------
     // Devuelve cuantos se enviaron. Si sigue sin internet, quedan pendientes en Room.
-    suspend fun sincronizarPendientes(): Int = candado.withLock {
+    suspend fun sincronizarPendientes(): Int {
+        if (enviandoPendientes) return 0
+        enviandoPendientes = true
+        var enviadas = 0
+        try {
+            enviadas = enviarPendientes()
+        } finally {
+            enviandoPendientes = false
+        }
+        return enviadas
+    }
+
+    private suspend fun enviarPendientes(): Int {
         var enviadas = 0
         for (borrador in borradorDao.pendientes()) {
             try {
@@ -124,7 +133,7 @@ class SolicitudRepository(
                 break // sin conexion: los demas tambien fallarian, se intenta en la proxima
             }
         }
-        enviadas
+        return enviadas
     }
 
     // El cliente pide reintentar un borrador con error: vuelve a "pendiente" y se intenta enviar
@@ -145,7 +154,7 @@ class SolicitudRepository(
     // Devuelve la lista y si se pudo conectar.
     suspend fun misSolicitudes(): Pair<List<Solicitud>, Boolean> {
         val lista = mutableListOf<Solicitud>()
-        borradorDao.todos().forEach { lista.add(it.aModelo()) }
+        borradorDao.todos().forEach { lista.add(borradorDesdeTabla(it)) }
 
         val clienteId = manager.clienteId.first()
         var conectado = true
@@ -159,13 +168,13 @@ class SolicitudRepository(
                 val datos = if (r.optString("status") == "success") r.getJSONArray("citas") else JSONArray()
                 val filas = mutableListOf<SolicitudEntity>()
                 for (i in 0 until datos.length()) {
-                    filas.add(ApiClient.solicitudDesdeJson(datos.getJSONObject(i), porEnviar = false).aEntidad())
+                    filas.add(solicitudParaTabla(ApiClient.solicitudDesdeJson(datos.getJSONObject(i), porEnviar = false)))
                 }
                 solicitudDao.reemplazar(filas)
             } catch (e: Exception) {
                 conectado = false
             }
-            solicitudDao.todas().forEach { lista.add(it.aModelo()) }
+            solicitudDao.todas().forEach { lista.add(solicitudDesdeTabla(it)) }
         }
         return Pair(lista, conectado)
     }

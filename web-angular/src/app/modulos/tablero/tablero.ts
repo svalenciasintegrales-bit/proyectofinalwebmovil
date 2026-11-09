@@ -123,11 +123,31 @@ export class Tablero implements OnInit {
   }
 
   inmuebleDe(id: string) {
-    return this.inmuebles.find((i: any) => i._id === id);
+    for (const i of this.inmuebles) {
+      if (i._id === id) return i;
+    }
+    return null;
   }
 
   clienteDe(id: string) {
-    return this.clientes.find((c: any) => c._id === id);
+    for (const c of this.clientes) {
+      if (c._id === id) return c;
+    }
+    return null;
+  }
+
+  // ordena la lista de mayor a menor (o de menor a mayor) segun un campo, con dos ciclos for
+  ordenar(lista: any[], campo: string, mayorPrimero: boolean) {
+    for (let a = 0; a < lista.length; a++) {
+      for (let b = a + 1; b < lista.length; b++) {
+        const cambiar = mayorPrimero ? lista[b][campo] > lista[a][campo] : lista[b][campo] < lista[a][campo];
+        if (cambiar) {
+          const temporal = lista[a];
+          lista[a] = lista[b];
+          lista[b] = temporal;
+        }
+      }
+    }
   }
 
   // ---------- CALCULOS DEL TABLERO ----------
@@ -156,7 +176,7 @@ export class Tablero implements OnInit {
         if (dia >= textoHoy) proximas.push(s);
       }
     }
-    proximas.sort((a: any, b: any) => String(a.fecha_cita).localeCompare(String(b.fecha_cita)));
+    this.ordenar(proximas, 'fecha_cita', false); // la visita mas cercana primero
 
     // --- indicadores de inmuebles ---
     let disponibles = 0, valorVenta = 0, enVenta = 0, venta = 0, arriendo = 0;
@@ -235,11 +255,16 @@ export class Tablero implements OnInit {
     for (const i of this.inmuebles) {
       ranking.push({ inmueble: i, total: conteoInmueble[i._id] || 0 });
     }
-    ranking.sort((a: any, b: any) => b.total - a.total);
-    const top = ranking.slice(0, 5);
+    this.ordenar(ranking, 'total', true); // el mas solicitado primero
+    const codigos: string[] = [];
+    const totales: number[] = [];
+    for (let k = 0; k < ranking.length && k < 5; k++) {
+      codigos.push(ranking[k].inmueble.codigo);
+      totales.push(ranking[k].total);
+    }
     this.topData = {
-      labels: top.map((t: any) => t.inmueble.codigo),
-      datasets: [{ data: top.map((t: any) => t.total), backgroundColor: [this.colores.rojo, '#ec4a50', '#f27c80', '#f7adb0', '#fbd5d6'], borderRadius: 6, maxBarThickness: 26 }]
+      labels: codigos,
+      datasets: [{ data: totales, backgroundColor: [this.colores.rojo, '#ec4a50', '#f27c80', '#f7adb0', '#fbd5d6'], borderRadius: 6, maxBarThickness: 26 }]
     };
     if (ranking.length > 0 && ranking[0].total > 0) {
       this.destacado = ranking[0].inmueble;

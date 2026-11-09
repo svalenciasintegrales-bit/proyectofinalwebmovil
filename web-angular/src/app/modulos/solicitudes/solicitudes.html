@@ -131,7 +131,6 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-rojo px-4" (click)="guardarRespuesta()" [disabled]="enviando">
-          <span *ngIf="enviando" class="spinner-border spinner-border-sm me-2"></span>
           <i *ngIf="!enviando" class="bi bi-send-fill me-2"></i>{{ enviando ? 'Enviando...' : 'Enviar respuesta' }}
         </button>
       </div>

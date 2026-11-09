@@ -63,21 +63,25 @@ data class BorradorEntity(
 
 // ---------- CONVERTIR entre las tablas y los modelos que usan las pantallas ----------
 
-fun InmuebleEntity.aModelo(): Inmueble = Inmueble(id, codigo, titulo, tipo, operacion, precio, barrio, ciudad, area, habitaciones, banos, descripcion, imagen, estado)
-
-fun Inmueble.aEntidad(): InmuebleEntity = InmuebleEntity(id, codigo, titulo, tipo, operacion, precio, barrio, ciudad, area, habitaciones, banos, descripcion, imagen, estado)
-
-fun SolicitudEntity.aModelo(): Solicitud = Solicitud(
-    id = id, inmuebleId = inmuebleId, tipo = tipo, fechaCita = fechaCita, hora = hora,
-    mensaje = mensaje, respuesta = respuesta, estado = estado, fecha = fecha, porEnviar = false
+fun inmuebleDesdeTabla(e: InmuebleEntity): Inmueble = Inmueble(
+    e.id, e.codigo, e.titulo, e.tipo, e.operacion, e.precio, e.barrio, e.ciudad, e.area, e.habitaciones, e.banos, e.descripcion, e.imagen, e.estado
 )
 
-fun Solicitud.aEntidad(): SolicitudEntity = SolicitudEntity(id, inmuebleId, tipo, fechaCita, hora, mensaje, respuesta, estado, fecha)
+fun inmuebleParaTabla(i: Inmueble): InmuebleEntity = InmuebleEntity(
+    i.id, i.codigo, i.titulo, i.tipo, i.operacion, i.precio, i.barrio, i.ciudad, i.area, i.habitaciones, i.banos, i.descripcion, i.imagen, i.estado
+)
+
+fun solicitudDesdeTabla(e: SolicitudEntity): Solicitud = Solicitud(
+    id = e.id, inmuebleId = e.inmuebleId, tipo = e.tipo, fechaCita = e.fechaCita, hora = e.hora,
+    mensaje = e.mensaje, respuesta = e.respuesta, estado = e.estado, fecha = e.fecha, porEnviar = false
+)
+
+fun solicitudParaTabla(s: Solicitud): SolicitudEntity = SolicitudEntity(s.id, s.inmuebleId, s.tipo, s.fechaCita, s.hora, s.mensaje, s.respuesta, s.estado, s.fecha)
 
 // el borrador se muestra en "Mis solicitudes" con el estado "por enviar" o "error al enviar"
-fun BorradorEntity.aModelo(): Solicitud = Solicitud(
-    id = "local-$localId", inmuebleId = inmuebleId, tipo = tipo, fechaCita = fechaCita, hora = hora,
-    mensaje = mensaje, respuesta = "",
-    estado = if (estadoEnvio == "error") "error al enviar" else "por enviar",
-    fecha = "", porEnviar = true, localId = localId, errorEnvio = error
+fun borradorDesdeTabla(b: BorradorEntity): Solicitud = Solicitud(
+    id = "local-${b.localId}", inmuebleId = b.inmuebleId, tipo = b.tipo, fechaCita = b.fechaCita, hora = b.hora,
+    mensaje = b.mensaje, respuesta = "",
+    estado = if (b.estadoEnvio == "error") "error al enviar" else "por enviar",
+    fecha = "", porEnviar = true, localId = b.localId, errorEnvio = b.error
 )

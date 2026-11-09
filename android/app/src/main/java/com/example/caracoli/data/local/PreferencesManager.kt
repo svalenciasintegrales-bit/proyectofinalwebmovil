@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.map
 private val Context.dataStore by preferencesDataStore("caracoli_preferences")
 
 class PreferencesManager(private val context: Context) {
-
+                              
     // LLAVES (como las columnas de una tabla)
     companion object {
         private val ONBOARDING = booleanPreferencesKey("onboarding")

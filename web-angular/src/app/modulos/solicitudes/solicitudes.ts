@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Cita } from '../../servicios/cita';
-import { mensajeError } from '../../servicios/errores';
 import { Inmueble } from '../../servicios/inmueble';
 import { Cliente } from '../../servicios/cliente';
 
@@ -80,21 +79,35 @@ export class Solicitudes implements OnInit {
 
   // filtro por tipo: se hace aqui con la lista que ya llego de la api
   visibles() {
-    if (!this.tipo) return this.solicitudes;
-    return this.solicitudes.filter((s: any) => (s.tipo || 'visita') === this.tipo);
+    if (this.tipo === '') return this.solicitudes;
+    const lista: any[] = [];
+    for (const s of this.solicitudes) {
+      if ((s.tipo || 'visita') === this.tipo) lista.push(s);
+    }
+    return lista;
   }
 
   contar(tipo: string) {
-    return this.solicitudes.filter((s: any) => (s.tipo || 'visita') === tipo).length;
+    let total = 0;
+    for (const s of this.solicitudes) {
+      if ((s.tipo || 'visita') === tipo) total++;
+    }
+    return total;
   }
 
   // "relacion manual": buscar en la lista el inmueble o el cliente con ese id
   inmuebleDe(id: string) {
-    return this.inmuebles.find((i: any) => i._id === id);
+    for (const i of this.inmuebles) {
+      if (i._id === id) return i;
+    }
+    return null;
   }
 
   clienteDe(id: string) {
-    return this.clientes.find((c: any) => c._id === id);
+    for (const c of this.clientes) {
+      if (c._id === id) return c;
+    }
+    return null;
   }
 
   // ---------- RESPONDER ----------
@@ -113,9 +126,12 @@ export class Solicitudes implements OnInit {
   // una visita pendiente no puede pasar directo a realizada: primero se confirma
   opcionesEstado(s: any) {
     if (!s) return [];
-    const permitidos = (this.transiciones[s.estado] || []).filter((e: string) =>
-      !(e === 'realizada' && s.estado === 'pendiente' && (s.tipo || 'visita') === 'visita'));
-    return [s.estado, ...permitidos];
+    const opciones: string[] = [s.estado];
+    for (const e of this.transiciones[s.estado] || []) {
+      const visitaSinConfirmar = e === 'realizada' && s.estado === 'pendiente' && (s.tipo || 'visita') === 'visita';
+      if (!visitaSinConfirmar) opciones.push(e);
+    }
+    return opciones;
   }
 
   guardarRespuesta() {
@@ -136,7 +152,7 @@ export class Solicitudes implements OnInit {
       // ej: 409 cambio de estado no permitido -> la respuesta escrita se conserva
       error: (err: any) => {
         this.enviando = false;
-        this.error = mensajeError(err);
+        this.error = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
         this.cdr.detectChanges();
       }
     });
@@ -152,7 +168,7 @@ export class Solicitudes implements OnInit {
         this.mostrarMensaje(`La solicitud quedó ${estado}.`);
       },
       error: (err: any) => {
-        this.errorTabla = mensajeError(err);
+        this.errorTabla = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
         this.cdr.detectChanges();
       }
     });
@@ -167,7 +183,7 @@ export class Solicitudes implements OnInit {
           this.mostrarMensaje('Solicitud eliminada con éxito.');
         },
         error: (err: any) => {
-          this.errorTabla = mensajeError(err);
+          this.errorTabla = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
           this.cdr.detectChanges();
         }
       });

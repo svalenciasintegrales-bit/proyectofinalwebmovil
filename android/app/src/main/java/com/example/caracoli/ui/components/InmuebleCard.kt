@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -31,14 +30,13 @@ import com.example.caracoli.model.formatoPrecio
 import com.example.caracoli.ui.theme.Negro
 import com.example.caracoli.ui.theme.RojoCaracoli
 
-// Foto del inmueble: se descarga de la API la primera vez y queda guardada en el celular.
-// Mientras carga (o si no hay foto) se muestra el simbolo de Caracoli.
+// Foto del inmueble: se descarga de la API.
+// Mientras carga (o si no hay foto o internet) se muestra el simbolo de Caracoli.
 @Composable
 fun FotoInmueble(imagen: String, servidor: String, modifier: Modifier) {
-    val context = LocalContext.current
     var foto by remember(imagen) { mutableStateOf<Bitmap?>(null) }
     LaunchedEffect(imagen, servidor) {
-        foto = FotoCache.cargar(context, servidor, imagen)
+        foto = FotoCache.cargar(servidor, imagen)
     }
     val bitmap = foto
     if (bitmap != null) {

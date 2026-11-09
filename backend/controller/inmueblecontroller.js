@@ -157,6 +157,14 @@ var controller = {
         // recoger el id que llega en la url
         var inmuebleId = req.params.id;
 
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(inmuebleId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
+
         try {
             const inmueble = await Inmueble.findById(inmuebleId); // findById: busca un documento por su _id
 
@@ -213,6 +221,14 @@ var controller = {
     update: async (req, res) => {
         // recoger el id que llega en la url
         var inmuebleId = req.params.id;
+
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(inmuebleId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
 
         // recoger los datos nuevos que llegan en el body
         var params = req.body;
@@ -281,6 +297,14 @@ var controller = {
         // recoger el id que llega en la url
         var inmuebleId = req.params.id;
 
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(inmuebleId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
+
         try {
             // si el inmueble tiene solicitudes no se borra (se perderia el historial de los clientes)
             const solicitudes = await Cita.countDocuments({ inmueble_id: inmuebleId });
@@ -331,6 +355,15 @@ var controller = {
 
         // sacar el id del inmueble de la url
         var inmuebleId = req.params.id;
+
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(inmuebleId))) {
+            fs.unlink(req.file.path, () => { }); // se borra la foto que se subio
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
 
         try {
             // buscar el inmueble, asignarle el nombre de la imagen y actualizarlo

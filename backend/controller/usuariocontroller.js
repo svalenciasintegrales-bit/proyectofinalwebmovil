@@ -163,6 +163,14 @@ var controller = {
     delete: async (req, res) => {
         var usuarioId = req.params.id;
 
+        // el id debe tener el formato de MongoDB, si no se responde 400
+        if (!validator.isMongoId(String(usuarioId))) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'El id no es valido !!!'
+            });
+        }
+
         if (req.query.actual && req.query.actual == usuarioId) {
             return res.status(409).send({
                 status: 'error',
