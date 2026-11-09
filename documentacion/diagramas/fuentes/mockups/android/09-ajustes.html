@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="500x1000">
+<title>Android - Ajustes</title>
+<link rel="stylesheet" href="android.css">
+<script src="../../iconos.js"></script>
+<script src="android.js"></script>
+<style>
+  .aj { position: absolute; inset: 16px; overflow: hidden; }
+  .chico { font-size: 13px; line-height: 18px; letter-spacing: .25px; margin: 0; }
+  .ok { color: var(--rojo); font-size: 16px; line-height: 24px; letter-spacing: .3px; }
+  .pie { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .pie img { height: 90px; }
+</style>
+</head>
+<body>
+<div class="dispositivo"><div class="pantalla">
+  <div class="estado"></div>
+  <div class="appbar">
+    <span class="icono-btn nav"><i data-i="atras" data-s="24"></i></span>
+    <div class="titulo">Ajustes</div>
+  </div>
+  <div class="contenido"><div class="aj">
+    <h2 class="title-l">Mis datos</h2>
+    <p class="body">Se usan para llenar los formularios de solicitudes.</p>
+    <div style="height:10px"></div>
+    <div class="campo"><span class="etiqueta">Nombre</span><div class="caja">Laura Gomez</div></div>
+    <div style="height:8px"></div>
+    <div class="campo"><span class="etiqueta">Celular</span><div class="caja">3001234567</div></div>
+    <div style="height:10px"></div>
+    <span class="btn">Guardar datos</span>
+
+    <div style="height:24px"></div>
+    <h2 class="title-l">Conexión con la inmobiliaria</h2>
+    <p class="chico">Dirección de la API. En un celular real usa la IP del computador, por ejemplo http://192.168.1.50:3900/api</p>
+    <div style="height:8px"></div>
+    <div class="campo"><span class="etiqueta">Servidor</span><div class="caja">http://192.168.1.50:3900/api</div></div>
+    <div style="height:8px"></div>
+    <span class="btn">Guardar y probar conexión</span>
+    <div class="ok">Conectado con Caracoli Inmobiliaria ✓</div>
+
+    <div style="height:24px"></div>
+    <div class="fila">
+      <div style="flex:1">
+        <div class="title-m">Modo oscuro</div>
+        <div class="body">Cambia los colores de la app</div>
+      </div>
+      <span class="switch"></span>
+    </div>
+
+    <div style="height:32px"></div>
+    <div class="pie">
+      <img src="../../../../../android/app/src/main/res/drawable/logo.png" alt="Caracoli Inmobiliaria">
+      <div class="body" style="font-style:italic">Tu confianza, nuestra prioridad</div>
+      <div class="body">Cra 3 # 11-89 Centro, Cartago · 314 780 2883</div>
+    </div>
+  </div></div>
+  <div class="gestos"></div>
+</div></div>
+</body>
+</html>

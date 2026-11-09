@@ -1,0 +1,4 @@
+/* solicitud.css -> piezas propias de SolicitudScreen.kt (05 y 06) */
+.form { position: absolute; inset: 16px; overflow: hidden; }
+.horas { display: flex; overflow: hidden; white-space: nowrap; }
+.horas span { margin-right: 8px; flex: none; }

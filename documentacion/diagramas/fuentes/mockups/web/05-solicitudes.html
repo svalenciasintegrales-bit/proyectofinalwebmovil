@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="tam" content="1440x1400">
+  <meta name="escala" content="1.5">
+  <title>Solicitudes | Panel InmoConecta</title>
+  <link rel="stylesheet" href="bootstrap-lite.css">
+  <link rel="stylesheet" href="panel.css">
+  <link rel="stylesheet" href="c-solicitudes.css">
+</head>
+<body data-pagina="solicitudes">
+  <div class="app-container">
+    <aside id="nav"></aside>
+    <main class="main-content">
+      <header id="header"></header>
+      <div class="content-wrapper">
+
+        <!-- filtros -->
+        <div class="barra-filtros">
+          <div class="filtro-grupo">
+            <button class="activo">Todas <b>12</b></button>
+            <button><i data-i="evento"></i>Visitas <b>6</b></button>
+            <button><i data-i="chat"></i>Información <b>6</b></button>
+          </div>
+          <div class="filtro-grupo estados">
+            <button class="activo">Todos los estados</button>
+            <button>Pendiente</button>
+            <button>Confirmada</button>
+            <button>Realizada</button>
+            <button>Cancelada</button>
+          </div>
+        </div>
+
+        <div class="tarjeta">
+          <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+              <thead>
+                <tr>
+                  <th class="ps-3">Solicitud</th>
+                  <th>Cliente</th>
+                  <th>Inmueble</th>
+                  <th>Detalle</th>
+                  <th>Respuesta</th>
+                  <th>Estado</th>
+                  <th class="text-end pe-3">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-info"><i data-i="chat"></i></span>
+                    <div>
+                      <div class="fw-bold">Información</div>
+                      <small class="text-muted text-nowrap">03/11/2026 18:42</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Jorge Castaño</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3186667788</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-101</div>
+                  <small class="text-muted">Casa nueva para estrenar</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted">¿Cuánto es la administración?</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted fst-italic">Sin responder</small>
+                </td>
+                <td><span class="estado estado-pendiente">pendiente</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Cancelar"><i data-i="cerrar" class="text-secondary"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-info"><i data-i="chat"></i></span>
+                    <div>
+                      <div class="fw-bold">Información</div>
+                      <small class="text-muted text-nowrap">29/10/2026 10:15</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Carlos Mejia</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3204445566</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-106</div>
+                  <small class="text-muted">Lote para construir</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted">¿Tiene escrituras al día?</small>
+                </td>
+                <td class="detalle">
+                  <small>Sí, escrituras al día y libre de gravámenes.</small>
+                </td>
+                <td><span class="estado estado-realizada">realizada</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-info"><i data-i="chat"></i></span>
+                    <div>
+                      <div class="fw-bold">Información</div>
+                      <small class="text-muted text-nowrap">05/11/2026 08:12</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Daniela Restrepo</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3012223344</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-102</div>
+                  <small class="text-muted">Apartamento con balcon</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted">¿Incluye parqueadero?</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted fst-italic">Sin responder</small>
+                </td>
+                <td><span class="estado estado-pendiente">pendiente</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Cancelar"><i data-i="cerrar" class="text-secondary"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-visita"><i data-i="evento"></i></span>
+                    <div>
+                      <div class="fw-bold">Visita</div>
+                      <small class="text-muted text-nowrap">03/11/2026 11:27</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Valentina Ospina</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3157778899</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-104</div>
+                  <small class="text-muted">Casa campestre con piscina</small>
+                </td>
+                <td class="detalle">
+                  <div class="fw-bold text-nowrap"><i data-i="calendario" class="me-1 text-rojo"></i>06/11/2026 · 2:00 p.m.</div>
+                  <small class="text-muted">Quiero conocer la piscina</small>
+                </td>
+                <td class="detalle">
+                  <small>Confirmada, la recogemos en la entrada de Zaragoza.</small>
+                </td>
+                <td><span class="estado estado-confirmada">confirmada</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Marcar como realizada"><i data-i="checkDoble" class="text-success"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Cancelar"><i data-i="cerrar" class="text-secondary"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-visita"><i data-i="evento"></i></span>
+                    <div>
+                      <div class="fw-bold">Visita</div>
+                      <small class="text-muted text-nowrap">24/10/2026 16:05</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Laura Gomez</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3001234567</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-105</div>
+                  <small class="text-muted">Apartaestudio amoblado</small>
+                </td>
+                <td class="detalle">
+                  <div class="fw-bold text-nowrap"><i data-i="calendario" class="me-1 text-rojo"></i>31/10/2026 · 4:00 p.m.</div>
+                  <small class="text-muted">Sin mensaje</small>
+                </td>
+                <td class="detalle">
+                  <small>El inmueble ya fue arrendado.</small>
+                </td>
+                <td><span class="estado estado-cancelada">cancelada</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-visita"><i data-i="evento"></i></span>
+                    <div>
+                      <div class="fw-bold">Visita</div>
+                      <small class="text-muted text-nowrap">27/10/2026 09:40</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Andres Rios</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3109876543</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-101</div>
+                  <small class="text-muted">Casa nueva para estrenar</small>
+                </td>
+                <td class="detalle">
+                  <div class="fw-bold text-nowrap"><i data-i="calendario" class="me-1 text-rojo"></i>03/11/2026 · 11:00 a.m.</div>
+                  <small class="text-muted">Sin mensaje</small>
+                </td>
+                <td class="detalle">
+                  <small>Visita realizada, quedó interesado.</small>
+                </td>
+                <td><span class="estado estado-realizada">realizada</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-info"><i data-i="chat"></i></span>
+                    <div>
+                      <div class="fw-bold">Información</div>
+                      <small class="text-muted text-nowrap">02/11/2026 14:18</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Daniela Restrepo</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3012223344</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-103</div>
+                  <small class="text-muted">Local comercial esquinero</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted">¿Qué uso de suelo tiene el local?</small>
+                </td>
+                <td class="detalle">
+                  <small>Uso comercial, apto para restaurante o tienda.</small>
+                </td>
+                <td><span class="estado estado-realizada">realizada</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-visita"><i data-i="evento"></i></span>
+                    <div>
+                      <div class="fw-bold">Visita</div>
+                      <small class="text-muted text-nowrap">04/11/2026 19:03</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Jorge Castaño</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3186667788</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-106</div>
+                  <small class="text-muted">Lote para construir</small>
+                </td>
+                <td class="detalle">
+                  <div class="fw-bold text-nowrap"><i data-i="calendario" class="me-1 text-rojo"></i>10/11/2026 · 9:00 a.m.</div>
+                  <small class="text-muted">Voy con un maestro de obra</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted fst-italic">Sin responder</small>
+                </td>
+                <td><span class="estado estado-pendiente">pendiente</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Cancelar"><i data-i="cerrar" class="text-secondary"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-info"><i data-i="chat"></i></span>
+                    <div>
+                      <div class="fw-bold">Información</div>
+                      <small class="text-muted text-nowrap">31/10/2026 12:30</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Carlos Mejia</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3204445566</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-104</div>
+                  <small class="text-muted">Casa campestre con piscina</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted">¿El precio es negociable?</small>
+                </td>
+                <td class="detalle">
+                  <small>Sí, el propietario recibe ofertas. Lo llamamos hoy.</small>
+                </td>
+                <td><span class="estado estado-confirmada">confirmada</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Marcar como realizada"><i data-i="checkDoble" class="text-success"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Cancelar"><i data-i="cerrar" class="text-secondary"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-info"><i data-i="chat"></i></span>
+                    <div>
+                      <div class="fw-bold">Información</div>
+                      <small class="text-muted text-nowrap">05/11/2026 07:51</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Valentina Ospina</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3157778899</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-101</div>
+                  <small class="text-muted">Casa nueva para estrenar</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted">¿Aceptan crédito hipotecario con el Fondo Nacional del Ahorro?</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted fst-italic">Sin responder</small>
+                </td>
+                <td><span class="estado estado-pendiente">pendiente</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Cancelar"><i data-i="cerrar" class="text-secondary"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-visita"><i data-i="evento"></i></span>
+                    <div>
+                      <div class="fw-bold">Visita</div>
+                      <small class="text-muted text-nowrap">01/11/2026 10:05</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Andres Rios</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3109876543</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-102</div>
+                  <small class="text-muted">Apartamento con balcon</small>
+                </td>
+                <td class="detalle">
+                  <div class="fw-bold text-nowrap"><i data-i="calendario" class="me-1 text-rojo"></i>08/11/2026 · 3:00 p.m.</div>
+                  <small class="text-muted">Sin mensaje</small>
+                </td>
+                <td class="detalle">
+                  <small>Lo esperamos en la portería del edificio.</small>
+                </td>
+                <td><span class="estado estado-confirmada">confirmada</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Marcar como realizada"><i data-i="checkDoble" class="text-success"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Cancelar"><i data-i="cerrar" class="text-secondary"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="tipo tipo-visita"><i data-i="evento"></i></span>
+                    <div>
+                      <div class="fw-bold">Visita</div>
+                      <small class="text-muted text-nowrap">04/11/2026 09:22</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">Laura Gomez</div>
+                  <small class="text-muted"><i data-i="telefono" class="me-1"></i>3001234567</small>
+                </td>
+                <td>
+                  <div class="fw-bold text-nowrap">CAR-101</div>
+                  <small class="text-muted">Casa nueva para estrenar</small>
+                </td>
+                <td class="detalle">
+                  <div class="fw-bold text-nowrap"><i data-i="calendario" class="me-1 text-rojo"></i>07/11/2026 · 10:00 a.m.</div>
+                  <small class="text-muted">Quiero ver la cocina y el segundo piso</small>
+                </td>
+                <td class="detalle">
+                  <small class="text-muted fst-italic">Sin responder</small>
+                </td>
+                <td><span class="estado estado-pendiente">pendiente</span></td>
+                <td class="text-end pe-3 text-nowrap">
+                  <button class="btn btn-sm btn-rojo me-1" title="Responder"><i data-i="responder"></i></button>
+                  <button class="btn btn-sm btn-light me-1" title="Cancelar"><i data-i="cerrar" class="text-secondary"></i></button>
+                  <button class="btn btn-sm btn-light text-danger" title="Eliminar"><i data-i="basura"></i></button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <script src="../../iconos.js"></script>
+  <script src="layout.js"></script>
+</body>
+</html>

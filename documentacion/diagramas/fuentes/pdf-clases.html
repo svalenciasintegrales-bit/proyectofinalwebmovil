@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>DIAGRAMA DE CLASES - InmoConecta Caracoli</title>
+<link rel="stylesheet" href="pdf-comun.css">
+</head>
+<body>
+
+<section class="pagina p-a3">
+  <div class="portada">
+    <img class="logo" src="../../../web-angular/public/img/logo.png" alt="Caracoli">
+    <div class="doc">DIAGRAMA DE CLASES</div>
+    <div class="sis">Sistema InmoConecta</div>
+    <div class="linea"></div>
+    <div class="dato">App Android · Panel Angular · API REST con Node, Express y MongoDB</div>
+    <div class="dato">Cliente: <b>Caracoli Inmobiliaria</b>, Cra 3 # 11-89 Centro, Cartago, Valle del Cauca</div>
+    <div class="dato">Proyecto integrador de Móvil I y Desarrollo Web 2</div>
+    <div class="dato">Ingeniería de Software · Institución Universitaria Visión de las Américas</div>
+    <div class="integrantes"><b>Integrantes:</b><div></div><div></div><div></div></div>
+    <div class="fecha">Cartago, noviembre de 2026</div>
+  </div>
+</section>
+
+<section class="pagina p-a3">
+  <h2>1. Contenido y convenciones</h2>
+  <p>El sistema InmoConecta tiene tres partes que comparten una sola base de datos: la <b>app Android</b> del cliente, el <b>panel web en Angular</b> de la inmobiliaria y la <b>API REST</b> en Node.js + Express, que es la única que se conecta a <b>MongoDB</b>. Los diagramas se sacaron del código fuente del repositorio (nombres de clases, atributos y métodos tal como están escritos).</p>
+  <table>
+    <tr><th style="width:18mm">Figura</th><th style="width:75mm">Diagrama</th><th>Qué muestra</th><th style="width:95mm">Fuente en el repositorio</th></tr>
+    <tr><td>1</td><td><b>Modelo de dominio</b></td><td>Las 4 colecciones de MongoDB (Inmueble, Cita, Cliente, Usuario), sus atributos, las enumeraciones de valores permitidos, las relaciones por ObjectId y las reglas de negocio que valida el servidor.</td><td><code>backend/models/*.js</code>, <code>backend/controller/*.js</code></td></tr>
+    <tr><td>2</td><td><b>API REST (backend)</b></td><td>Capas del servidor: index/app, middlewares (validarid, Multer), routers, controladores con cada ruta HTTP y los modelos que usa cada uno.</td><td><code>backend/index.js</code>, <code>app.js</code>, <code>routers/</code>, <code>controller/</code></td></tr>
+    <tr><td>3</td><td><b>App Android (MVVM)</b></td><td>MainActivity, navegación, pantallas, ViewModels con StateFlow, repositorios, DataStore, cliente HTTP, base Room (DAO y entidades) y modelos.</td><td><code>android/app/src/main/java/com/example/caracoli/</code></td></tr>
+    <tr><td>4</td><td><b>Panel web (Angular)</b></td><td>Configuración, rutas y guard, layout (Main, Header, Nav), componentes de página y servicios HTTP.</td><td><code>web-angular/src/app/</code></td></tr>
+  </table>
+
+  <h3>Notación UML usada</h3>
+  <table class="leyenda-tabla">
+    <tr><th>Símbolo</th><th>Significado</th></tr>
+    <tr><td><svg width="150" height="20"><line x1="5" y1="10" x2="140" y2="10" stroke="#333" stroke-width="1.5"/><path d="M130,4 L141,10 L130,16" fill="none" stroke="#333" stroke-width="1.4"/></svg></td><td><b>Asociación navegable</b> con multiplicidad (ej. una Cita pertenece a 1 Inmueble; un Inmueble tiene 0..* Citas).</td></tr>
+    <tr><td><svg width="150" height="20"><line x1="5" y1="10" x2="140" y2="10" stroke="#333" stroke-width="1.5" stroke-dasharray="7 5"/><path d="M130,4 L141,10 L130,16" fill="none" stroke="#333" stroke-width="1.4"/></svg></td><td><b>Dependencia</b>: una clase usa a otra (llama sus métodos, la importa o la consulta).</td></tr>
+    <tr><td><svg width="150" height="20"><path d="M5,10 L14,5 L23,10 L14,15 z" fill="#fff" stroke="#333" stroke-width="1.2"/><line x1="23" y1="10" x2="140" y2="10" stroke="#333" stroke-width="1.5"/></svg></td><td><b>Agregación</b>: la clase recibe la otra en su constructor (ej. el ViewModel tiene su Repository).</td></tr>
+    <tr><td><svg width="150" height="20"><path d="M5,10 L14,5 L23,10 L14,15 z" fill="#333" stroke="#333"/><line x1="23" y1="10" x2="140" y2="10" stroke="#333" stroke-width="1.5"/></svg></td><td><b>Composición</b>: la clase crea y es dueña de la otra (ej. CaracoliDatabase y sus DAO; Main con Header y Nav).</td></tr>
+    <tr><td><span style="display:inline-block;border:1.5px solid #333;border-radius:3px;padding:2px 10px;font-size:9pt"><i>«Schema»</i> · <i>«enumeration»</i> · <i>«@Composable»</i></span></td><td><b>Estereotipo</b>: tipo de elemento según la tecnología (esquema de Mongoose, lista de valores, función Composable, componente de Angular, objeto Kotlin).</td></tr>
+    <tr><td><span style="display:inline-block;background:#FFFBEA;border:1px solid #C9B458;padding:2px 10px;font-size:9pt">Nota</span></td><td><b>Nota</b> con reglas de negocio o aclaraciones, unida con línea punteada al elemento que explica.</td></tr>
+    <tr><td><span style="color:#E3141B;font-weight:bold">+</span> público · <span style="color:#E3141B;font-weight:bold">-</span> privado</td><td>Visibilidad de atributos y métodos. <u>Subrayado</u> = miembro estático. El tipo va después de los dos puntos.</td></tr>
+  </table>
+  <div class="caja"><b>Nota sobre MongoDB:</b> los esquemas de Mongoose no declaran <i>required</i>, <i>enum</i> ni <i>ref</i>. Las restricciones que aparecen entre llaves (único, &gt; 0, obligatorio) y las enumeraciones las valida el controlador antes de guardar, y responde 400 o 409 cuando no se cumplen.</div>
+</section>
+
+<section class="pagina p-a3">
+  <div class="fig-tit"><span class="num">Figura 1.</span><span class="t">Modelo de dominio</span></div>
+  <div class="fig-desc">Cita es la "solicitud" del cliente: guarda a mano el id del inmueble y el del cliente. Usuario es independiente: solo da acceso al panel.</div>
+  <div class="fig"><img src="../png/clases/01-dominio.png"></div>
+</section>
+
+<section class="pagina p-a3">
+  <div class="fig-tit"><span class="num">Figura 2.</span><span class="t">API REST · backend</span></div>
+  <div class="fig-desc">Cada petición pasa por app.js → router (con validarid y, para la foto, Multer) → controlador → modelo de Mongoose. Todas las respuestas tienen la forma { status, message, … }.</div>
+  <div class="fig"><img src="../png/clases/02-backend-api.png"></div>
+</section>
+
+<section class="pagina p-a3">
+  <div class="fig-tit"><span class="num">Figura 3.</span><span class="t">App Android del cliente · MVVM</span></div>
+  <div class="fig-desc">Las pantallas observan los StateFlow de los ViewModel; los repositorios deciden entre la API (HttpURLConnection + org.json) y la copia local en Room. DataStore guarda las preferencias.</div>
+  <div class="fig"><img src="../png/clases/03-app-android.png"></div>
+</section>
+
+<section class="pagina p-a3">
+  <div class="fig-tit"><span class="num">Figura 4.</span><span class="t">Panel web de la inmobiliaria · Angular</span></div>
+  <div class="fig-desc">Componentes standalone. Cada componente de página usa uno o varios servicios, y los servicios llaman a la API con HttpClient. El guard protege todas las rutas /panel/*.</div>
+  <div class="fig"><img src="../png/clases/04-panel-angular.png"></div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+/* pdf-comun.css -> estilo de impresion de los PDF (igual al documento tecnico: Arial, titulos rojos, tablas negras) */
+@page { size: A4 portrait; margin: 16mm 14mm 14mm 14mm; }
+@page vertical { size: A4 portrait; margin: 16mm 14mm 14mm 14mm; }
+@page horizontal { size: A4 landscape; margin: 15mm 12mm 12mm 12mm; }
+@page a3h { size: A3 landscape; margin: 15mm 12mm 12mm 12mm; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: Arial, Helvetica, sans-serif; color: #4A4A4A; font-size: 10.5pt; line-height: 1.45;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+.pagina { break-after: page; position: relative; }
+.pagina:last-child { break-after: auto; }
+.p-vertical { page: vertical; }
+.p-horizontal { page: horizontal; }
+.p-a3 { page: a3h; }
+
+h1, h2, h3 { font-family: Arial, Helvetica, sans-serif; margin: 0; }
+h2 { color: #E3141B; font-size: 14pt; font-weight: bold; margin: 0 0 6pt; }
+h3 { color: #111; font-size: 11.5pt; margin: 10pt 0 4pt; }
+p { margin: 0 0 6pt; }
+b, strong { color: #111; }
+code { font-family: Consolas, 'Courier New', monospace; font-size: 9pt; background: #F4F4F4; padding: 0 3px; border-radius: 3px; color: #111; }
+
+/* ---------- portada ---------- */
+.portada { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 262mm; }
+.p-a3 .portada, .p-horizontal .portada { height: 180mm; }
+.p-a3 .portada { height: 265mm; }
+.portada img.logo { width: 60mm; margin-bottom: 14mm; }
+.portada .doc { font-size: 26pt; font-weight: bold; color: #111; letter-spacing: .5pt; }
+.portada .sis { font-size: 17pt; color: #E3141B; font-weight: bold; margin: 4mm 0 10mm; }
+.portada .linea { width: 70mm; height: 3px; background: #E3141B; margin: 0 auto 10mm; }
+.portada .dato { font-size: 11pt; color: #4A4A4A; margin: 1.5mm 0; }
+.portada .dato b { color: #111; }
+.portada .integrantes { margin-top: 14mm; font-size: 11pt; color: #111; text-align: left; width: 120mm; }
+.portada .integrantes div { border-bottom: 1px solid #BFBFBF; height: 9mm; }
+.portada .fecha { margin-top: 12mm; font-size: 10.5pt; }
+
+/* ---------- tablas ---------- */
+table { width: 100%; border-collapse: collapse; margin: 4pt 0 10pt; font-size: 9.5pt; }
+th { background: #111; color: #fff; text-align: left; font-weight: bold; padding: 5pt 6pt; border: 1px solid #111; }
+td { border: 1px solid #BFBFBF; padding: 4.5pt 6pt; vertical-align: top; color: #333; }
+tr:nth-child(even) td { background: #F7F7F7; }
+td.clave { width: 32mm; font-weight: bold; color: #111; background: #F7F7F7; }
+table.compacta td, table.compacta th { padding: 2.5pt 4pt; font-size: 8.5pt; }
+
+/* ---------- figuras ---------- */
+.fig-tit { display: flex; align-items: baseline; gap: 8pt; margin-bottom: 4pt; }
+.fig-tit .num { color: #E3141B; font-weight: bold; font-size: 12pt; }
+.fig-tit .t { color: #111; font-weight: bold; font-size: 13pt; }
+.fig-desc { font-size: 9.5pt; margin-bottom: 5pt; }
+.fig { text-align: center; }
+.fig img { max-width: 100%; object-fit: contain; border: 1px solid #E5E5E5; }
+.p-a3 .fig img { max-height: 238mm; }
+.p-horizontal .fig img { max-height: 158mm; }
+.p-vertical .fig img { max-height: 232mm; }
+
+.chip { display: inline-block; padding: 0 6pt; border-radius: 8pt; font-size: 8.5pt; font-weight: bold; }
+.leyenda-tabla td:first-child { width: 48mm; text-align: center; }
+.caja { border: 1px solid #BFBFBF; border-left: 4px solid #E3141B; background: #FAFAFA; padding: 6pt 9pt; margin: 6pt 0 10pt; font-size: 9.5pt; }
+ul { margin: 2pt 0 6pt; padding-left: 14pt; }
+li { margin: 1pt 0; }

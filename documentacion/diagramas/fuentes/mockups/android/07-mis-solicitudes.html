@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="500x1000">
+<title>Android - Mis solicitudes</title>
+<link rel="stylesheet" href="android.css">
+<script src="../../iconos.js"></script>
+<script src="android.js"></script>
+<style>
+  .sol { margin: 6px 0; padding: 14px; }
+  .sol .cab { display: flex; align-items: center; min-height: 24px; }
+  .sol .cab b { flex: 1; font-size: 16px; letter-spacing: .3px; }
+  .sol .inm-l { font-size: 14px; line-height: 20px; letter-spacing: .25px; }
+  .sol .cita { color: var(--rojo); font-weight: 700; font-size: 16px; line-height: 24px; letter-spacing: .3px; }
+  .sol .tu { font-size: 14px; line-height: 20px; letter-spacing: .25px; padding-top: 4px; }
+  .sol .nota { font-size: 13px; line-height: 18px; letter-spacing: .25px; padding-top: 8px; }
+  .sol .err { color: #B3261E; }
+  .respuesta { margin-top: 10px; background: #FDE8E8; border-radius: 8px; padding: 10px; }
+  .respuesta b { display: block; color: var(--rojo); font-size: 13px; line-height: 18px; }
+  .respuesta div { color: #111; font-size: 16px; line-height: 24px; letter-spacing: .3px; }
+  .acciones { display: flex; padding-top: 4px; margin-left: -12px; }
+</style>
+</head>
+<body class="sin-red">
+<div class="dispositivo"><div class="pantalla">
+  <div class="estado"></div>
+  <div class="appbar">
+    <span class="icono-btn nav"><i data-i="atras" data-s="24"></i></span>
+    <div class="titulo">Mis solicitudes</div>
+    <span class="icono-btn"><i data-i="actualizar" data-s="24"></i></span>
+  </div>
+  <div class="contenido"><div class="relleno">
+    <div class="aviso">⚠ Sin conexión: estas son las últimas respuestas guardadas en tu celular.</div>
+
+    <!-- borradores guardados en Room (van primero) -->
+    <div class="tarjeta sol">
+      <div class="cab"><b>Pedir información</b><span class="chip-estado por-enviar">POR ENVIAR</span></div>
+      <div class="inm-l">CAR-101 · Casa nueva para estrenar</div>
+      <div class="tu">Tú: ¿Aceptan crédito hipotecario con el Fondo Nacional del Ahorro?</div>
+      <div class="nota">Guardada en tu celular. Se enviará cuando tengas conexión.</div>
+    </div>
+
+    <div class="tarjeta sol">
+      <div class="cab"><b>Visita</b><span class="chip-estado error">ERROR AL ENVIAR</span></div>
+      <div class="inm-l">Inmueble ya no disponible</div>
+      <div class="cita">07/11/2026 · 4:00 p.m.</div>
+      <div class="nota err">El inmueble CAR-105 ya no esta disponible (arrendado) !!!</div>
+      <div class="acciones"><span class="btn-texto">Reintentar</span><span class="btn-texto">Eliminar</span></div>
+    </div>
+
+    <!-- solicitudes que ya estan en el servidor (con estado y respuesta del panel web) -->
+    <div class="tarjeta sol">
+      <div class="cab"><b>Visita</b><span class="chip-estado pendiente">PENDIENTE</span></div>
+      <div class="inm-l">CAR-102 · Apartamento con balcon</div>
+      <div class="cita">20/11/2026 · 10:00 a.m.</div>
+      <div class="tu">Tú: Voy con mi familia, queremos ver el balcón y el parqueadero.</div>
+      <div class="nota">Esperando respuesta de la inmobiliaria.</div>
+    </div>
+
+    <div class="tarjeta sol">
+      <div class="cab"><b>Visita</b><span class="chip-estado confirmada">CONFIRMADA</span></div>
+      <div class="inm-l">CAR-104 · Casa campestre con piscina</div>
+      <div class="cita">06/11/2026 · 2:00 p.m.</div>
+      <div class="tu">Tú: Quiero conocer la piscina</div>
+      <div class="respuesta"><b>Respuesta de Caracoli</b><div>Confirmada, la recogemos en la entrada de Zaragoza.</div></div>
+    </div>
+  </div></div>
+  <div class="gestos"></div>
+</div></div>
+</body>
+</html>

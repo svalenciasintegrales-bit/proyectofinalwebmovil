@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="1900x1250">
+<title>Casos de uso - General</title>
+<link rel="stylesheet" href="../comun.css">
+<script src="../uml.js"></script>
+</head>
+<body>
+<div id="lienzo" class="lienzo" style="width:1900px;height:1250px">
+  <div class="diag-cab">
+    <div class="barra"></div>
+    <img src="../../../../web-angular/public/img/logo.png" alt="">
+    <div>
+      <div class="t">Diagrama de casos de uso · Vista general</div>
+      <div class="s">Proceso central: el interesado pide información o agenda una visita desde el celular; la inmobiliaria la atiende en el panel web y el cliente ve el estado y la respuesta en su app</div>
+    </div>
+    <div class="der">Sistema InmoConecta<br>Caracoli Inmobiliaria</div>
+  </div>
+</div>
+<script>
+frontera('fApp', { x: 230, y: 120, w: 840, h: 1000, titulo: 'App Android del cliente (InmoConecta)' });
+frontera('fWeb', { x: 1110, y: 120, w: 570, h: 1000, titulo: 'Panel web de la inmobiliaria (Angular)' });
+
+actor('Cliente', { x: 50, y: 590, nombre: 'Cliente<small>interesado en un inmueble</small>' });
+actor('Asesor', { x: 1740, y: 330, nombre: 'Asesor<small>inmobiliario</small>' });
+actor('Admin', { x: 1740, y: 760, nombre: 'Administrador<small>dueño de Caracoli</small>' });
+
+var app = [
+  ['CU-01', 'Ver bienvenida'], ['CU-02', 'Ver catálogo de inmuebles'], ['CU-03', 'Buscar y filtrar inmuebles'],
+  ['CU-04', 'Buscar por código del letrero'], ['CU-05', 'Ver detalle del inmueble'], ['CU-06', 'Simular cuota del crédito'],
+  ['CU-07', 'Agendar visita'], ['CU-08', 'Pedir información'], ['CU-09', 'Consultar mis solicitudes'],
+  ['CU-10', 'Gestionar favoritos'], ['CU-11', 'Configurar ajustes']
+];
+// casos en arco alrededor del actor para que las lineas no crucen otros casos
+var k = 0;
+app.forEach(function (c, i) {
+  var tono = (i === 6 || i === 7 || i === 8) ? 'rojo' : 'normal';
+  if (i === 5) return;
+  var th = (-56 + k * (112 / 9)) * Math.PI / 180;
+  var cx = 160 + 560 * Math.cos(th), cy = 650 + 470 * Math.sin(th);
+  cu('a' + i, { x: cx - 145, y: cy - 34, w: 290, h: 68, codigo: c[0], nombre: c[1], tono: tono });
+  if (i === 4) cu('a5', { x: 853, y: cy - 112, w: 210, h: 72, codigo: app[5][0], nombre: app[5][1] });
+  k++;
+});
+var web = [
+  ['CU-12', 'Iniciar / cerrar sesión'], ['CU-13', 'Consultar tablero'], ['CU-14', 'Gestionar inmuebles'],
+  ['CU-15', 'Atender solicitudes'], ['CU-16', 'Gestionar clientes'], ['CU-17', 'Generar reportes'], ['CU-18', 'Gestionar usuarios']
+];
+web.forEach(function (c, i) {
+  var y = 185 + i * 128 + (i >= 5 ? 50 : 0);
+  cu('w' + i, { x: 1250, y: y, w: 290, h: 74, codigo: c[0], nombre: c[1], tono: i === 3 ? 'rojo' : (i >= 5 ? 'azul' : 'normal') });
+});
+
+nota('nFlujo', { x: 230, y: 1140, w: 1440, html:
+  '<b>Flujo integral</b>: CU-07/CU-08 crean la solicitud (estado <i>pendiente</i>) → CU-15 la responde y la pasa a <i>confirmada</i>, <i>realizada</i> o <i>cancelada</i> → CU-09 muestra el estado y la respuesta. Ambas interfaces usan la misma API REST y MongoDB.' });
+
+app.forEach(function (c, i) { if (i !== 5) rel('Cliente', 'a' + i, { tipo: 'linea' }); });
+rel('a5', 'a4', { tipo: 'extend', tl: 0.45 });
+for (var i = 0; i < 5; i++) rel('Asesor', 'w' + i, { tipo: 'linea' });
+rel('Admin', 'w5', { tipo: 'linea' });
+rel('Admin', 'w6', { tipo: 'linea' });
+rel('Admin', 'Asesor', { tipo: 'herencia', desde: 't', hasta: 'b' });
+rel('a6', 'w3', { tipo: 'dependencia', desde: 'r', hasta: 'l', fh: 0.4, etiqueta: 'crea solicitud (pendiente)', tl: 0.5 });
+rel('w3', 'a8', { tipo: 'dependencia', desde: 'l', hasta: 'r', fd: 0.7, etiqueta: 'respuesta y nuevo estado', tl: 0.5 });
+
+dibujar();
+</script>
+</body>
+</html>

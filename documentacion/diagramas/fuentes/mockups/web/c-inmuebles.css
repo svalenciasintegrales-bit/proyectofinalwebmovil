@@ -1,0 +1,65 @@
+/* copia de web-angular/src/app/modulos/inmuebles/inmuebles.css (estilos del componente) */
+.mini {
+  width: 64px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.sin-foto {
+  background: var(--cr-gris-claro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a8bcc4;
+}
+
+.venta {
+  background: var(--cr-rojo);
+}
+
+.arriendo {
+  background: var(--cr-negro);
+}
+
+
+/* buscador y filtros */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  background: #fff;
+  border: 1px solid var(--cr-linea);
+  border-radius: 12px;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.filtros .form-select {
+  width: auto;
+}
+
+.buscar {
+  flex: 1 1 240px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0.4rem;
+}
+
+.buscar i {
+  color: var(--cr-rojo);
+}
+
+.buscar .form-control {
+  border: 0;
+  box-shadow: none;
+}
+
+.conteo {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cr-gris);
+  padding: 0 0.4rem;
+}

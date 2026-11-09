@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="500x1000">
+<title>Android - Bienvenida</title>
+<link rel="stylesheet" href="android.css">
+<script src="../../iconos.js"></script>
+<script src="android.js"></script>
+<style>
+  .onb { height: 100%; padding: 24px; display: flex; flex-direction: column; align-items: center; }
+  .onb .logo { height: 110px; }
+  .pagina { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .pagina .body { color: var(--texto); padding: 0 4px; }
+  .indicador { display: flex; justify-content: center; }
+  .indicador span { margin: 5px; height: 10px; width: 12px; border-radius: 5px; background: #CCCCCC; }
+  .indicador span.sel { width: 30px; background: var(--rojo); }
+</style>
+</head>
+<body>
+<div class="dispositivo"><div class="pantalla">
+  <div class="estado"></div>
+  <div class="contenido">
+    <div class="onb">
+      <img class="logo" src="../../../../../android/app/src/main/res/drawable/logo.png" alt="Caracoli Inmobiliaria">
+
+      <div class="pagina">
+        <!-- en la app es la animacion Lottie R.raw.welcome; aqui una ilustracion fija -->
+        <svg width="240" height="240" viewBox="0 0 240 240">
+          <circle cx="120" cy="124" r="100" fill="#FDE8E8"/>
+          <circle cx="120" cy="124" r="78" fill="#FBD3D4" opacity=".55"/>
+          <!-- suelo -->
+          <ellipse cx="120" cy="196" rx="86" ry="9" fill="#E3141B" opacity=".14"/>
+          <!-- arbol -->
+          <rect x="183" y="150" width="6" height="44" rx="3" fill="#8B5E3C"/>
+          <circle cx="186" cy="140" r="20" fill="#3E9A5B"/>
+          <circle cx="176" cy="150" r="13" fill="#4FB26C"/>
+          <!-- casa -->
+          <rect x="62" y="112" width="112" height="84" rx="3" fill="#FFFFFF"/>
+          <rect x="62" y="112" width="112" height="84" rx="3" fill="none" stroke="#111" stroke-opacity=".08" stroke-width="2"/>
+          <path d="M50 118 L118 58 L186 118 Z" fill="#E3141B"/>
+          <path d="M118 58 L186 118 L170 118 L118 72 Z" fill="#8B0000"/>
+          <rect x="146" y="66" width="14" height="30" fill="#4A4A4A"/>
+          <rect x="143" y="62" width="20" height="7" rx="2" fill="#111"/>
+          <!-- puerta -->
+          <rect x="102" y="146" width="32" height="50" rx="3" fill="#8B0000"/>
+          <circle cx="127" cy="172" r="2.6" fill="#FFD27A"/>
+          <!-- ventanas -->
+          <rect x="74" y="128" width="20" height="20" rx="2" fill="#BFE3F5"/>
+          <path d="M84 128 V148 M74 138 H94" stroke="#fff" stroke-width="2"/>
+          <rect x="142" y="128" width="20" height="20" rx="2" fill="#BFE3F5"/>
+          <path d="M152 128 V148 M142 138 H162" stroke="#fff" stroke-width="2"/>
+          <!-- letrero SE VENDE -->
+          <rect x="30" y="150" width="4" height="46" fill="#4A4A4A"/>
+          <rect x="16" y="140" width="40" height="22" rx="3" fill="#E3141B"/>
+          <rect x="21" y="147" width="30" height="3" rx="1.5" fill="#fff"/>
+          <rect x="21" y="153" width="20" height="3" rx="1.5" fill="#fff" opacity=".8"/>
+          <!-- llave -->
+          <g transform="translate(150 30) rotate(35)">
+            <circle cx="0" cy="0" r="13" fill="none" stroke="#111" stroke-width="6"/>
+            <rect x="11" y="-3" width="34" height="6" rx="3" fill="#111"/>
+            <rect x="34" y="2" width="5" height="9" rx="1.5" fill="#111"/>
+            <rect x="26" y="2" width="5" height="7" rx="1.5" fill="#111"/>
+          </g>
+          <!-- brillos -->
+          <path d="M44 66 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3 l8 -3 z" fill="#E3141B"/>
+          <path d="M204 92 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2 z" fill="#8B0000"/>
+        </svg>
+        <div style="height:16px"></div>
+        <h1 class="headline">Bienvenido a Caracoli</h1>
+        <div style="height:12px"></div>
+        <p class="body">Casas, apartamentos, locales y lotes en venta y arriendo en Cartago, Valle del Cauca.</p>
+      </div>
+
+      <div class="indicador"><span class="sel"></span><span></span><span></span></div>
+      <div style="height:20px"></div>
+      <div class="fila" style="justify-content:center"><span class="btn">Siguiente</span></div>
+    </div>
+  </div>
+  <div class="gestos"></div>
+</div></div>
+</body>
+</html>

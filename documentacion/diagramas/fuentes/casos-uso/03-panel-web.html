@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="1800x1260">
+<title>Casos de uso - Panel web</title>
+<link rel="stylesheet" href="../comun.css">
+<script src="../uml.js"></script>
+</head>
+<body>
+<div id="lienzo" class="lienzo" style="width:1800px;height:1260px">
+  <div class="diag-cab">
+    <div class="barra"></div>
+    <img src="../../../../web-angular/public/img/logo.png" alt="">
+    <div>
+      <div class="t">Diagrama de casos de uso · Panel web de la inmobiliaria</div>
+      <div class="s">Angular + Bootstrap · el Asesor atiende inmuebles, solicitudes y clientes; el Administrador además ve los reportes y gestiona los usuarios</div>
+    </div>
+    <div class="der">Sistema InmoConecta<br>Caracoli Inmobiliaria</div>
+  </div>
+</div>
+<script>
+frontera('fWeb', { x: 230, y: 120, w: 1170, h: 1000, titulo: 'Panel web InmoConecta (Angular 21)' });
+actor('Asesor', { x: 50, y: 420, nombre: 'Asesor<small>inmobiliario</small>' });
+actor('Admin', { x: 50, y: 880, nombre: 'Administrador<small>dueño de Caracoli</small>' });
+actor('API', { x: 1560, y: 880, nombre: 'API REST<small>«sistema» Express + MongoDB</small>' });
+
+var ases = [
+  ['w12', 'CU-12', 'Iniciar / cerrar sesión'], ['w13', 'CU-13', 'Consultar tablero'], ['w14', 'CU-14', 'Gestionar inmuebles'],
+  ['w15', 'CU-15', 'Atender solicitudes'], ['w16', 'CU-16', 'Gestionar clientes']
+];
+var P = {};
+ases.forEach(function (c, k) {
+  var th = (-52 + k * 26) * Math.PI / 180;
+  var cx = 165 + 520 * Math.cos(th), cy = 470 + 290 * Math.sin(th);
+  P[c[0]] = [cx, cy];
+  cu(c[0], { x: cx - 145, y: cy - 36, w: 290, h: 72, codigo: c[1], nombre: c[2], tono: c[0] === 'w15' ? 'rojo' : 'normal' });
+  rel('Asesor', c[0], { tipo: 'linea' });
+});
+cu('w17', { x: 470, y: 820, w: 290, h: 72, codigo: 'CU-17', nombre: 'Generar reportes', tono: 'azul' });
+cu('w18', { x: 470, y: 990, w: 290, h: 72, codigo: 'CU-18', nombre: 'Gestionar usuarios', tono: 'azul' });
+rel('Admin', 'w17', { tipo: 'linea' });
+rel('Admin', 'w18', { tipo: 'linea' });
+rel('Admin', 'Asesor', { tipo: 'herencia', desde: 't', hasta: 'b' });
+
+// casos de apoyo
+cu('y1', { x: 1000, y: P.w13[1] - 70, w: 300, h: 72, nombre: 'Ver aviso de pendientes<br><small>(se actualiza cada 10 s)</small>', tono: 'gris' });
+cu('y2', { x: 1000, y: P.w14[1] - 40, w: 300, h: 72, nombre: 'Subir foto del inmueble<br><small>(Multer, máx. 5 MB)</small>', tono: 'gris' });
+cu('y3', { x: 1000, y: P.w14[1] + 50, w: 300, h: 72, nombre: 'Validar código único<br>y precio &gt; 0', tono: 'gris' });
+cu('y4', { x: 1000, y: P.w15[1] + 60, w: 300, h: 72, nombre: 'Validar transición<br>de estado', tono: 'gris' });
+cu('y5', { x: 1000, y: 770, w: 300, h: 72, nombre: 'Descargar Excel (CSV)', tono: 'gris' });
+cu('y6', { x: 1000, y: 870, w: 300, h: 72, nombre: 'Imprimir / guardar PDF', tono: 'gris' });
+cu('y7', { x: 1000, y: 990, w: 300, h: 72, nombre: 'Encriptar contraseña<br><small>(sal + sha256)</small>', tono: 'gris' });
+
+rel('y1', 'w13', { tipo: 'extend' });
+rel('y2', 'w14', { tipo: 'extend' });
+rel('w14', 'y3', { tipo: 'include' });
+rel('w15', 'y4', { tipo: 'include' });
+rel('y5', 'w17', { tipo: 'extend' });
+rel('y6', 'w17', { tipo: 'extend' });
+rel('w18', 'y7', { tipo: 'include' });
+
+rel('API', 'y3', { tipo: 'linea' });
+rel('API', 'y4', { tipo: 'linea' });
+rel('API', 'y7', { tipo: 'linea' });
+
+nota('nGuard', { x: 230, y: 1140, w: 1170, html:
+  '<b>Precondición común</b>: CU-13 a CU-18 exigen sesión iniciada (CU-12). El <i>validaruserGuard</i> revisa <i>sessionStorage</i> y, si no hay sesión, envía a /login. ' +
+  'Reportes y Usuarios solo se muestran al rol <i>administrador</i>; si un asesor entra por la URL ve el aviso "Solo el administrador…".' });
+
+dibujar();
+</script>
+</body>
+</html>

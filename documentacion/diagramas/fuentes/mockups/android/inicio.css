@@ -1,0 +1,10 @@
+/* inicio.css -> piezas propias de HomeScreen.kt (02, 03 y 10) */
+.logo-barra { height: 48px; margin-left: 12px; }
+.contador { font-size: 14px; color: var(--rojo); padding: 0 12px; }
+.contador i { color: var(--rojo); }
+.banner { margin-top: 8px; background: var(--rojo); border-radius: 12px; padding: 18px; color: #fff; }
+.banner .saludo { font-size: 15px; line-height: 20px; }
+.banner .pregunta { font-family: var(--serif); font-weight: bold; font-size: 22px; line-height: 28px; }
+.banner .eslogan { margin-top: 4px; font-style: italic; font-size: 14px; line-height: 20px; }
+.con-icono { padding: 0 24px 0 16px; }
+.cuenta { font-size: 13px; line-height: 18px; padding-top: 8px; letter-spacing: .25px; }
