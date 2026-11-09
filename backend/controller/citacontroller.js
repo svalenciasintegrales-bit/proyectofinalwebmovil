@@ -24,6 +24,25 @@ function hoy() {
     return new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().substring(0, 10);
 }
 
+// minutos que van del dia en Colombia (UTC-5). Ej: 9:30 a.m. -> 570
+function minutosAhora() {
+    var ahora = new Date(Date.now() - 5 * 60 * 60 * 1000);
+    return ahora.getUTCHours() * 60 + ahora.getUTCMinutes();
+}
+
+// convierte la hora de la visita a minutos del dia. Ej: '8:00 a.m.' -> 480, '2:00 p.m.' -> 840
+// devuelve -1 si el texto no tiene el formato 'H:MM a.m.' o 'H:MM p.m.'
+function minutosDeHora(texto) {
+    var partes = String(texto || '').trim().toLowerCase().match(/^(\d{1,2}):(\d{2})\s*(a\.?\s?m\.?|p\.?\s?m\.?)$/);
+    if (!partes) return -1;
+    var horas = parseInt(partes[1], 10);
+    var minutos = parseInt(partes[2], 10);
+    if (horas < 1 || horas > 12 || minutos > 59) return -1;
+    var esTarde = partes[3].charAt(0) == 'p';
+    if (horas == 12) horas = 0; // 12:xx a.m. = 0:xx y 12:xx p.m. = 12:xx
+    return (horas + (esTarde ? 12 : 0)) * 60 + minutos;
+}
+
 // objeto controller: guarda todos los metodos de citas
 var controller = {
 
@@ -65,7 +84,10 @@ var controller = {
             var validate_tipo = tipo == 'visita' || tipo == 'informacion';
             var validate_detalle = false;
             if (tipo == 'visita') {
-                validate_detalle = validator.isDate(String(params.fecha_cita)) && !validator.isEmpty(String(params.hora || ''));
+                // la fecha debe venir exactamente como AAAA-MM-DD (con '/' se colaban fechas pasadas)
+                // y la hora como '8:00 a.m.' o '2:00 p.m.'
+                validate_detalle = validator.isDate(String(params.fecha_cita), { format: 'YYYY-MM-DD', delimiters: ['-'], strictMode: true }) &&
+                    minutosDeHora(params.hora) >= 0;
             } else {
                 validate_detalle = !validator.isEmpty(String(params.observaciones || '').trim());
             }
@@ -84,6 +106,14 @@ var controller = {
                     return res.status(400).send({
                         status: 'error',
                         message: 'La fecha de la visita no puede ser anterior a hoy !!!'
+                    });
+                }
+
+                // REGLA: si la visita es para hoy, la hora no puede haber pasado ya
+                if (tipo == 'visita' && String(params.fecha_cita).substring(0, 10) == hoy() && minutosDeHora(params.hora) <= minutosAhora()) {
+                    return res.status(400).send({
+                        status: 'error',
+                        message: 'Esa hora ya pasó. Elige una hora más tarde u otro día !!!'
                     });
                 }
 

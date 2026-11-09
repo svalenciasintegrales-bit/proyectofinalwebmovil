@@ -16,7 +16,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.caracoli.model.ResultadoEnvio
 import com.example.caracoli.ui.theme.Negro
@@ -61,6 +63,23 @@ fun SolicitudScreen(
     val hoy = java.time.LocalDate.now().toString()
     val fechaValida = formatoValido && fecha >= hoy
 
+    // REGLA (la misma del servidor): si la visita es para hoy, no se puede elegir una hora que ya paso.
+    // ahoraMin se actualiza cada 30 segundos para que las horas se vayan tachando solas.
+    var ahoraMin by remember { mutableIntStateOf(minutosActuales()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(30_000)
+            ahoraMin = minutosActuales()
+        }
+    }
+    val esHoy = fecha == hoy
+    val hoySinHoras = esHoy && !horas.any { minutosDeHora(it) > ahoraMin }
+    val horaPasada = esHoy && hora.isNotBlank() && minutosDeHora(hora) <= ahoraMin
+    // si la hora elegida ya paso (o cambiaron la fecha a hoy), se quita la seleccion
+    LaunchedEffect(horaPasada) {
+        if (horaPasada) hora = ""
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -98,20 +117,29 @@ fun SolicitudScreen(
                     else if (intentoEnviar && !fechaValida) Text("La fecha no puede ser anterior a hoy ($hoy)", color = RojoCaracoli)
                     Spacer(Modifier.height(12.dp))
                     Text("Hora *", color = if (intentoEnviar && hora.isBlank()) RojoCaracoli else MaterialTheme.colorScheme.onBackground)
-                    // LazyRow: las horas en una fila que se desliza; la elegida se pinta de rojo
+                    // LazyRow: las horas en una fila que se desliza; la elegida se pinta de rojo.
+                    // Si la fecha es hoy, las horas que ya pasaron salen tachadas y no se pueden tocar.
                     LazyRow {
                         items(horas) { h ->
                             val activa = h == hora
+                            val pasada = esHoy && minutosDeHora(h) <= ahoraMin
                             Button(
                                 onClick = { hora = h },
+                                enabled = !pasada,
                                 modifier = Modifier.padding(end = 8.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = if (activa) RojoCaracoli else Color(0xFFE6E6E6),
-                                    contentColor = if (activa) Color.White else Negro
+                                    contentColor = if (activa) Color.White else Negro,
+                                    disabledContainerColor = Color(0xFFF2F2F2),
+                                    disabledContentColor = Color(0xFFA6A6A6)
                                 )
-                            ) { Text(h) }
+                            ) {
+                                Text(h, textDecoration = if (pasada) TextDecoration.LineThrough else TextDecoration.None)
+                            }
                         }
                     }
+                    if (hoySinHoras) Text("Hoy ya no quedan horas disponibles. Elige otra fecha.", color = RojoCaracoli)
+                    else if (esHoy) Text("Las horas tachadas ya pasaron.", style = MaterialTheme.typography.bodySmall)
                     Spacer(Modifier.height(12.dp))
                 }
 
@@ -129,7 +157,7 @@ fun SolicitudScreen(
                     onClick = {
                         intentoEnviar = true
                         val completo = nombre.isNotBlank() && telefono.isNotBlank() &&
-                                (if (esVisita) fechaValida && hora.isNotBlank() else mensaje.isNotBlank())
+                                (if (esVisita) fechaValida && hora.isNotBlank() && !horaPasada else mensaje.isNotBlank())
                         if (completo) solicitudVM.enviar(id, tipo, nombre, telefono, mensaje, fecha, hora)
                     },
                     enabled = !enviando,
@@ -168,4 +196,22 @@ fun SolicitudScreen(
             }
         )
     }
+}
+
+// minutos que van del dia en el celular. Ej: 9:30 a.m. -> 570
+fun minutosActuales(): Int {
+    val ahora = java.time.LocalTime.now()
+    return ahora.hour * 60 + ahora.minute
+}
+
+// convierte una hora de la lista a minutos del dia. Ej: "8:00 a.m." -> 480, "2:00 p.m." -> 840
+fun minutosDeHora(texto: String): Int {
+    val partes = texto.trim().split(" ")
+    val hm = partes[0].split(":")
+    var horas = hm[0].toIntOrNull() ?: return -1
+    val minutos = if (hm.size > 1) hm[1].toIntOrNull() ?: 0 else 0
+    val esTarde = partes.size > 1 && partes[1].startsWith("p")
+    if (horas == 12) horas = 0
+    if (esTarde) horas += 12
+    return horas * 60 + minutos
 }
