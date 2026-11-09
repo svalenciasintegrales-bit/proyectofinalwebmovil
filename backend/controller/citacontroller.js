@@ -33,14 +33,17 @@ function minutosAhora() {
 // convierte la hora de la visita a minutos del dia. Ej: '8:00 a.m.' -> 480, '2:00 p.m.' -> 840
 // devuelve -1 si el texto no tiene el formato 'H:MM a.m.' o 'H:MM p.m.'
 function minutosDeHora(texto) {
-    var partes = String(texto || '').trim().toLowerCase().match(/^(\d{1,2}):(\d{2})\s*(a\.?\s?m\.?|p\.?\s?m\.?)$/);
-    if (!partes) return -1;
-    var horas = parseInt(partes[1], 10);
-    var minutos = parseInt(partes[2], 10);
-    if (horas < 1 || horas > 12 || minutos > 59) return -1;
-    var esTarde = partes[3].charAt(0) == 'p';
+    var t = String(texto || '').trim().toLowerCase(); // ej: '8:00 a.m.'
+    var dosPuntos = t.indexOf(':');
+    if (dosPuntos < 1) return -1;
+    var horas = parseInt(t.substring(0, dosPuntos), 10); // lo que va antes de ':'
+    var minutos = parseInt(t.substring(dosPuntos + 1, dosPuntos + 3), 10); // los 2 numeros despues de ':'
+    if (isNaN(horas) || isNaN(minutos) || horas < 1 || horas > 12 || minutos > 59) return -1;
+    var jornada = t.substring(dosPuntos + 3).trim(); // 'a.m.' o 'p.m.'
+    if (jornada.charAt(0) != 'a' && jornada.charAt(0) != 'p') return -1;
     if (horas == 12) horas = 0; // 12:xx a.m. = 0:xx y 12:xx p.m. = 12:xx
-    return (horas + (esTarde ? 12 : 0)) * 60 + minutos;
+    if (jornada.charAt(0) == 'p') horas = horas + 12;
+    return horas * 60 + minutos;
 }
 
 // objeto controller: guarda todos los metodos de citas
