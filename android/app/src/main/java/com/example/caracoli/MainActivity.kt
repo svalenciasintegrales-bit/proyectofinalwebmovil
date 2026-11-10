@@ -2,6 +2,7 @@
 // y arma el tema y la navegacion (igual que en MiRuta).
 package com.example.caracoli
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,8 +29,27 @@ import com.example.caracoli.viewmodel.SolicitudViewModel
 import kotlinx.coroutines.flow.first
 
 class MainActivity : ComponentActivity() {
+    // codigo del inmueble que llego por el enlace del QR (caracoli://inmueble/CAR-102), o null
+    private val codigoQr = mutableStateOf<String?>(null)
+
+    // saca el codigo del enlace: caracoli://inmueble/CAR-102 -> "CAR-102"
+    private fun leerCodigoQr(intent: Intent?): String? {
+        val enlace = intent?.data ?: return null
+        if (enlace.scheme != "caracoli" || enlace.host != "inmueble") return null
+        val codigo = enlace.lastPathSegment ?: return null
+        return codigo.trim().uppercase()
+    }
+
+    // si la app ya estaba abierta y se escanea otro QR, el enlace llega aqui (launchMode singleTask)
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        codigoQr.value = leerCodigoQr(intent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        codigoQr.value = leerCodigoQr(intent)
         // Se crean UNA vez: las preferencias (DataStore), la base de datos local (Room) y los dos Repository.
         val manager = PreferencesManager(applicationContext)
         val db = CaracoliDatabase.obtener(applicationContext)
@@ -53,13 +73,20 @@ class MainActivity : ComponentActivity() {
             // Pantalla inicial segun DataStore, y se envian las solicitudes que quedaron sin conexion.
             var initial by remember { mutableStateOf<String?>(null) }
             LaunchedEffect(Unit) {
-                initial = if (manager.onboardingCompletado.first()) Routes.HOME else Routes.ONBOARDING
+                // si la app se abrio desde un QR se va directo al inicio (la bienvenida sale la proxima vez)
+                initial = if (manager.onboardingCompletado.first() || codigoQr.value != null) Routes.HOME else Routes.ONBOARDING
                 solicitudVM.sincronizar()
             }
 
             CaracoliTheme(oscuro = oscuro) {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    initial?.let { AppNavigation(rememberNavController(), it, inmuebleVM, solicitudVM, prefsVM) }
+                    initial?.let {
+                        AppNavigation(
+                            rememberNavController(), it, inmuebleVM, solicitudVM, prefsVM,
+                            codigoQr = codigoQr.value,
+                            onQrAtendido = { codigoQr.value = null }
+                        )
+                    }
                 }
             }
         }

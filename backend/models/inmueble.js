@@ -21,7 +21,9 @@ var InmuebleSchema = Schema({
     habitaciones: Number, // numero de habitaciones
     banos: Number, // numero de baños
     descripcion: String, // descripcion larga del inmueble
-    imagen: String, // nombre del archivo de la foto (se sube con upload-image)
+    imagen: String, // PORTADA: nombre del archivo de la foto principal (la que sale en la tarjeta y en el aviso)
+    imagenes: [String], // todas las fotos del inmueble (carrusel), en el orden en que se subieron
+    video: String, // enlace de YouTube (ej: https://www.youtube.com/watch?v=XXXXXXXXXXX) o vacio
     estado: { type: String, default: 'disponible' }, // disponible, arrendado o vendido
     fecha: { type: Date, default: Date.now } // fecha en que se publico
 

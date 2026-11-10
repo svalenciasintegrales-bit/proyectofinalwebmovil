@@ -45,15 +45,27 @@ export class Inmueble {
     return this.http.delete(`${this.url}/inmueble/${id}`);
   }
 
-  // sube la foto: se envia como formulario con la key file0 (igual que en postman)
-  subirFoto(id: string, archivo: File) {
+  // sube una o varias fotos al carrusel: se envian como formulario con la key file0 (igual que en postman)
+  subirFotos(id: string, archivos: File[]) {
     const datos = new FormData();
-    datos.append('file0', archivo);
+    for (const archivo of archivos) {
+      datos.append('file0', archivo);
+    }
     return this.http.post(`${this.url}/upload-image/${id}`, datos);
+  }
+
+  // quita una foto del carrusel (si era la portada, la siguiente queda de portada)
+  borrarFoto(id: string, imagen: string) {
+    return this.http.delete(`${this.url}/inmueble/${id}/imagen/${imagen}`);
   }
 
   // direccion de la foto para ponerla en <img src="...">
   urlFoto(imagen: string) {
     return `${this.url}/get-image/${imagen}`;
+  }
+
+  // IP del computador en la red (la usa el aviso para armar la direccion del codigo QR)
+  red() {
+    return this.http.get(`${this.url}/red`);
   }
 }

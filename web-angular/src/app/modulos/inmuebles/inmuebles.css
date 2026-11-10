@@ -62,3 +62,135 @@
   color: var(--cr-gris);
   padding: 0 0.4rem;
 }
+
+/* miniatura de la tabla: cuantas fotos tiene y si tiene video */
+.mini-caja {
+  position: relative;
+  width: 64px;
+}
+
+.mini-cuenta,
+.mini-video {
+  position: absolute;
+  bottom: 2px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(17, 17, 17, 0.75);
+  border-radius: 6px;
+  padding: 0 4px;
+}
+
+.mini-cuenta {
+  left: 2px;
+}
+
+.mini-video {
+  right: 2px;
+  background: var(--cr-rojo);
+}
+
+/* galeria de fotos dentro del formulario */
+.galeria {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.foto-item {
+  position: relative;
+  width: 132px;
+  height: 96px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid var(--cr-linea);
+}
+
+.foto-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.foto-item.es-portada {
+  border: 3px solid var(--cr-rojo);
+}
+
+.foto-item.nueva {
+  border-style: dashed;
+}
+
+.etq-portada,
+.etq-nueva {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--cr-rojo);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.etq-nueva {
+  background: var(--cr-negro);
+}
+
+.btn-foto {
+  position: absolute;
+  top: 5px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.btn-foto.portada {
+  left: 5px;
+  color: #d97706;
+}
+
+.btn-foto.quitar {
+  right: 5px;
+  color: var(--cr-rojo);
+}
+
+.foto-agregar {
+  width: 132px;
+  height: 96px;
+  border: 2px dashed #c9c9c9;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--cr-gris);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin: 0;
+}
+
+.foto-agregar i {
+  font-size: 1.4rem;
+  color: var(--cr-rojo);
+}
+
+.foto-agregar:hover {
+  border-color: var(--cr-rojo);
+  background: #fff6f6;
+}
+
+.video-previa {
+  max-width: 480px;
+  border-radius: 10px;
+  overflow: hidden;
+}

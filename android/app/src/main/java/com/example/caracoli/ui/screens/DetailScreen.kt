@@ -25,8 +25,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.caracoli.model.formatoPrecio
-import com.example.caracoli.ui.components.EtiquetaOperacion
-import com.example.caracoli.ui.components.FotoInmueble
+import com.example.caracoli.ui.components.CarruselFotos
+import com.example.caracoli.ui.components.VideoYoutube
+import com.example.caracoli.ui.components.fotosDelCarrusel
+import com.example.caracoli.ui.components.idVideoYoutube
 import com.example.caracoli.ui.theme.RojoCaracoli
 import com.example.caracoli.viewmodel.InmuebleViewModel
 import com.example.caracoli.viewmodel.PreferencesViewModel
@@ -67,10 +69,8 @@ fun DetailScreen(id: String, vm: InmuebleViewModel, prefs: PreferencesViewModel,
 
         LazyColumn(Modifier.fillMaxSize().padding(padding)) {
             item {
-                Box {
-                    FotoInmueble(inmueble.imagen, servidor, Modifier.fillMaxWidth().height(280.dp))
-                    EtiquetaOperacion(inmueble.operacion, Modifier.align(Alignment.BottomStart).padding(bottom = 14.dp))
-                }
+                // CARRUSEL: la portada primero y luego las demas fotos (se deslizan con el dedo)
+                CarruselFotos(fotosDelCarrusel(inmueble), servidor, inmueble.operacion, Modifier.fillMaxWidth().height(280.dp))
             }
             item {
                 Column(Modifier.padding(16.dp)) {
@@ -97,6 +97,14 @@ fun DetailScreen(id: String, vm: InmuebleViewModel, prefs: PreferencesViewModel,
                     Text("Descripción", style = MaterialTheme.typography.titleLarge)
                     Text(inmueble.descripcion)
                     Spacer(Modifier.height(18.dp))
+
+                    // VIDEO de YouTube (si el administrador lo puso en el panel): se reproduce aqui mismo
+                    if (idVideoYoutube(inmueble.video).isNotBlank()) {
+                        Text("Video del inmueble", style = MaterialTheme.typography.titleLarge)
+                        Spacer(Modifier.height(8.dp))
+                        VideoYoutube(inmueble.video, Modifier.fillMaxWidth().aspectRatio(16f / 9f))
+                        Spacer(Modifier.height(18.dp))
+                    }
 
                     // Las dos solicitudes que llegan al administrador
                     Button(onClick = { onSolicitud("visita") }, modifier = Modifier.fillMaxWidth().height(52.dp)) {

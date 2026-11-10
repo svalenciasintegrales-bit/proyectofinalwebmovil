@@ -35,10 +35,11 @@ var upload = multer({
 
 // middleware: sube la foto y, si multer da error (formato o tamaño), responde con un mensaje claro
 var md_upload = (req, res, next) => {
-    upload.single('file0')(req, res, (err) => {
+    upload.array('file0', 10)(req, res, (err) => { // hasta 10 fotos por envio (key file0)
         if (!err) return next();
         var message = 'No se pudo subir la imagen !!!';
         if (err.message == 'FORMATO') message = 'La imagen debe ser ' + EXTENSIONES.join(', ') + ' !!!';
+        if (err.code == 'LIMIT_UNEXPECTED_FILE') message = 'Se pueden subir maximo 10 fotos a la vez !!!';
         if (err.code == 'LIMIT_FILE_SIZE') message = 'La imagen pesa mas de ' + (Number(process.env.MAX_FOTO_MB) || 5) + ' MB !!!';
         return res.status(400).send({ status: 'error', message: message });
     });
@@ -61,8 +62,11 @@ router.delete('/inmueble/:id', inmuebleController.delete); // DELETE /api/inmueb
 
 // rutas extra
 router.get('/inmueble-codigo/:codigo', inmuebleController.getInmuebleCodigo); // GET /api/inmueble-codigo/CAR-102 -> la app busca por el codigo del letrero
-router.post('/upload-image/:id', md_upload, inmuebleController.upload); // POST /api/upload-image/:id -> sube la foto (key file0)
+router.post('/upload-image/:id', md_upload, inmuebleController.upload); // POST /api/upload-image/:id -> sube una o varias fotos (key file0, max 10)
+router.delete('/inmueble/:id/imagen/:image', inmuebleController.borrarImagen); // DELETE /api/inmueble/:id/imagen/:image -> quita una foto del carrusel
 router.get('/get-image/:image', inmuebleController.getImage); // GET  /api/get-image/:image -> devuelve la foto
+router.get('/qr/:codigo', inmuebleController.paginaQr); // GET  /api/qr/CAR-102 -> pagina del codigo QR del aviso (abre la app)
+router.get('/red', inmuebleController.red); // GET  /api/red -> IP del computador en la red (para armar el QR)
 router.get('/search/:search', inmuebleController.search); // GET  /api/search/:search -> busca por titulo, barrio o tipo
 
 // exportar las rutas para usarlas en app.js

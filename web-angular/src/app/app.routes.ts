@@ -3,6 +3,7 @@ import { Main } from './estructura/main';
 import { Login } from './modulos/login/login';
 import { Tablero } from './modulos/tablero/tablero';
 import { Inmuebles } from './modulos/inmuebles/inmuebles';
+import { Aviso } from './modulos/aviso/aviso';
 import { Solicitudes } from './modulos/solicitudes/solicitudes';
 import { Clientes } from './modulos/clientes/clientes';
 import { Usuarios } from './modulos/usuarios/usuarios';
@@ -20,6 +21,7 @@ export const routes: Routes = [
             [
                 { path: 'tablero', component: Tablero, canActivate: [validaruserGuard] },
                 { path: 'inmuebles', component: Inmuebles, canActivate: [validaruserGuard] },
+                { path: 'aviso/:id', component: Aviso, canActivate: [validaruserGuard] },
                 { path: 'solicitudes', component: Solicitudes, canActivate: [validaruserGuard] },
                 { path: 'clientes', component: Clientes, canActivate: [validaruserGuard] },
                 { path: 'reportes', component: Reportes, canActivate: [validaruserGuard] },

@@ -1,6 +1,9 @@
 package com.example.caracoli.navigation
 
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,11 +16,42 @@ import com.example.caracoli.viewmodel.SolicitudViewModel
 
 // nav: cambia de pantalla (navigate = ir, popBackStack = volver).
 // initial: ONBOARDING la primera vez, HOME las siguientes (lo decide MainActivity con DataStore).
+// codigoQr: codigo del inmueble que llego por el QR del aviso (null si la app se abrio normal).
 @Composable
 fun AppNavigation(
     nav: NavHostController, initial: String,
-    inmuebleVM: InmuebleViewModel, solicitudVM: SolicitudViewModel, prefsVM: PreferencesViewModel
+    inmuebleVM: InmuebleViewModel, solicitudVM: SolicitudViewModel, prefsVM: PreferencesViewModel,
+    codigoQr: String? = null, onQrAtendido: () -> Unit = {}
 ) {
+    // codigo del QR que no se encontro en el catalogo (para mostrar el aviso)
+    var qrNoEncontrado by remember { mutableStateOf("") }
+
+    // CODIGO QR: se trae el catalogo actualizado y se abre el detalle del inmueble escaneado
+    LaunchedEffect(codigoQr) {
+        if (codigoQr != null) {
+            inmuebleVM.cargar().join() // join: espera a que termine de cargar (API o, sin internet, Room)
+            val inmueble = inmuebleVM.buscarPorCodigo(codigoQr)
+            if (inmueble != null) {
+                nav.navigate(Routes.detalle(inmueble.id)) { popUpTo(Routes.HOME) }
+            } else {
+                qrNoEncontrado = codigoQr
+            }
+            onQrAtendido()
+        }
+    }
+
+    if (qrNoEncontrado.isNotBlank()) {
+        AlertDialog(
+            onDismissRequest = { qrNoEncontrado = "" },
+            title = { Text("Inmueble no encontrado") },
+            text = {
+                Text("El inmueble $qrNoEncontrado no está en el catálogo. Puede que ya se haya vendido o arrendado, " +
+                        "o que la app no esté conectada al servidor de la inmobiliaria (revisa Ajustes).")
+            },
+            confirmButton = { TextButton(onClick = { qrNoEncontrado = "" }) { Text("Aceptar") } }
+        )
+    }
+
     NavHost(navController = nav, startDestination = initial) {
 
         // 1. BIENVENIDA: al terminar se guarda en DataStore y se borra del backstack (popUpTo inclusive).

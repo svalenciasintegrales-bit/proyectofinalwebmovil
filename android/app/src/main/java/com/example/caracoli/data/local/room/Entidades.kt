@@ -4,6 +4,7 @@
 // y los BORRADORES de solicitudes que todavia no han llegado al servidor.
 package com.example.caracoli.data.local.room
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.caracoli.model.Inmueble
@@ -25,7 +26,10 @@ data class InmuebleEntity(
     val banos: Int,
     val descripcion: String,
     val imagen: String,
-    val estado: String
+    val estado: String,
+    // version 2 de la base: fotos del carrusel (nombres separados por |) y enlace del video
+    @ColumnInfo(defaultValue = "") val imagenes: String = "",
+    @ColumnInfo(defaultValue = "") val video: String = ""
 )
 
 // Tabla "solicitudes": copia de las solicitudes del cliente que ya estan en MongoDB
@@ -63,12 +67,17 @@ data class BorradorEntity(
 
 // ---------- CONVERTIR entre las tablas y los modelos que usan las pantallas ----------
 
+// las fotos del carrusel se guardan en una sola columna de texto: "foto1.jpg|foto2.jpg"
 fun inmuebleDesdeTabla(e: InmuebleEntity): Inmueble = Inmueble(
-    e.id, e.codigo, e.titulo, e.tipo, e.operacion, e.precio, e.barrio, e.ciudad, e.area, e.habitaciones, e.banos, e.descripcion, e.imagen, e.estado
+    e.id, e.codigo, e.titulo, e.tipo, e.operacion, e.precio, e.barrio, e.ciudad, e.area, e.habitaciones, e.banos, e.descripcion, e.imagen, e.estado,
+    imagenes = if (e.imagenes.isBlank()) emptyList() else e.imagenes.split("|"),
+    video = e.video
 )
 
 fun inmuebleParaTabla(i: Inmueble): InmuebleEntity = InmuebleEntity(
-    i.id, i.codigo, i.titulo, i.tipo, i.operacion, i.precio, i.barrio, i.ciudad, i.area, i.habitaciones, i.banos, i.descripcion, i.imagen, i.estado
+    i.id, i.codigo, i.titulo, i.tipo, i.operacion, i.precio, i.barrio, i.ciudad, i.area, i.habitaciones, i.banos, i.descripcion, i.imagen, i.estado,
+    imagenes = i.imagenes.joinToString("|"),
+    video = i.video
 )
 
 fun solicitudDesdeTabla(e: SolicitudEntity): Solicitud = Solicitud(

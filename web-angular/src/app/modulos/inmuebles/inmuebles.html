@@ -54,8 +54,13 @@
         <tbody>
           <tr *ngFor="let inm of visibles()">
             <td class="ps-3">
-              <img *ngIf="inm.imagen" [src]="sinmueble.urlFoto(inm.imagen)" class="mini" [alt]="inm.titulo">
-              <div *ngIf="!inm.imagen" class="mini sin-foto"><i class="bi bi-image"></i></div>
+              <!-- la portada y, encima, cuantas fotos tiene el carrusel -->
+              <div class="mini-caja">
+                <img *ngIf="inm.imagen" [src]="sinmueble.urlFoto(inm.imagen)" class="mini" [alt]="inm.titulo">
+                <div *ngIf="!inm.imagen" class="mini sin-foto"><i class="bi bi-image"></i></div>
+                <span *ngIf="inm.imagenes?.length > 1" class="mini-cuenta"><i class="bi bi-images"></i> {{ inm.imagenes.length }}</span>
+                <span *ngIf="inm.video" class="mini-video" title="Tiene video"><i class="bi bi-youtube"></i></span>
+              </div>
             </td>
             <td class="fw-bold text-nowrap">{{ inm.codigo }}</td>
             <td>
@@ -68,11 +73,10 @@
               <span class="badge" [ngClass]="inm.estado === 'disponible' ? 'bg-success' : 'bg-secondary'">{{ inm.estado }}</span>
             </td>
             <td class="text-end pe-3 text-nowrap">
-              <!-- subir foto: el boton abre el input file escondido -->
-              <label class="btn btn-sm btn-light me-1" title="Subir foto">
-                <i class="bi bi-camera"></i>
-                <input type="file" accept=".png,.jpg,.jpeg,.gif,.webp" hidden (change)="subirFoto($event, inm)">
-              </label>
+              <!-- aviso para imprimir con codigo QR -->
+              <a class="btn btn-sm btn-light me-1" title="Aviso con QR" [routerLink]="['/panel/aviso', inm._id]">
+                <i class="bi bi-qr-code"></i>
+              </a>
               <button class="btn btn-sm btn-light me-1" title="Editar" data-bs-toggle="modal" data-bs-target="#inmuebleModal" (click)="editar(inm)">
                 <i class="bi bi-pencil-square"></i>
               </button>
@@ -166,6 +170,57 @@
             <label class="form-label small fw-bold">Descripción</label>
             <textarea class="form-control" name="descripcion" rows="3" [(ngModel)]="objInmueble.descripcion"></textarea>
           </div>
+          <!-- FOTOS: carrusel de la app. La estrella elige la portada (la que sale en la tarjeta y en el aviso) -->
+          <div class="col-12">
+            <label class="form-label small fw-bold mb-1">Fotos</label>
+            <div class="form-text mt-0 mb-2">Toca <i class="bi bi-star-fill text-warning"></i> para elegir la portada. Las demás salen en el carrusel de la app.</div>
+            <div class="galeria">
+              <div class="foto-item" *ngFor="let f of fotosActuales" [class.es-portada]="esPortadaActual(f)">
+                <img [src]="sinmueble.urlFoto(f)" alt="">
+                <span class="etq-portada" *ngIf="esPortadaActual(f)">Portada</span>
+                <button type="button" class="btn-foto portada" title="Usar como portada" (click)="elegirPortadaActual(f)">
+                  <i class="bi" [ngClass]="esPortadaActual(f) ? 'bi-star-fill' : 'bi-star'"></i>
+                </button>
+                <button type="button" class="btn-foto quitar" title="Eliminar foto" (click)="quitarActual(f)">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </div>
+              <div class="foto-item nueva" *ngFor="let n of nuevasFotos; let i = index" [class.es-portada]="esPortadaNueva(i)">
+                <img [src]="n.url" alt="">
+                <span class="etq-portada" *ngIf="esPortadaNueva(i)">Portada</span>
+                <span class="etq-nueva" *ngIf="!esPortadaNueva(i)">Nueva</span>
+                <button type="button" class="btn-foto portada" title="Usar como portada" (click)="elegirPortadaNueva(i)">
+                  <i class="bi" [ngClass]="esPortadaNueva(i) ? 'bi-star-fill' : 'bi-star'"></i>
+                </button>
+                <button type="button" class="btn-foto quitar" title="Quitar" (click)="quitarNueva(i)">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+              <label class="foto-agregar">
+                <i class="bi bi-plus-lg"></i>
+                <span>Agregar fotos</span>
+                <input type="file" multiple accept=".png,.jpg,.jpeg,.gif,.webp" hidden (change)="agregarFotos($event)">
+              </label>
+            </div>
+            <div class="form-text">png, jpg, jpeg, gif o webp · máximo 5 MB cada una · las fotos nuevas se suben al guardar.</div>
+            <div *ngIf="errorFotos" class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ errorFotos }}</div>
+          </div>
+
+          <!-- VIDEO de YouTube (opcional): en la app se reproduce dentro del detalle del inmueble -->
+          <div class="col-12">
+            <label class="form-label small fw-bold">Video de YouTube <span class="text-muted fw-normal">(opcional)</span></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-youtube text-danger"></i></span>
+              <input type="text" class="form-control" name="video" [(ngModel)]="objInmueble.video" (ngModelChange)="actualizarVideo()"
+                placeholder="https://www.youtube.com/watch?v=..." [ngClass]="{'is-invalid': validarFormulario && errorCampo('video')}">
+              <div class="invalid-feedback">{{ errorCampo('video') }}</div>
+            </div>
+            <div class="ratio ratio-16x9 mt-2 video-previa" *ngIf="videoSeguro">
+              <iframe [src]="videoSeguro" title="Video del inmueble" allowfullscreen
+                allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+          </div>
+
           <div class="col-md-4" *ngIf="editingId">
             <label class="form-label small fw-bold">Estado</label>
             <select class="form-select" name="estado" [(ngModel)]="objInmueble.estado">

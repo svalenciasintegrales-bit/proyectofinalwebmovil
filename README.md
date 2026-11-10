@@ -136,7 +136,12 @@ pendiente ──► confirmada ──► realizada
   | 500 | Error del servidor |
 
 - **Formato de las respuestas:** `{ status: 'success' | 'error', message, ... }`.
-- **Fotos con Multer:** `POST /api/upload-image/:id`, con la key `file0`. Acepta png, jpg, jpeg, gif y webp, de máximo 5 MB.
+- **Fotos con Multer:** `POST /api/upload-image/:id`, con la key `file0` (una o varias fotos, máximo 10 por envío). Acepta png, jpg, jpeg, gif y webp, de máximo 5 MB cada una.
+  - Las fotos se **agregan** al carrusel (`imagenes`). Si el inmueble no tenía portada, la primera queda de portada (`imagen`).
+  - La portada se cambia con `PUT /api/inmueble/:id` enviando `imagen` (debe ser una de sus fotos).
+  - `DELETE /api/inmueble/:id/imagen/:image` quita una foto; si era la portada, la siguiente queda de portada.
+- **Video de YouTube (opcional):** campo `video` en guardar y actualizar. Se acepta youtube.com/watch, youtu.be y shorts, y se guarda como `https://www.youtube.com/watch?v=ID`. En la app se reproduce dentro del detalle (WebView con el reproductor de YouTube).
+- **Actualizar:** `PUT /api/inmueble/:id` solo cambia los campos del inmueble (código, título, tipo, operación, precio, barrio, ciudad, área, habitaciones, baños, descripción, estado, video y portada); los demás campos que lleguen se ignoran.
 - **Postman:** `backend/postman/InmoConecta.postman_collection.json` tiene 59 peticiones con pruebas. Se ejecutan en orden.
   - Con newman pasan 109 de 112 verificaciones.
   - Las 3 restantes son las de la foto, que necesitan elegir el archivo a mano.
@@ -164,9 +169,19 @@ Todo lo demás sigue lo visto en clase: el proyecto de Node y la biblioteca, el 
 | `FormData` | `web-angular/src/app/servicios/inmueble.ts` | Subir y mostrar la imagen |
 | Room | `android/.../data/local/room` | Persistencia local con Room |
 | `HttpURLConnection` y `org.json` | `android/.../data/remote` | Que la app consuma la API compartida |
+| Librería `qrcode` | `web-angular/src/app/modulos/aviso` | Aviso con código QR (adicional, propuesto al cliente) |
+| Enlace `caracoli://` (intent-filter) | `AndroidManifest.xml` y `MainActivity.kt` | Que el QR abra el inmueble en la app |
+| `WebView` con el reproductor de YouTube | `android/.../ui/components/Galeria.kt` | Video del inmueble dentro de la app |
+| Migración de Room (versión 2) | `CaracoliDatabase.kt` | Agregar fotos y video sin borrar lo guardado en el celular |
 
-## 10. Mejora futura (adicional)
-- **Letrero con código QR:** el cliente escanearía el letrero y la app abriría el inmueble directamente.
-  - Se propuso al inicio, en `documentacion/ADICIONAL - Propuesta comercial inicial (con QR).pdf`.
-  - No se implementó porque la lectura de QR con la cámara no se vio en clase.
-  - Hoy se cubre con la búsqueda por el **código del letrero** (ej. CAR-102), que hace lo mismo escribiendo el código.
+## 10. Adicional: aviso con código QR
+Se propuso al inicio, en `documentacion/ADICIONAL - Propuesta comercial inicial (con QR).pdf`.
+
+- **Panel:** en **Inmuebles**, el botón del QR abre el aviso del inmueble: logo, SE VENDE / SE ARRIENDA, foto, datos básicos, teléfonos y el código QR. Con **Imprimir / Guardar PDF** se imprime o se guarda como PDF desde el navegador.
+- **Qué lleva el QR:** `http://IP-del-computador:3900/api/qr/CAR-102`. La IP la toma el panel de la API (`GET /api/red`) y se puede corregir antes de imprimir.
+- **Al escanearlo:** la cámara del celular abre esa página de la API y, en Android, la página abre sola la app con el enlace `caracoli://inmueble/CAR-102`. La app carga el catálogo y muestra el detalle del inmueble. Si la app no está instalada, la página muestra los datos básicos y los teléfonos.
+- **Limitaciones:**
+  - El celular debe estar en la misma red WiFi que el computador de la API.
+  - Si la IP del computador cambia, hay que volver a imprimir el aviso.
+  - Si el inmueble ya está vendido o arrendado, la app avisa que no está en el catálogo.
+- La búsqueda por el **código del letrero** (ej. CAR-102) sigue funcionando para quien no quiera escanear.

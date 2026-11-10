@@ -23,6 +23,7 @@ export class Header implements OnInit {
   paginas: any = {
     tablero: { titulo: 'Tablero', descripcion: 'Resumen del negocio en tiempo real' },
     inmuebles: { titulo: 'Inmuebles', descripcion: 'Portafolio publicado en la app de clientes' },
+    aviso: { titulo: 'Aviso con QR', descripcion: 'Letrero para imprimir: al escanearlo se abre el inmueble en la app' },
     solicitudes: { titulo: 'Solicitudes', descripcion: 'Visitas y preguntas enviadas desde la app' },
     clientes: { titulo: 'Clientes', descripcion: 'Personas interesadas en los inmuebles' },
     reportes: { titulo: 'Reportes', descripcion: 'Información para la toma de decisiones' },
@@ -47,7 +48,8 @@ export class Header implements OnInit {
   }
 
   actualizarTitulo(url: string) {
-    const nombre = url.split('/').pop() || 'tablero';
+    // la pagina del aviso lleva el id al final (/panel/aviso/ID), por eso se revisa aparte
+    const nombre = url.indexOf('/aviso/') >= 0 ? 'aviso' : (url.split('/').pop() || 'tablero');
     const pagina = this.paginas[nombre] || this.paginas['tablero'];
     this.titulo = pagina.titulo;
     this.descripcion = pagina.descripcion;

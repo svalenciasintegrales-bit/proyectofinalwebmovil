@@ -67,8 +67,21 @@ object ApiClient {
         banos = j.optInt("banos", 0),
         descripcion = texto(j, "descripcion"),
         imagen = texto(j, "imagen"),
-        estado = texto(j, "estado").ifBlank { "disponible" }
+        estado = texto(j, "estado").ifBlank { "disponible" },
+        imagenes = listaDeTexto(j, "imagenes"),
+        video = texto(j, "video")
     )
+
+    // lee una lista de textos del JSON (ej: "imagenes": ["a.jpg", "b.jpg"]); si no viene, lista vacia
+    private fun listaDeTexto(j: JSONObject, campo: String): List<String> {
+        val lista = mutableListOf<String>()
+        val arreglo = j.optJSONArray(campo) ?: return lista
+        for (i in 0 until arreglo.length()) {
+            val valor = arreglo.optString(i, "")
+            if (valor.isNotBlank()) lista.add(valor)
+        }
+        return lista
+    }
 
     // Convierte una solicitud de la API (coleccion Citas) en un objeto Solicitud
     fun solicitudDesdeJson(j: JSONObject, porEnviar: Boolean): Solicitud = Solicitud(

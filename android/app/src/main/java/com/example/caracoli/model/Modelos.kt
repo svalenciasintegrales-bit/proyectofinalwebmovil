@@ -16,8 +16,10 @@ data class Inmueble(
     val habitaciones: Int,
     val banos: Int,
     val descripcion: String,
-    val imagen: String,
-    val estado: String
+    val imagen: String, // portada (la foto de la tarjeta)
+    val estado: String,
+    val imagenes: List<String> = emptyList(), // todas las fotos del carrusel
+    val video: String = "" // enlace de YouTube, o vacio
 )
 
 // Una solicitud del cliente: pedir informacion o agendar visita.
