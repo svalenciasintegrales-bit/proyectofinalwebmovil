@@ -27,10 +27,10 @@
   <p>El sistema InmoConecta tiene tres partes que comparten una sola base de datos: la <b>app Android</b> del cliente, el <b>panel web en Angular</b> de la inmobiliaria y la <b>API REST</b> en Node.js + Express, que es la única que se conecta a <b>MongoDB</b>. Los diagramas se sacaron del código fuente del repositorio (nombres de clases, atributos y métodos tal como están escritos).</p>
   <table>
     <tr><th style="width:18mm">Figura</th><th style="width:75mm">Diagrama</th><th>Qué muestra</th><th style="width:95mm">Fuente en el repositorio</th></tr>
-    <tr><td>1</td><td><b>Modelo de dominio</b></td><td>Las 4 colecciones de MongoDB (Inmueble, Cita, Cliente, Usuario), sus atributos, las enumeraciones de valores permitidos, las relaciones por ObjectId y las reglas de negocio que valida el servidor.</td><td><code>backend/models/*.js</code>, <code>backend/controller/*.js</code></td></tr>
-    <tr><td>2</td><td><b>API REST (backend)</b></td><td>Capas del servidor: index/app, middlewares (validarid, Multer), routers, controladores con cada ruta HTTP y los modelos que usa cada uno.</td><td><code>backend/index.js</code>, <code>app.js</code>, <code>routers/</code>, <code>controller/</code></td></tr>
-    <tr><td>3</td><td><b>App Android (MVVM)</b></td><td>MainActivity, navegación, pantallas, ViewModels con StateFlow, repositorios, DataStore, cliente HTTP, base Room (DAO y entidades) y modelos.</td><td><code>android/app/src/main/java/com/example/caracoli/</code></td></tr>
-    <tr><td>4</td><td><b>Panel web (Angular)</b></td><td>Configuración, rutas y guard, layout (Main, Header, Nav), componentes de página y servicios HTTP.</td><td><code>web-angular/src/app/</code></td></tr>
+    <tr><td>1</td><td><b>Modelo de dominio</b></td><td>Las 4 colecciones de MongoDB (Inmueble, Cita, Cliente, Usuario), sus atributos (incluidas las fotos del carrusel con su portada y el video de YouTube), las enumeraciones de valores permitidos, las relaciones por ObjectId y las reglas de negocio que valida el servidor.</td><td><code>backend/models/*.js</code>, <code>backend/controller/*.js</code></td></tr>
+    <tr><td>2</td><td><b>API REST (backend)</b></td><td>Capas del servidor: index/app, middleware Multer (hasta 10 fotos por envío), routers, controladores con cada ruta HTTP (incluidas la página del código QR y la IP del servidor) y los modelos que usa cada uno.</td><td><code>backend/index.js</code>, <code>app.js</code>, <code>routers/</code>, <code>controller/</code></td></tr>
+    <tr><td>3</td><td><b>App Android (MVVM)</b></td><td>MainActivity (enlace caracoli:// del QR), navegación, pantallas, carrusel de fotos y video, ViewModels con StateFlow, repositorios, DataStore, cliente HTTP, base Room versión 2 (DAO, entidades y funciones de conversión) y modelos.</td><td><code>android/app/src/main/java/com/example/caracoli/</code></td></tr>
+    <tr><td>4</td><td><b>Panel web (Angular)</b></td><td>Configuración, rutas y guard, layout (Main, Header, Nav), componentes de página (incluido el aviso con código QR) y servicios HTTP.</td><td><code>web-angular/src/app/</code></td></tr>
   </table>
 
   <h3>Notación UML usada</h3>
@@ -44,30 +44,30 @@
     <tr><td><span style="display:inline-block;background:#FFFBEA;border:1px solid #C9B458;padding:2px 10px;font-size:9pt">Nota</span></td><td><b>Nota</b> con reglas de negocio o aclaraciones, unida con línea punteada al elemento que explica.</td></tr>
     <tr><td><span style="color:#E3141B;font-weight:bold">+</span> público · <span style="color:#E3141B;font-weight:bold">-</span> privado</td><td>Visibilidad de atributos y métodos. <u>Subrayado</u> = miembro estático. El tipo va después de los dos puntos.</td></tr>
   </table>
-  <div class="caja"><b>Nota sobre MongoDB:</b> los esquemas de Mongoose no declaran <i>required</i>, <i>enum</i> ni <i>ref</i>. Las restricciones que aparecen entre llaves (único, &gt; 0, obligatorio) y las enumeraciones las valida el controlador antes de guardar, y responde 400 o 409 cuando no se cumplen.</div>
+  <div class="caja"><b>Nota sobre MongoDB:</b> los esquemas de Mongoose no declaran <i>required</i>, <i>enum</i> ni <i>ref</i>. Las restricciones que aparecen entre llaves (único, &gt; 0, obligatorio) las valida el controlador antes de guardar, y responde 400 o 409 cuando no se cumplen. El controlador también valida los valores de TipoCita, EstadoCita y Rol; los de TipoInmueble, Operacion y EstadoInmueble los limita el formulario del panel (listas desplegables).</div>
 </section>
 
 <section class="pagina p-a3">
   <div class="fig-tit"><span class="num">Figura 1.</span><span class="t">Modelo de dominio</span></div>
-  <div class="fig-desc">Cita es la "solicitud" del cliente: guarda a mano el id del inmueble y el del cliente. Usuario es independiente: solo da acceso al panel.</div>
+  <div class="fig-desc">Cita es la "solicitud" del cliente: guarda a mano el id del inmueble y el del cliente. Inmueble guarda sus fotos en <i>imagenes</i>, la portada en <i>imagen</i> y un enlace de YouTube en <i>video</i>. Usuario es independiente: solo da acceso al panel.</div>
   <div class="fig"><img src="../png/clases/01-dominio.png"></div>
 </section>
 
 <section class="pagina p-a3">
   <div class="fig-tit"><span class="num">Figura 2.</span><span class="t">API REST · backend</span></div>
-  <div class="fig-desc">Cada petición pasa por app.js → router (con validarid y, para la foto, Multer) → controlador → modelo de Mongoose. Todas las respuestas tienen la forma { status, message, … }.</div>
+  <div class="fig-desc">Cada petición pasa por app.js → router (Multer solo para subir fotos) → controlador, que revisa el :id con validator.isMongoId → modelo de Mongoose. Las respuestas tienen la forma { status, message, … }, salvo la foto (archivo) y la página del código QR (HTML).</div>
   <div class="fig"><img src="../png/clases/02-backend-api.png"></div>
 </section>
 
 <section class="pagina p-a3">
   <div class="fig-tit"><span class="num">Figura 3.</span><span class="t">App Android del cliente · MVVM</span></div>
-  <div class="fig-desc">Las pantallas observan los StateFlow de los ViewModel; los repositorios deciden entre la API (HttpURLConnection + org.json) y la copia local en Room. DataStore guarda las preferencias.</div>
+  <div class="fig-desc">Las pantallas observan los StateFlow de los ViewModel; los repositorios deciden entre la API (HttpURLConnection + org.json) y la copia local en Room. DataStore guarda las preferencias. El QR del aviso abre la app con el enlace caracoli://inmueble/CODIGO.</div>
   <div class="fig"><img src="../png/clases/03-app-android.png"></div>
 </section>
 
 <section class="pagina p-a3">
   <div class="fig-tit"><span class="num">Figura 4.</span><span class="t">Panel web de la inmobiliaria · Angular</span></div>
-  <div class="fig-desc">Componentes standalone. Cada componente de página usa uno o varios servicios, y los servicios llaman a la API con HttpClient. El guard protege todas las rutas /panel/*.</div>
+  <div class="fig-desc">Componentes standalone. Cada componente de página usa uno o varios servicios, y los servicios llaman a la API con HttpClient. El guard protege todas las rutas /panel/*. El aviso arma el código QR con la librería qrcode.</div>
   <div class="fig"><img src="../png/clases/04-panel-angular.png"></div>
 </section>
 

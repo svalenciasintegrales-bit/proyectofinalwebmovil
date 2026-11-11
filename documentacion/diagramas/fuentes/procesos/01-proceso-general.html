@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="2880x1210">
+<title>Diagrama de procesos - General</title>
+<link rel="stylesheet" href="../comun.css">
+<link rel="stylesheet" href="bpmn.css">
+<script src="../uml.js"></script>
+<script src="bpmn.js"></script>
+</head>
+<body>
+<div id="lienzo" class="lienzo" style="width:2880px;height:1210px">
+  <div class="diag-cab">
+    <div class="barra"></div>
+    <img src="../../../../web-angular/public/img/logo.png" alt="">
+    <div>
+      <div class="t">Diagrama de procesos · Del letrero a la visita</div>
+      <div class="s">Proceso comercial de Caracoli Inmobiliaria con InmoConecta (notación BPMN): publicar el inmueble con su aviso QR, la solicitud del cliente desde la app y la atención en el panel</div>
+    </div>
+    <div class="der">Sistema InmoConecta<br>Caracoli Inmobiliaria</div>
+  </div>
+</div>
+<script>
+// ---------------- carriles (participantes) ----------------
+carril('cA', { x: 20, y: 110, w: 2840, h: 330, titulo: 'Asesor / Administrador', sub: 'panel web', tono: 'rojo' });
+carril('cS', { x: 20, y: 440, w: 2840, h: 280, titulo: 'Sistema InmoConecta', sub: 'API REST + MongoDB', tono: 'verde' });
+carril('cC', { x: 20, y: 720, w: 2840, h: 470, titulo: 'Cliente', sub: 'app Android', tono: 'negro' });
+
+// ---------------- 1. publicar el inmueble y su aviso ----------------
+evento('eA1', { x: 112, y: 252, tipo: 'inicio', texto: 'Hay un inmueble para publicar' });
+tarea('t1', { x: 205, y: 236, w: 190, texto: '<b>Registrar el inmueble</b><small>datos, varias fotos, portada y video de YouTube</small>' });
+tarea('t2', { x: 205, y: 541, w: 190, tono: 'verde', texto: '<b>Validar y guardar</b><small>código único, precio &gt; 0, fotos ≤ 5 MB, video de YouTube</small>' });
+almacen('db', { x: 660, y: 535, texto: 'MongoDB<br>InmoConecta' });
+tarea('t3', { x: 460, y: 236, tono: 'rojo', texto: '<b>Generar el aviso con QR</b><small>imprimir o guardar en PDF</small>' });
+tarea('t4', { x: 720, y: 236, texto: '<b>Colocar el letrero</b><small>en el inmueble</small>' });
+
+// ---------------- 2. el cliente encuentra el inmueble ----------------
+evento('eC1', { x: 795, y: 817, tipo: 'inicio', texto: 'Ve el letrero' });
+compuerta('g1', { x: 880, y: 812, texto: '¿Cómo abre el inmueble?' });
+tarea('t5', { x: 975, y: 801, w: 180, texto: '<b>Escanear el QR</b><small>con la cámara del celular</small>' });
+tarea('t5b', { x: 975, y: 1021, w: 180, texto: '<b>Escribir el código</b><small>del letrero en la app (ej. CAR-102)</small>' });
+tarea('t6', { x: 975, y: 541, w: 180, tono: 'verde', texto: '<b>Abrir la página del QR</b><small>/api/qr salta a la app en el inmueble</small>' });
+tarea('t7', { x: 1215, y: 801, w: 200, tono: 'azul', texto: '<b>Ver el detalle</b><small>carrusel de fotos, video y simulador de cuota</small>' });
+compuerta('g2', { x: 1460, y: 812, texto: '¿Le interesa?' });
+evento('eC2', { x: 1465, y: 1037, tipo: 'fin', texto: 'No le interesa' });
+
+// ---------------- 3. la solicitud ----------------
+tarea('t8', { x: 1560, y: 801, w: 200, tono: 'rojo', texto: '<b>Agendar visita o pedir información</b><small>las horas que ya pasaron salen tachadas</small>' });
+compuerta('g3', { x: 1810, y: 812, texto: '¿Hay internet?', pos: 'derecha' });
+tarea('t9', { x: 1750, y: 1021, w: 180, tono: 'ambar', texto: '<b>Guardar borrador</b><small>en el celular (Room)</small>' });
+tarea('t10', { x: 1880, y: 541, w: 200, tono: 'verde', texto: '<b>Validar y guardar la solicitud</b><small>fecha y hora, disponible, sin duplicado → pendiente</small>' });
+compuerta('g4', { x: 2120, y: 552, texto: '¿Es válida?', pos: 'derecha' });
+tarea('t11', { x: 2000, y: 1021, w: 180, tono: 'rojo', texto: '<b>Ver el motivo</b><small>y corregir la solicitud</small>' });
+
+// ---------------- 4. atencion y cierre ----------------
+tarea('t12', { x: 2060, y: 236, w: 210, tono: 'rojo', texto: '<b>Atender la solicitud</b><small>aviso de pendientes · responder y cambiar el estado</small>' });
+tarea('t13', { x: 2330, y: 541, w: 200, tono: 'verde', texto: '<b>Validar la transición</b><small>y guardar estado y respuesta</small>' });
+tarea('t14', { x: 2330, y: 801, w: 200, tono: 'azul', texto: '<b>Consultar Mis solicitudes</b><small>ve el estado y la respuesta</small>' });
+compuerta('g5', { x: 2402, y: 1032, texto: '¿Visita confirmada?', pos: 'abajo' });
+evento('eC3', { x: 2250, y: 1037, tipo: 'fin', texto: 'Información respondida o cancelada' });
+tarea('t15', { x: 2510, y: 1021, w: 170, texto: '<b>Hacer la visita</b><small>con el asesor</small>' });
+tarea('t16', { x: 2500, y: 236, w: 190, tono: 'rojo', texto: '<b>Marcar como realizada</b><small>cierra la solicitud</small>' });
+evento('eA2', { x: 2770, y: 252, tipo: 'fin', texto: 'Visita realizada' });
+
+nota('leyenda', { x: 70, y: 905, w: 600, html:
+  '<b>Cómo leerlo</b>: cada franja es un participante; los rectángulos son tareas y los rombos ✕ decisiones (una sola salida). ' +
+  'Círculo verde = inicio, círculo rojo grueso = fin, flecha punteada = mensaje entre participantes. ' +
+  'Verde = lo hace el sistema (API + MongoDB), azul = lo ve el cliente en la app, rojo = acciones clave del proceso.' });
+
+// ---------------- flujos ----------------
+var F = function (a, b, o) { o = o || {}; o.tipo = o.tipo || 'navegable'; rel(a, b, o); };
+F('eA1', 't1', { desde: 'r', hasta: 'l', recta: 'h' });
+F('t1', 't2', { desde: 'b', hasta: 't' });
+F('t2', 't3', { desde: 'r', hasta: 'b', fd: 0.3, fh: 0.5, orto: true, etiqueta: 'guardado', tl: 0.55, dx: 34 });
+F('t3', 't4', { desde: 'r', hasta: 'l', recta: 'h' });
+F('t4', 'eC1', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.5, orto: true, etiqueta: 'el cliente lo ve', tl: 0.8, dx: 52 });
+
+F('eC1', 'g1', { desde: 'r', hasta: 'l', recta: 'h' });
+F('g1', 't5', { desde: 'r', hasta: 'l', recta: 'h', etiqueta: 'QR', dy: -12 });
+F('g1', 't5b', { desde: 'b', hasta: 'l', orto: true, etiqueta: 'código', tl: 0.35, dx: -28 });
+F('t5', 't6', { desde: 't', hasta: 'b' });
+F('t6', 't7', { desde: 'r', hasta: 't', fh: 0.5, orto: true, etiqueta: 'abre la app', tl: 0.35, dy: -12 });
+F('t5b', 't7', { desde: 'r', hasta: 'b', fh: 0.5, orto: true });
+F('t7', 'g2', { desde: 'r', hasta: 'l', recta: 'h' });
+F('g2', 'eC2', { desde: 'b', hasta: 't', etiqueta: 'No', dx: 16 });
+F('g2', 't8', { desde: 'r', hasta: 'l', recta: 'h', etiqueta: 'Sí', dy: -12 });
+
+F('t8', 'g3', { desde: 'r', hasta: 'l', recta: 'h' });
+F('g3', 't9', { desde: 'b', hasta: 't', fh: 0.49, etiqueta: 'No', dx: 16 });
+F('g3', 't10', { desde: 't', hasta: 'b', fh: 0.2, orto: true, etiqueta: 'Sí', tl: 0.2, dx: 16 });
+F('t9', 't10', { desde: 'r', hasta: 'b', fd: 0.5, fh: 0.45, orto: true, etiqueta: 'al volver la conexión', tl: 0.55, dx: 64 });
+F('t10', 'g4', { desde: 'r', hasta: 'l', recta: 'h' });
+F('g4', 't12', { desde: 't', hasta: 'b', fh: (2148 - 2060) / 210, etiqueta: 'Sí', dx: 16 });
+F('g4', 't11', { desde: 'b', hasta: 't', fh: (2148 - 2000) / 180, etiqueta: 'No', tl: 0.15, dx: 16 });
+F('t11', 't8', { desde: 'b', hasta: 'b', via: [[2090, 1160], [1660, 1160]], etiqueta: 'corrige y vuelve a enviar', tl: 0.5 });
+
+F('t12', 't13', { desde: 'r', hasta: 't', fh: 0.5, orto: true });
+F('t13', 't14', { desde: 'b', hasta: 't' });
+F('t14', 'g5', { desde: 'b', hasta: 't', fd: (2430 - 2330) / 200 });
+F('g5', 't15', { desde: 'r', hasta: 'l', recta: 'h', etiqueta: 'Sí', dy: -12 });
+F('g5', 'eC3', { desde: 'l', hasta: 'r', recta: 'h', etiqueta: 'No', dy: -12 });
+F('t15', 't16', { desde: 't', hasta: 'b' , etiqueta: 'el asesor la cierra', tl: 0.5, dx: 70 });
+F('t16', 'eA2', { desde: 'r', hasta: 'l', recta: 'h' });
+
+dibujar();
+</script>
+</body>
+</html>

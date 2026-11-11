@@ -2,68 +2,77 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="tam" content="1900x1250">
+<meta name="tam" content="2000x1320">
 <title>Casos de uso - General</title>
 <link rel="stylesheet" href="../comun.css">
 <script src="../uml.js"></script>
+<style>.tono-cu-verde { background: #EFFAF2; border-color: #15803D; }</style>
 </head>
 <body>
-<div id="lienzo" class="lienzo" style="width:1900px;height:1250px">
+<div id="lienzo" class="lienzo" style="width:2000px;height:1320px">
   <div class="diag-cab">
     <div class="barra"></div>
     <img src="../../../../web-angular/public/img/logo.png" alt="">
     <div>
       <div class="t">Diagrama de casos de uso · Vista general</div>
-      <div class="s">Proceso central: el interesado pide información o agenda una visita desde el celular; la inmobiliaria la atiende en el panel web y el cliente ve el estado y la respuesta en su app</div>
+      <div class="s">Proceso central: el interesado pide información o agenda una visita desde el celular; la inmobiliaria la atiende en el panel web y el cliente ve el estado y la respuesta en su app. Adicional: el aviso impreso con QR abre el inmueble en la app</div>
     </div>
     <div class="der">Sistema InmoConecta<br>Caracoli Inmobiliaria</div>
   </div>
 </div>
 <script>
-frontera('fApp', { x: 230, y: 120, w: 840, h: 1000, titulo: 'App Android del cliente (InmoConecta)' });
-frontera('fWeb', { x: 1110, y: 120, w: 570, h: 1000, titulo: 'Panel web de la inmobiliaria (Angular)' });
+frontera('fApp', { x: 230, y: 120, w: 870, h: 1100, titulo: 'App Android del cliente (InmoConecta)' });
+frontera('fWeb', { x: 1130, y: 120, w: 680, h: 1100, titulo: 'Panel web de la inmobiliaria (Angular)' });
 
-actor('Cliente', { x: 50, y: 590, nombre: 'Cliente<small>interesado en un inmueble</small>' });
-actor('Asesor', { x: 1740, y: 330, nombre: 'Asesor<small>inmobiliario</small>' });
-actor('Admin', { x: 1740, y: 760, nombre: 'Administrador<small>dueño de Caracoli</small>' });
+actor('Cliente', { x: 50, y: 643, nombre: 'Cliente<small>interesado en<br>un inmueble</small>' });
+actor('Asesor', { x: 1840, y: 473, nombre: 'Asesor<small>inmobiliario</small>' });
+actor('Admin', { x: 1840, y: 963, nombre: 'Administrador<small>dueño de Caracoli</small>' });
 
+// CU-20 va junto a CU-05 porque lo incluye; CU-06 se dibuja aparte (extiende CU-05)
 var app = [
   ['CU-01', 'Ver bienvenida'], ['CU-02', 'Ver catálogo de inmuebles'], ['CU-03', 'Buscar y filtrar inmuebles'],
-  ['CU-04', 'Buscar por código del letrero'], ['CU-05', 'Ver detalle del inmueble'], ['CU-06', 'Simular cuota del crédito'],
+  ['CU-04', 'Buscar por código del letrero'], ['CU-05', 'Ver detalle del inmueble'], ['CU-20', 'Abrir inmueble desde el QR del aviso'],
   ['CU-07', 'Agendar visita'], ['CU-08', 'Pedir información'], ['CU-09', 'Consultar mis solicitudes'],
   ['CU-10', 'Gestionar favoritos'], ['CU-11', 'Configurar ajustes']
 ];
+var idApp = ['a0', 'a1', 'a2', 'a3', 'a4', 'a19', 'a6', 'a7', 'a8', 'a9', 'a10'];
 // casos en arco alrededor del actor para que las lineas no crucen otros casos
-var k = 0;
-app.forEach(function (c, i) {
-  var tono = (i === 6 || i === 7 || i === 8) ? 'rojo' : 'normal';
-  if (i === 5) return;
-  var th = (-56 + k * (112 / 9)) * Math.PI / 180;
-  var cx = 160 + 560 * Math.cos(th), cy = 650 + 470 * Math.sin(th);
-  cu('a' + i, { x: cx - 145, y: cy - 34, w: 290, h: 68, codigo: c[0], nombre: c[1], tono: tono });
-  if (i === 4) cu('a5', { x: 853, y: cy - 112, w: 210, h: 72, codigo: app[5][0], nombre: app[5][1] });
-  k++;
+app.forEach(function (c, k) {
+  var tono = (c[0] === 'CU-07' || c[0] === 'CU-08' || c[0] === 'CU-09') ? 'rojo' : (c[0] === 'CU-20' ? 'verde' : 'normal');
+  // misma separacion vertical entre casos; x sobre el arco
+  var cy = 690 + (k - 5) * 92, sn = (cy - 690) / 540;
+  var cx = 160 + 580 * Math.sqrt(1 - sn * sn);
+  cu(idApp[k], { x: cx - 145, y: cy - 34, w: 290, h: 68, codigo: c[0], nombre: c[1], tono: tono });
+  if (c[0] === 'CU-04') cu('a5', { x: 878, y: cy - 46, w: 210, h: 72, codigo: 'CU-06', nombre: 'Simular cuota del crédito' });
 });
+
+// panel: los casos del asesor tambien en arco alrededor de su actor
 var web = [
-  ['CU-12', 'Iniciar / cerrar sesión'], ['CU-13', 'Consultar tablero'], ['CU-14', 'Gestionar inmuebles'],
-  ['CU-15', 'Atender solicitudes'], ['CU-16', 'Gestionar clientes'], ['CU-17', 'Generar reportes'], ['CU-18', 'Gestionar usuarios']
+  ['w0', 'CU-12', 'Iniciar / cerrar sesión'], ['w1', 'CU-13', 'Consultar tablero'], ['w2', 'CU-14', 'Gestionar inmuebles'],
+  ['w7', 'CU-19', 'Generar aviso con QR'], ['w3', 'CU-15', 'Atender solicitudes'], ['w4', 'CU-16', 'Gestionar clientes']
 ];
-web.forEach(function (c, i) {
-  var y = 185 + i * 128 + (i >= 5 ? 50 : 0);
-  cu('w' + i, { x: 1250, y: y, w: 290, h: 74, codigo: c[0], nombre: c[1], tono: i === 3 ? 'rojo' : (i >= 5 ? 'azul' : 'normal') });
+web.forEach(function (c, k) {
+  var th = (-50 + k * 20) * Math.PI / 180;
+  var cx = 1900 - 560 * Math.cos(th), cy = 520 + 330 * Math.sin(th);
+  cu(c[0], { x: cx - 145, y: cy - 37, w: 290, h: 74, codigo: c[1], nombre: c[2], tono: c[1] === 'CU-15' ? 'rojo' : (c[1] === 'CU-19' ? 'verde' : 'normal') });
+  rel('Asesor', c[0], { tipo: 'linea' });
 });
+cu('w5', { x: 1300, y: 900, w: 290, h: 74, codigo: 'CU-17', nombre: 'Generar reportes', tono: 'azul' });
+cu('w6', { x: 1300, y: 1060, w: 290, h: 74, codigo: 'CU-18', nombre: 'Gestionar usuarios', tono: 'azul' });
 
-nota('nFlujo', { x: 230, y: 1140, w: 1440, html:
-  '<b>Flujo integral</b>: CU-07/CU-08 crean la solicitud (estado <i>pendiente</i>) → CU-15 la responde y la pasa a <i>confirmada</i>, <i>realizada</i> o <i>cancelada</i> → CU-09 muestra el estado y la respuesta. Ambas interfaces usan la misma API REST y MongoDB.' });
+nota('nFlujo', { x: 230, y: 1238, w: 1580, html:
+  '<b>Flujo integral</b>: CU-07/CU-08 crean la solicitud (estado <i>pendiente</i>) → CU-15 la responde y la pasa a <i>confirmada</i>, <i>realizada</i> o <i>cancelada</i> → CU-09 muestra el estado y la respuesta. ' +
+  '<b>Adicional (verde)</b>: CU-19 imprime el aviso con el QR y CU-20 abre ese inmueble en la app al escanearlo. Ambas interfaces usan la misma API REST y MongoDB.' });
 
-app.forEach(function (c, i) { if (i !== 5) rel('Cliente', 'a' + i, { tipo: 'linea' }); });
-rel('a5', 'a4', { tipo: 'extend', tl: 0.45 });
-for (var i = 0; i < 5; i++) rel('Asesor', 'w' + i, { tipo: 'linea' });
+idApp.forEach(function (id) { rel('Cliente', id, { tipo: 'linea' }); });
+rel('a5', 'a4', { tipo: 'extend', tl: 0.5 });
+rel('a19', 'a4', { tipo: 'include', tl: 0.5, dx: 40 });
 rel('Admin', 'w5', { tipo: 'linea' });
 rel('Admin', 'w6', { tipo: 'linea' });
 rel('Admin', 'Asesor', { tipo: 'herencia', desde: 't', hasta: 'b' });
-rel('a6', 'w3', { tipo: 'dependencia', desde: 'r', hasta: 'l', fh: 0.4, etiqueta: 'crea solicitud (pendiente)', tl: 0.5 });
-rel('w3', 'a8', { tipo: 'dependencia', desde: 'l', hasta: 'r', fd: 0.7, etiqueta: 'respuesta y nuevo estado', tl: 0.5 });
+rel('a6', 'w3', { tipo: 'dependencia', etiqueta: 'crea solicitud (pendiente)', tl: 0.5 });
+rel('w3', 'a8', { tipo: 'dependencia', etiqueta: 'respuesta y nuevo estado', tl: 0.5 });
+rel('w7', 'a19', { tipo: 'dependencia', etiqueta: 'aviso impreso con el QR', tl: 0.5 });
 
 dibujar();
 </script>

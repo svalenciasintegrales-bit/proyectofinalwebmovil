@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="1900x900">
+<title>Diagrama de procesos - Ciclo de la solicitud</title>
+<link rel="stylesheet" href="../comun.css">
+<link rel="stylesheet" href="bpmn.css">
+<script src="../uml.js"></script>
+<script src="bpmn.js"></script>
+</head>
+<body>
+<div id="lienzo" class="lienzo" style="width:1900px;height:900px">
+  <div class="diag-cab">
+    <div class="barra"></div>
+    <img src="../../../../web-angular/public/img/logo.png" alt="">
+    <div>
+      <div class="t">Diagrama de procesos · Ciclo de vida de una solicitud</div>
+      <div class="s">Estados por los que pasa una visita o pregunta: primero en el celular (borrador en Room) y luego en el servidor (MongoDB), donde la mueve el asesor desde el panel</div>
+    </div>
+    <div class="der">Sistema InmoConecta<br>Caracoli Inmobiliaria</div>
+  </div>
+</div>
+<script>
+carril('cApp', { x: 20, y: 110, w: 1860, h: 300, titulo: 'En el celular', sub: 'app · Room', tono: 'negro' });
+carril('cSrv', { x: 20, y: 410, w: 1860, h: 470, titulo: 'En el servidor', sub: 'API · MongoDB · panel', tono: 'verde' });
+
+// ---------------- en el celular ----------------
+evento('e0', { x: 130, y: 237, tipo: 'inicio', texto: 'Toca Confirmar visita o Enviar pregunta' });
+compuerta('g1', { x: 240, y: 232, texto: '¿Hay internet?' });
+estado('porEnviar', { x: 360, y: 200, w: 250, tono: 'ambar', nombre: 'Por enviar',
+  texto: '<small>borrador guardado en el celular; se reintenta al abrir la app y en Mis solicitudes</small>' });
+estado('error', { x: 780, y: 200, w: 260, tono: 'rojo', nombre: 'Error al enviar',
+  texto: '<small>el servidor la rechazó (hora pasada, inmueble no disponible…). Reintentar o Eliminar</small>' });
+evento('eBorrada', { x: 1160, y: 237, tipo: 'fin', texto: 'Eliminada del celular' });
+
+// ---------------- en el servidor ----------------
+estado('pendiente', { x: 360, y: 600, w: 250, tono: 'ambar', nombre: 'Pendiente',
+  texto: '<small>guardada en MongoDB; aparece en el panel con aviso de pendientes</small>' });
+estado('confirmada', { x: 820, y: 470, w: 260, tono: 'azul', nombre: 'Confirmada',
+  texto: '<small>el asesor confirmó la visita y escribió la respuesta</small>' });
+estado('cancelada', { x: 820, y: 745, w: 260, tono: 'blanco', nombre: 'Cancelada',
+  texto: '<small>estado final: ya no se puede cambiar</small>' });
+estado('realizada', { x: 1300, y: 600, w: 260, tono: 'verde', nombre: 'Realizada',
+  texto: '<small>visita hecha o pregunta respondida · estado final</small>' });
+evento('eFin', { x: 1700, y: 627, tipo: 'fin', texto: 'Solicitud cerrada' });
+evento('eFin2', { x: 1180, y: 762, tipo: 'fin', texto: 'Solicitud cerrada' });
+
+nota('nReglas', { x: 1310, y: 150, w: 540, html:
+  '<b>Reglas del servidor</b> (si no se cumplen responde 409 y no cambia nada): una <i>visita</i> pendiente no pasa directo a realizada; ' +
+  'realizada y cancelada son finales; un cliente no puede tener dos solicitudes abiertas del mismo tipo para el mismo inmueble. ' +
+  'El cliente ve cada cambio y la respuesta en <i>Mis solicitudes</i>.' });
+
+var F = function (a, b, o) { o = o || {}; o.tipo = o.tipo || 'navegable'; rel(a, b, o); };
+F('e0', 'g1', { desde: 'r', hasta: 'l', recta: 'h' });
+F('g1', 'porEnviar', { desde: 'r', hasta: 'l', recta: 'h', etiqueta: 'No', dy: -12 });
+F('g1', 'pendiente', { desde: 'b', hasta: 'l', orto: true, etiqueta: 'Sí · la API valida y guarda (201)', tl: 0.38, dx: 112 });
+F('porEnviar', 'pendiente', { desde: 'b', hasta: 't', fd: 0.6, fh: 0.6, etiqueta: 'al volver la conexión', tl: 0.45, dx: 76 });
+F('porEnviar', 'error', { desde: 'r', hasta: 'l', recta: 'h', etiqueta: 'el servidor la rechaza', dy: -12 });
+F('error', 'porEnviar', { desde: 't', hasta: 't', fd: 0.3, fh: 0.7, via: [[858, 165], [535, 165]], etiqueta: 'Reintentar', tl: 0.5 });
+F('error', 'eBorrada', { desde: 'r', hasta: 'l', recta: 'h', etiqueta: 'Eliminar', dy: -12 });
+
+F('pendiente', 'confirmada', { desde: 'r', hasta: 'l', fd: 0.25, fh: 0.5, orto: true, etiqueta: 'responder y confirmar (visita)', tl: 0.75, dy: -12 });
+F('pendiente', 'realizada', { desde: 'r', hasta: 'l', recta: 'h', etiqueta: 'responder (pregunta de información)', tl: 0.78, dy: -12 });
+F('pendiente', 'cancelada', { desde: 'r', hasta: 'l', fd: 0.78, fh: 0.5, orto: true, etiqueta: 'cancelar', tl: 0.75, dy: 14 });
+F('confirmada', 'realizada', { desde: 'r', hasta: 't', fh: 0.3, orto: true, etiqueta: 'marcar realizada', tl: 0.35, dy: -12 });
+F('confirmada', 'cancelada', { desde: 'b', hasta: 't', etiqueta: 'cancelar', tl: 0.82, dx: 36 });
+F('realizada', 'eFin', { desde: 'r', hasta: 'l', recta: 'h' });
+F('cancelada', 'eFin2', { desde: 'r', hasta: 'l', recta: 'h' });
+
+dibujar();
+</script>
+</body>
+</html>

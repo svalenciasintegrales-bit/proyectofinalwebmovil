@@ -24,7 +24,7 @@ from pathlib import Path
 FUENTES = Path(__file__).resolve().parent
 SALIDA = FUENTES.parent
 PNG = SALIDA / "png"
-CARPETAS = ["clases", "casos-uso", "mockups/android", "mockups/web", "mockups/navegacion"]
+CARPETAS = ["clases", "casos-uso", "procesos", "mockups/android", "mockups/web", "mockups/navegacion"]
 
 CHROME_CANDIDATOS = [
     r"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -36,6 +36,7 @@ PDFS = [
     ("pdf-clases.html", "DIAGRAMA DE CLASES - InmoConecta Caracoli.pdf", "Diagrama de clases"),
     ("pdf-casos-uso.html", "CASOS DE USO - InmoConecta Caracoli.pdf", "Casos de uso"),
     ("pdf-mockups.html", "MOCKUPS - InmoConecta Caracoli.pdf", "Mockups"),
+    ("pdf-procesos.html", "DIAGRAMA DE PROCESOS - InmoConecta Caracoli.pdf", "Diagrama de procesos"),
 ]
 
 

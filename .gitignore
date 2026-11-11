@@ -26,3 +26,6 @@ backend/upload/inmuebles/*
 # configuracion del editor
 .claude/
 .vscode/
+
+# cache de python
+__pycache__/

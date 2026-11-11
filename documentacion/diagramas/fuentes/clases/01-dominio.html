@@ -24,20 +24,23 @@
 clase('Inmueble', { x: 40, y: 130, w: 360, est: '«Schema» colección Inmuebles', tono: 'rojo',
   attrs: ['- _id: ObjectId', '- codigo: String  {único, ej. CAR-102}', '- titulo: String', '- tipo: TipoInmueble',
     '- operacion: Operacion', '- precio: Number  {> 0}', '- barrio: String', '- ciudad: String', '- area: Number',
-    '- habitaciones: Number', '- banos: Number', '- descripcion: String', '- imagen: String',
+    '- habitaciones: Number', '- banos: Number', '- descripcion: String',
+    '- imagen: String  {portada, una de imagenes}', '- imagenes: String[]  {fotos del carrusel}', '- video: String  {enlace de YouTube o vacío}',
     '- estado: EstadoInmueble = disponible', '- fecha: Date = Date.now', '- createdAt: Date', '- updatedAt: Date'],
   mets: ['+ save(): Inmueble', '+ getInmuebles(last, operacion): Inmueble[]', '+ getInmuebleCodigo(codigo): Inmueble',
-    '+ search(texto): Inmueble[]', '+ update(id, datos): Inmueble', '+ upload(id, file0): Inmueble', '+ delete(id): Inmueble'] });
+    '+ search(texto): Inmueble[]', '+ update(id, datos): Inmueble', '+ upload(id, file0[1..10]): Inmueble',
+    '+ borrarImagen(id, imagen): Inmueble', '+ paginaQr(codigo): HTML', '+ delete(id): Inmueble'] });
 
 clase('Cita', { x: 690, y: 160, w: 400, est: '«Schema» colección Citas (solicitud)', tono: 'rojo',
   attrs: ['- _id: ObjectId', '- inmueble_id: ObjectId', '- cliente_id: ObjectId', '- tipo: TipoCita = visita',
-    '- fecha_cita: Date  {solo visita, ≥ hoy}', '- hora: String  {solo visita}', '- observaciones: String',
+    '- fecha_cita: Date  {solo visita, AAAA-MM-DD, ≥ hoy}', '- hora: String  {solo visita, "H:MM a.m./p.m."}', '- observaciones: String',
     '- respuesta: String', '- estado: EstadoCita = pendiente', '- fecha: Date = Date.now', '- createdAt: Date', '- updatedAt: Date'],
-  mets: ['+ save(): Cita', '+ getCitas(estado, last): Cita[]', '+ getCitasInmueble(id): Cita[]', '+ getCitasCliente(id): Cita[]',
-    '+ update(id, estado, respuesta): Cita', '+ delete(id): Cita', '- hoy(): Date  {hora de Colombia}'] });
+  mets: ['+ save(): Cita', '+ getCitas(estado, last): Cita[]', '+ getCita(id): Cita', '+ getCitasInmueble(id): Cita[]', '+ getCitasCliente(id): Cita[]',
+    '+ update(id, estado, respuesta): Cita', '+ delete(id): Cita', '- hoy(): String  {AAAA-MM-DD, hora de Colombia}',
+    '- minutosAhora(): Number  {minutos del día, Colombia}', '- minutosDeHora(texto): Number  {-1 si no es válida}'] });
 
 clase('Cliente', { x: 1390, y: 160, w: 360, est: '«Schema» colección Clientes', tono: 'rojo',
-  attrs: ['- _id: ObjectId', '- nombre: String  {obligatorio}', '- telefono: String  {obligatorio}', '- correo: String  {email válido}',
+  attrs: ['- _id: ObjectId', '- nombre: String  {obligatorio}', '- telefono: String  {obligatorio}', '- correo: String  {opcional, email válido}',
     '- fecha: Date = Date.now', '- createdAt: Date', '- updatedAt: Date'],
   mets: ['+ save(): Cliente', '+ getClientes(last): Cliente[]', '+ getCliente(id): Cliente', '+ update(id, datos): Cliente', '+ delete(id): Cliente'] });
 
@@ -48,9 +51,9 @@ clase('Usuario', { x: 1390, y: 640, w: 360, est: '«Schema» colección Usuarios
     '+ delete(id, actual): Usuario', '- encriptar(contrasena): String', '- comprobar(contrasena, guardada): Boolean'] });
 
 // ---------------- enumeraciones ----------------
-enumeracion('TipoInmueble', { x: 40, y: 790, w: 170, valores: ['casa', 'apartamento', 'local', 'lote', 'finca'] });
-enumeracion('Operacion', { x: 230, y: 790, w: 170, valores: ['venta', 'arriendo'] });
-enumeracion('EstadoInmueble', { x: 230, y: 935, w: 170, valores: ['disponible', 'arrendado', 'vendido'] });
+enumeracion('TipoInmueble', { x: 40, y: 770, w: 170, valores: ['casa', 'apartamento', 'local', 'lote', 'finca'] });
+enumeracion('Operacion', { x: 230, y: 770, w: 170, valores: ['venta', 'arriendo'] });
+enumeracion('EstadoInmueble', { x: 230, y: 915, w: 170, valores: ['disponible', 'arrendado', 'vendido'] });
 enumeracion('TipoCita', { x: 690, y: 690, w: 170, valores: ['visita', 'informacion'] });
 enumeracion('EstadoCita', { x: 890, y: 690, w: 200, valores: ['pendiente', 'confirmada', 'realizada  {final}', 'cancelada  {final}'] });
 enumeracion('Rol', { x: 1390, y: 1010, w: 170, valores: ['administrador', 'asesor'] });
@@ -64,16 +67,25 @@ nota('nTransiciones', { x: 690, y: 880, w: 400, html:
   '<li>una <i>visita</i> pendiente no pasa directo a realizada</li></ul>' +
   'Cambio no permitido → <b>409</b>. Solo se modifican <i>estado</i> y <i>respuesta</i>.' });
 
-nota('nReglas', { x: 1120, y: 880, w: 240, html:
+nota('nReglas', { x: 1120, y: 640, w: 250, html:
   '<b>Reglas de negocio (servidor)</b><ul>' +
-  '<li>R1 código único → 409</li><li>R2 precio &gt; 0</li><li>R3 visita con fecha ≥ hoy y hora; información con mensaje</li>' +
-  '<li>R4 solo inmuebles <i>disponible</i>s y clientes existentes</li><li>R5 sin dos abiertas del mismo tipo e inmueble → 409</li>' +
-  '<li>R7 no se borra inmueble ni cliente con solicitudes → 409</li></ul>' });
+  '<li>R1 código único → 409</li><li>R2 precio &gt; 0 → 400</li>' +
+  '<li>R3 visita con fecha AAAA-MM-DD ≥ hoy y hora; información con mensaje → 400</li>' +
+  '<li>R4 visita de hoy: la hora no puede haber pasado → 400</li>' +
+  '<li>R5 solo inmuebles <i>disponible</i>s y clientes existentes → 409 / 404</li>' +
+  '<li>R6 sin dos abiertas del mismo tipo e inmueble → 409</li>' +
+  '<li>R7 no se borra inmueble ni cliente con solicitudes → 409</li>' +
+  '<li>R8 la portada debe ser una de <i>imagenes</i> → 400</li>' +
+  '<li>R9 el video solo puede ser de YouTube → 400</li>' +
+  '<li>R10 fotos: máx. 10 por envío, png/jpg/jpeg/gif/webp de máx. 5 MB → 400</li></ul>' });
+
+nota('nFotos', { x: 425, y: 360, w: 240, html:
+  '<b>Fotos y video</b>: <i>upload</i> agrega las fotos al final de <i>imagenes</i>; si no hay portada, la primera queda de portada. Al borrar la portada pasa a ser la siguiente. El video se guarda como <i>youtube.com/watch?v=ID</i>.' });
 
 nota('nUsuario', { x: 1580, y: 1010, w: 170, html:
   'No se borra el último <i>administrador</i> ni el usuario de la sesión (409).' });
 
-nota('nRef', { x: 450, y: 520, w: 200, html:
+nota('nRef', { x: 450, y: 600, w: 200, html:
   'Relación guardada a mano con <b>Schema.ObjectId</b> (sin <i>populate</i>): se consulta con dos búsquedas.' });
 
 // ---------------- relaciones ----------------
@@ -87,7 +99,8 @@ rel('Cita', 'TipoCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.21,
 rel('Cita', 'EstadoCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.75, fh: 0.5, orto: true });
 rel('Usuario', 'Rol', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.24, fh: 0.5, orto: true });
 rel('EstadoCita', 'nTransiciones', { tipo: 'nota', desde: 'b', hasta: 't', fh: 0.75 });
-rel('nRef', 'Cita', { tipo: 'nota', desde: 'r', hasta: 'l', fh: 0.5 });
+rel('nRef', 'Cita', { tipo: 'nota', desde: 'r', hasta: 'l', fh: 0.8 });
+rel('nFotos', 'Inmueble', { tipo: 'nota', desde: 'l', hasta: 'r', recta: 'h' });
 rel('Usuario', 'nUsuario', { tipo: 'nota', desde: 'b', hasta: 't', fd: 0.78 });
 
 dibujar();

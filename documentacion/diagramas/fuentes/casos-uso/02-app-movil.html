@@ -2,54 +2,63 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="tam" content="1800x1300">
+<meta name="tam" content="1800x1390">
 <title>Casos de uso - App movil</title>
 <link rel="stylesheet" href="../comun.css">
 <script src="../uml.js"></script>
+<style>.tono-cu-verde { background: #EFFAF2; border-color: #15803D; }</style>
 </head>
 <body>
-<div id="lienzo" class="lienzo" style="width:1800px;height:1300px">
+<div id="lienzo" class="lienzo" style="width:1800px;height:1390px">
   <div class="diag-cab">
     <div class="barra"></div>
     <img src="../../../../web-angular/public/img/logo.png" alt="">
     <div>
       <div class="t">Diagrama de casos de uso · App Android del cliente</div>
-      <div class="s">Catálogo con copia local en Room, búsqueda por código del letrero, solicitudes con borradores sin conexión y preferencias en DataStore</div>
+      <div class="s">Catálogo con copia local en Room, búsqueda por código del letrero o por el QR del aviso, fotos en carrusel y video, solicitudes con borradores sin conexión y preferencias en DataStore</div>
     </div>
     <div class="der">Sistema InmoConecta<br>Caracoli Inmobiliaria</div>
   </div>
 </div>
 <script>
-frontera('fApp', { x: 230, y: 120, w: 1170, h: 1060, titulo: 'App Android InmoConecta (Kotlin + Jetpack Compose)' });
-actor('Cliente', { x: 50, y: 590, nombre: 'Cliente<small>interesado en un inmueble</small>' });
-actor('API', { x: 1560, y: 650, nombre: 'API REST<small>«sistema» Express + MongoDB</small>' });
+frontera('fApp', { x: 230, y: 120, w: 1170, h: 1155, titulo: 'App Android InmoConecta (Kotlin + Jetpack Compose)' });
+actor('Cliente', { x: 50, y: 673, nombre: 'Cliente<small>interesado en<br>un inmueble</small>' });
+actor('API', { x: 1560, y: 770, nombre: 'API REST<small>«sistema» Express + MongoDB</small>' });
 
 var prim = [
   ['a01', 'CU-01', 'Ver bienvenida (primera vez)'], ['a02', 'CU-02', 'Ver catálogo de inmuebles'], ['a03', 'CU-03', 'Buscar y filtrar inmuebles'],
-  ['a04', 'CU-04', 'Buscar por código del letrero'], ['a05', 'CU-05', 'Ver detalle del inmueble'], ['a07', 'CU-07', 'Agendar visita'],
+  ['a04', 'CU-04', 'Buscar por código del letrero'], ['a05', 'CU-05', 'Ver detalle del inmueble<br><small>(carrusel de fotos)</small>'],
+  ['a20', 'CU-20', 'Abrir inmueble desde<br>el QR del aviso'], ['a07', 'CU-07', 'Agendar visita'],
   ['a08', 'CU-08', 'Pedir información'], ['a09', 'CU-09', 'Consultar mis solicitudes'], ['a10', 'CU-10', 'Gestionar favoritos'],
   ['a11', 'CU-11', 'Configurar ajustes']
 ];
 var Y = {};
+// casos en arco alrededor del actor (misma separacion vertical) para que las lineas no crucen otros casos
 prim.forEach(function (c, k) {
-  var th = (-56 + k * (112 / 9)) * Math.PI / 180;
-  var cx = 165 + 540 * Math.cos(th), cy = 665 + 505 * Math.sin(th);
+  var cy = 720 + (k - 5) * 96, sn = (cy - 720) / 565;
+  var cx = 165 + 580 * Math.sqrt(1 - sn * sn);
   Y[c[0]] = cy;
-  cu(c[0], { x: cx - 145, y: cy - 35, w: 290, h: 70, codigo: c[1], nombre: c[2], tono: (c[0] === 'a07' || c[0] === 'a08' || c[0] === 'a09') ? 'rojo' : 'normal' });
+  var tono = (c[0] === 'a07' || c[0] === 'a08' || c[0] === 'a09') ? 'rojo' : (c[0] === 'a20' ? 'verde' : 'normal');
+  cu(c[0], { x: cx - 145, y: cy - 35, w: 290, h: 70, codigo: c[1], nombre: c[2], tono: tono });
   rel('Cliente', c[0], { tipo: 'linea' });
 });
 
 // casos de apoyo (incluidos / extensiones)
 cu('x1', { x: 1000, y: Y.a02 - 36, w: 290, h: 72, nombre: 'Sincronizar catálogo<br>(API → copia en Room)', tono: 'gris' });
-cu('a06', { x: 1000, y: Y.a04 - 10, w: 290, h: 72, codigo: 'CU-06', nombre: 'Simular cuota del crédito<br><small>(solo inmuebles en venta)</small>' });
+cu('a06', { x: 1000, y: Y.a04 - 46, w: 290, h: 72, codigo: 'CU-06', nombre: 'Simular cuota del crédito<br><small>(solo inmuebles en venta)</small>' });
+cu('x6', { x: 1000, y: Y.a05 - 30, w: 290, h: 72, nombre: 'Ver video del inmueble<br><small>(YouTube dentro de la app)</small>', tono: 'gris' });
+cu('x7', { x: 1000, y: Y.a20 - 26, w: 290, h: 72, nombre: 'Abrir la página del QR<br><small>(GET /api/qr/:codigo)</small>', tono: 'gris' });
 cu('x2', { x: 1000, y: Y.a07 + 2, w: 290, h: 72, nombre: 'Registrar cliente<br>en el servidor', tono: 'gris' });
 cu('x3', { x: 1000, y: Y.a08 + 40, w: 290, h: 72, nombre: 'Guardar borrador<br>sin conexión (Room)', tono: 'gris' });
 cu('x4', { x: 1000, y: Y.a09 + 62, w: 290, h: 72, nombre: 'Enviar borradores<br>pendientes', tono: 'gris' });
-cu('x5', { x: 760, y: Y.a10 + 50, w: 290, h: 72, nombre: 'Reintentar o eliminar<br>borrador con error', tono: 'gris' });
+cu('x5', { x: 760, y: Y.a10 + 62, w: 290, h: 72, nombre: 'Reintentar o eliminar<br>borrador con error', tono: 'gris' });
 
 rel('a02', 'x1', { tipo: 'include' });
 rel('a04', 'a05', { tipo: 'include', tl: 0.5, dx: 40 });
 rel('a06', 'a05', { tipo: 'extend' });
+rel('x6', 'a05', { tipo: 'extend' });
+rel('a20', 'a05', { tipo: 'include', tl: 0.5, dx: 40 });
+rel('a20', 'x7', { tipo: 'include' });
 rel('a07', 'x2', { tipo: 'include' });
 rel('a08', 'x2', { tipo: 'include', tl: 0.72 });
 rel('x3', 'a07', { tipo: 'extend', tl: 0.25 });
@@ -58,12 +67,14 @@ rel('a09', 'x4', { tipo: 'include' });
 rel('x5', 'a09', { tipo: 'extend', tl: 0.5 });
 
 rel('API', 'x1', { tipo: 'linea' });
+rel('API', 'x7', { tipo: 'linea' });
 rel('API', 'x2', { tipo: 'linea' });
 rel('API', 'x4', { tipo: 'linea' });
 
-nota('nApp', { x: 230, y: 1190, w: 1170, html:
-  '<b>Persistencia local</b>: Room guarda el catálogo (<i>inmuebles</i>), las solicitudes del cliente (<i>solicitudes</i>) y los <i>borradores</i> que el servidor aún no confirma; DataStore guarda bienvenida vista, modo oscuro, URL del servidor, nombre, celular, id del cliente y favoritos. ' +
-  'Una solicitud solo se muestra como enviada cuando la API responde 201 (o 409 con la misma cita, sin duplicar).' });
+nota('nApp', { x: 230, y: 1290, w: 1170, html:
+  '<b>Persistencia local</b>: Room (versión 2) guarda el catálogo con sus fotos y video (<i>inmuebles</i>), las solicitudes del cliente (<i>solicitudes</i>) y los <i>borradores</i> que el servidor aún no confirma; DataStore guarda bienvenida vista, modo oscuro, URL del servidor, nombre, celular, id del cliente y favoritos. ' +
+  'Una solicitud solo se muestra como enviada cuando la API responde 201 (o 409 con la misma cita, sin duplicar). En CU-07, si la fecha es hoy, las horas que ya pasaron salen tachadas. ' +
+  'CU-20: el QR abre la app con el enlace <i>caracoli://inmueble/CÓDIGO</i>.' });
 
 dibujar();
 </script>

@@ -2,71 +2,87 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="tam" content="1800x1260">
+<meta name="tam" content="1900x1310">
 <title>Casos de uso - Panel web</title>
 <link rel="stylesheet" href="../comun.css">
 <script src="../uml.js"></script>
+<style>.tono-cu-verde { background: #EFFAF2; border-color: #15803D; }</style>
 </head>
 <body>
-<div id="lienzo" class="lienzo" style="width:1800px;height:1260px">
+<div id="lienzo" class="lienzo" style="width:1900px;height:1310px">
   <div class="diag-cab">
     <div class="barra"></div>
     <img src="../../../../web-angular/public/img/logo.png" alt="">
     <div>
       <div class="t">Diagrama de casos de uso · Panel web de la inmobiliaria</div>
-      <div class="s">Angular + Bootstrap · el Asesor atiende inmuebles, solicitudes y clientes; el Administrador además ve los reportes y gestiona los usuarios</div>
+      <div class="s">Angular + Bootstrap · el Asesor atiende inmuebles (con fotos, video y aviso con QR), solicitudes y clientes; el Administrador además ve los reportes y gestiona los usuarios</div>
     </div>
     <div class="der">Sistema InmoConecta<br>Caracoli Inmobiliaria</div>
   </div>
 </div>
 <script>
-frontera('fWeb', { x: 230, y: 120, w: 1170, h: 1000, titulo: 'Panel web InmoConecta (Angular 21)' });
-actor('Asesor', { x: 50, y: 420, nombre: 'Asesor<small>inmobiliario</small>' });
-actor('Admin', { x: 50, y: 880, nombre: 'Administrador<small>dueño de Caracoli</small>' });
-actor('API', { x: 1560, y: 880, nombre: 'API REST<small>«sistema» Express + MongoDB</small>' });
+frontera('fWeb', { x: 230, y: 120, w: 1270, h: 1080, titulo: 'Panel web InmoConecta (Angular 21)' });
+actor('Asesor', { x: 50, y: 453, nombre: 'Asesor<small>inmobiliario</small>' });
+actor('Admin', { x: 50, y: 960, nombre: 'Administrador<small>dueño de Caracoli</small>' });
+actor('API', { x: 1620, y: 640, nombre: 'API REST<small>«sistema» Express + MongoDB</small>' });
 
+// casos del asesor en arco alrededor del actor; CU-19 sale del boton QR de la tabla de Inmuebles
 var ases = [
   ['w12', 'CU-12', 'Iniciar / cerrar sesión'], ['w13', 'CU-13', 'Consultar tablero'], ['w14', 'CU-14', 'Gestionar inmuebles'],
-  ['w15', 'CU-15', 'Atender solicitudes'], ['w16', 'CU-16', 'Gestionar clientes']
+  ['w19', 'CU-19', 'Generar aviso con QR'], ['w15', 'CU-15', 'Atender solicitudes'], ['w16', 'CU-16', 'Gestionar clientes']
 ];
 var P = {};
 ases.forEach(function (c, k) {
-  var th = (-52 + k * 26) * Math.PI / 180;
-  var cx = 165 + 520 * Math.cos(th), cy = 470 + 290 * Math.sin(th);
+  var th = (-55 + k * 22) * Math.PI / 180;
+  var cx = 165 + 560 * Math.cos(th), cy = 500 + 330 * Math.sin(th);
   P[c[0]] = [cx, cy];
-  cu(c[0], { x: cx - 145, y: cy - 36, w: 290, h: 72, codigo: c[1], nombre: c[2], tono: c[0] === 'w15' ? 'rojo' : 'normal' });
+  cu(c[0], { x: cx - 145, y: cy - 36, w: 290, h: 72, codigo: c[1], nombre: c[2], tono: c[0] === 'w15' ? 'rojo' : (c[0] === 'w19' ? 'verde' : 'normal') });
   rel('Asesor', c[0], { tipo: 'linea' });
 });
-cu('w17', { x: 470, y: 820, w: 290, h: 72, codigo: 'CU-17', nombre: 'Generar reportes', tono: 'azul' });
-cu('w18', { x: 470, y: 990, w: 290, h: 72, codigo: 'CU-18', nombre: 'Gestionar usuarios', tono: 'azul' });
+cu('w17', { x: 470, y: 920, w: 290, h: 72, codigo: 'CU-17', nombre: 'Generar reportes', tono: 'azul' });
+cu('w18', { x: 470, y: 1080, w: 290, h: 72, codigo: 'CU-18', nombre: 'Gestionar usuarios', tono: 'azul' });
 rel('Admin', 'w17', { tipo: 'linea' });
 rel('Admin', 'w18', { tipo: 'linea' });
 rel('Admin', 'Asesor', { tipo: 'herencia', desde: 't', hasta: 'b' });
 
-// casos de apoyo
-cu('y1', { x: 1000, y: P.w13[1] - 70, w: 300, h: 72, nombre: 'Ver aviso de pendientes<br><small>(se actualiza cada 10 s)</small>', tono: 'gris' });
-cu('y2', { x: 1000, y: P.w14[1] - 40, w: 300, h: 72, nombre: 'Subir foto del inmueble<br><small>(Multer, máx. 5 MB)</small>', tono: 'gris' });
-cu('y3', { x: 1000, y: P.w14[1] + 50, w: 300, h: 72, nombre: 'Validar código único<br>y precio &gt; 0', tono: 'gris' });
-cu('y4', { x: 1000, y: P.w15[1] + 60, w: 300, h: 72, nombre: 'Validar transición<br>de estado', tono: 'gris' });
-cu('y5', { x: 1000, y: 770, w: 300, h: 72, nombre: 'Descargar Excel (CSV)', tono: 'gris' });
-cu('y6', { x: 1000, y: 870, w: 300, h: 72, nombre: 'Imprimir / guardar PDF', tono: 'gris' });
-cu('y7', { x: 1000, y: 990, w: 300, h: 72, nombre: 'Encriptar contraseña<br><small>(sal + sha256)</small>', tono: 'gris' });
+// casos de apoyo (una columna, de arriba abajo en el orden de los casos base)
+var col = [
+  ['y1', 'Ver aviso de pendientes<br><small>(se actualiza cada 10 s)</small>'],
+  ['y2', 'Subir fotos y elegir portada<br><small>(Multer, 10 por envío, 5 MB c/u)</small>'],
+  ['y8', 'Agregar video de YouTube<br><small>(vista previa en el formulario)</small>'],
+  ['y3', 'Validar código único, precio &gt; 0,<br>video de YouTube y portada'],
+  ['y9', 'Obtener IP del servidor<br><small>(GET /api/red, editable)</small>'],
+  ['y10', 'Imprimir / guardar<br>el aviso en PDF'],
+  ['y4', 'Validar transición<br>de estado']
+];
+col.forEach(function (c, k) {
+  cu(c[0], { x: 1150, y: 214 + k * 100, w: 310, h: 72, nombre: c[1], tono: 'gris' });
+});
+cu('y7', { x: 1150, y: 1080, w: 310, h: 72, nombre: 'Encriptar contraseña<br><small>(sal + sha256)</small>', tono: 'gris' });
+// las extensiones de reportes van junto a CU-17
+cu('y5', { x: 830, y: 860, w: 270, h: 66, nombre: 'Descargar Excel (CSV)', tono: 'gris' });
+cu('y6', { x: 830, y: 975, w: 270, h: 66, nombre: 'Imprimir / guardar PDF', tono: 'gris' });
 
 rel('y1', 'w13', { tipo: 'extend' });
-rel('y2', 'w14', { tipo: 'extend' });
-rel('w14', 'y3', { tipo: 'include' });
+rel('y2', 'w14', { tipo: 'extend', tl: 0.55 });
+rel('y8', 'w14', { tipo: 'extend', tl: 0.55 });
+rel('w14', 'y3', { tipo: 'include', tl: 0.55 });
+rel('w19', 'y9', { tipo: 'include', tl: 0.55 });
+rel('y10', 'w19', { tipo: 'extend', tl: 0.5 });
 rel('w15', 'y4', { tipo: 'include' });
 rel('y5', 'w17', { tipo: 'extend' });
 rel('y6', 'w17', { tipo: 'extend' });
 rel('w18', 'y7', { tipo: 'include' });
 
 rel('API', 'y3', { tipo: 'linea' });
-rel('API', 'y4', { tipo: 'linea' });
-rel('API', 'y7', { tipo: 'linea' });
+rel('API', 'y9', { tipo: 'linea' });
+rel('API', 'y4', { tipo: 'linea', desde: 'b' });
+rel('API', 'y7', { tipo: 'linea', desde: 'b' });
 
-nota('nGuard', { x: 230, y: 1140, w: 1170, html:
-  '<b>Precondición común</b>: CU-13 a CU-18 exigen sesión iniciada (CU-12). El <i>validaruserGuard</i> revisa <i>sessionStorage</i> y, si no hay sesión, envía a /login. ' +
-  'Reportes y Usuarios solo se muestran al rol <i>administrador</i>; si un asesor entra por la URL ve el aviso "Solo el administrador…".' });
+nota('nGuard', { x: 230, y: 1215, w: 1270, html:
+  '<b>Precondición común</b>: CU-13 a CU-19 exigen sesión iniciada (CU-12). El <i>validaruserGuard</i> revisa <i>sessionStorage</i> y, si no hay sesión, envía a /login. ' +
+  'Reportes y Usuarios solo se muestran al rol <i>administrador</i>; si un asesor entra por la URL ve el aviso "Solo el administrador…". ' +
+  '<b>Adicional (verde)</b>: CU-19 abre /panel/aviso/:id desde el botón QR de la tabla de Inmuebles; el QR lleva http://IP:3900/api/qr/CÓDIGO.' });
 
 dibujar();
 </script>

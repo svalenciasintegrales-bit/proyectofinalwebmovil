@@ -2,135 +2,151 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="tam" content="2000x1660">
+<meta name="tam" content="2000x1890">
 <title>Diagrama de clases - App Android</title>
 <link rel="stylesheet" href="../comun.css">
 <script src="../uml.js"></script>
 </head>
 <body>
-<div id="lienzo" class="lienzo" style="width:2000px;height:1660px">
+<div id="lienzo" class="lienzo" style="width:2000px;height:1890px">
   <div class="diag-cab">
     <div class="barra"></div>
     <img src="../../../../web-angular/public/img/logo.png" alt="">
     <div>
       <div class="t">Diagrama de clases · App Android del cliente</div>
-      <div class="s">Kotlin 2.0 + Jetpack Compose (Material 3) · MVVM con StateFlow · Room (caracoli.db) · DataStore · HttpURLConnection + org.json · paquete com.example.caracoli</div>
+      <div class="s">Kotlin 2.0 + Jetpack Compose (Material 3) · MVVM con StateFlow · Room v2 (caracoli.db) · DataStore · HttpURLConnection + org.json · paquete com.example.caracoli</div>
     </div>
     <div class="der">Sistema InmoConecta<br>Caracoli Inmobiliaria</div>
   </div>
 </div>
 <script>
 // ---------------- capas ----------------
-paquete('pUI', { x: 20, y: 115, w: 1960, h: 265, titulo: 'ui · navigation  (Jetpack Compose)', tono: 'negro' });
-paquete('pVM', { x: 20, y: 410, w: 1960, h: 330, titulo: 'viewmodel  (ViewModel + MutableStateFlow / asStateFlow)', tono: 'rojo' });
-paquete('pData', { x: 20, y: 770, w: 1960, h: 350, titulo: 'data · repository / remote / local (DataStore)', tono: 'azul' });
-paquete('pRoom', { x: 20, y: 1150, w: 1250, h: 490, titulo: 'data.local.room  (base caracoli.db, versión 1)', tono: 'ambar' });
-paquete('pModel', { x: 1300, y: 1150, w: 680, h: 490, titulo: 'model', tono: 'verde' });
+paquete('pUI', { x: 20, y: 115, w: 1960, h: 355, titulo: 'ui · navigation  (Jetpack Compose)', tono: 'negro' });
+paquete('pVM', { x: 20, y: 500, w: 1960, h: 330, titulo: 'viewmodel  (ViewModel + MutableStateFlow / asStateFlow)', tono: 'rojo' });
+paquete('pData', { x: 20, y: 860, w: 1960, h: 350, titulo: 'data · repository / remote / local (DataStore)', tono: 'azul' });
+paquete('pRoom', { x: 20, y: 1240, w: 1250, h: 630, titulo: 'data.local.room  (base caracoli.db, versión 2 con MIGRACION_1_2)', tono: 'ambar' });
+paquete('pModel', { x: 1300, y: 1240, w: 680, h: 630, titulo: 'model', tono: 'verde' });
 
 // ---------------- ui / navegacion ----------------
 clase('MainActivity', { x: 40, y: 145, w: 440, est: 'ComponentActivity', nombre: 'MainActivity', tono: 'negro',
-  attrs: ['- manager: PreferencesManager', '- db: CaracoliDatabase', '- inmuebleRepo: InmuebleRepository', '- solicitudRepo: SolicitudRepository'],
-  mets: ['+ onCreate(savedInstanceState: Bundle?)', '  crea los 3 ViewModel con ViewModelProvider.Factory'] });
+  attrs: ['- codigoQr: MutableState<String?>'],
+  mets: ['+ onCreate(savedInstanceState: Bundle?)', '  crea DataStore, Room, Repository y los 3 ViewModel', '+ onNewIntent(intent: Intent)', '- leerCodigoQr(intent: Intent?): String?'] });
+nota('nManifest', { x: 40, y: 330, w: 370, html:
+  '<b>AndroidManifest</b>: <i>launchMode="singleTask"</i> e <i>intent-filter</i> VIEW · BROWSABLE para <b>caracoli://inmueble/CODIGO</b>: el QR del aviso abre la app en el detalle del inmueble.' });
 clase('Routes', { x: 510, y: 145, w: 340, est: '«object»', nombre: 'Routes', tono: 'negro',
   attrs: ['+ ONBOARDING, HOME, MIS_SOLICITUDES', '+ FAVORITOS, AJUSTES: String', '+ DETAIL = "detail/{id}"', '+ SOLICITUD = "solicitud/{id}/{tipo}"'],
   mets: ['+ detalle(id): String', '+ solicitud(id, tipo): String'] });
 clase('AppNavigation', { x: 880, y: 145, w: 380, est: '«@Composable» NavHost', nombre: 'AppNavigation', tono: 'negro',
   attrs: null,
-  mets: ['+ AppNavigation(nav: NavHostController,', '      inicio: String,', '      inmuebleVM, solicitudVM, prefsVM)', '  inicio = ONBOARDING o HOME (DataStore)'] });
+  mets: ['+ AppNavigation(nav: NavHostController,', '      initial: String, inmuebleVM, solicitudVM,', '      prefsVM, codigoQr: String?,', '      onQrAtendido: () -> Unit)', '  codigoQr → cargar().join() → detalle'] });
+clase('Galeria', { x: 510, y: 330, w: 680, est: '«@Composable» ui/components/Galeria.kt', nombre: 'Galeria', tono: 'negro',
+  attrs: null,
+  mets: ['+ fotosDelCarrusel(inmueble: Inmueble): List<String>   portada primero, sin repetir', '+ CarruselFotos(fotos, servidor, operacion, modifier)   HorizontalPager + contador',
+    '+ idVideoYoutube(enlace: String): String', '+ VideoYoutube(enlace, modifier)   WebView con el iframe de YouTube'] });
 clase('Pantallas', { x: 1290, y: 145, w: 670, est: '«@Composable» ui/screens · ui/components', nombre: 'Pantallas', tono: 'negro',
   attrs: ['OnboardingScreen(onTerminar)       HorizontalPager + Lottie', 'HomeScreen(vm, prefs, …)           catálogo, búsqueda, filtros',
-    'DetailScreen(id, vm, prefs, …)     detalle + simulador de cuota', 'SolicitudScreen(id, tipo, …)       visita o información',
+    'DetailScreen(id, vm, prefs, …)     carrusel, video, cuota', 'SolicitudScreen(id, tipo, …)       horas pasadas tachadas',
     'MisSolicitudesScreen(inmuebleVM, solicitudVM, …)', 'FavoritosScreen(vm, prefs, …)   ·   AjustesScreen(prefs, inmuebleVM, …)'],
-  mets: ['InmuebleCard · FotoInmueble (usa FotoCache) · EtiquetaOperacion', 'EstadoChip · AvisoSinConexion · BotonFiltro · DatoCard'] });
+  mets: ['InmuebleCard · FotoInmueble (usa FotoCache) · EtiquetaOperacion', 'EstadoChip · AvisoSinConexion · BotonFiltro · DatoCard',
+    'minutosDelDia(): Int  {SolicitudScreen, cada 30 s}'] });
 
 // ---------------- viewmodels ----------------
-clase('InmuebleViewModel', { x: 40, y: 440, w: 610, est: 'ViewModel', nombre: 'InmuebleViewModel', tono: 'rojo',
+clase('InmuebleViewModel', { x: 40, y: 530, w: 610, est: 'ViewModel', nombre: 'InmuebleViewModel', tono: 'rojo',
   attrs: ['- repository: InmuebleRepository', '+ filtro: StateFlow<FiltroOperacion>', '+ texto: StateFlow<String>', '+ inmuebles: StateFlow<List<Inmueble>>',
     '+ cargando: StateFlow<Boolean>', '+ sinConexion: StateFlow<Boolean>'],
   mets: ['+ cargar(): Job', '+ cambiarFiltro(nuevo: FiltroOperacion)', '+ cambiarTexto(nuevo: String)', '+ buscarInmueble(id): Inmueble?',
     '+ buscarPorCodigo(codigo): Inmueble?', '+ inmueblesFavoritos(ids: Set<String>): List<Inmueble>',
     '+ cuotaMensual(precio, cuotaInicial, anios, tasaAnual): Long', '- actualizarLista()'] });
-clase('PreferencesViewModel', { x: 690, y: 440, w: 560, est: 'ViewModel', nombre: 'PreferencesViewModel', tono: 'rojo',
+clase('PreferencesViewModel', { x: 690, y: 530, w: 560, est: 'ViewModel', nombre: 'PreferencesViewModel', tono: 'rojo',
   attrs: ['- manager: PreferencesManager', '+ oscuro: StateFlow<Boolean>  (stateIn)', '+ nombre, telefono, servidor: StateFlow<String>', '+ favoritos: StateFlow<Set<String>>'],
   mets: ['+ finalizarOnboarding(): Job', '+ guardarOscuro(valor: Boolean): Job', '+ guardarDatos(nombre, telefono): Job', '+ guardarServidor(valor: String): Job',
     '+ cambiarFavorito(id, esFavorito): Job'] });
-clase('SolicitudViewModel', { x: 1290, y: 440, w: 670, est: 'ViewModel', nombre: 'SolicitudViewModel', tono: 'rojo',
+clase('SolicitudViewModel', { x: 1290, y: 530, w: 670, est: 'ViewModel', nombre: 'SolicitudViewModel', tono: 'rojo',
   attrs: ['- repository: SolicitudRepository', '+ enviando: StateFlow<Boolean>', '+ resultado: StateFlow<Envio?>', '+ solicitudes: StateFlow<List<Solicitud>>',
     '+ cargando, sinConexion: StateFlow<Boolean>'],
   mets: ['+ enviar(inmuebleId, tipo, nombre, telefono, mensaje, fecha, hora): Job', '+ limpiarResultado()', '+ cargarMisSolicitudes(): Job', '+ sincronizar(): Job',
     '+ reintentar(localId: Long): Job', '+ eliminarBorrador(localId: Long): Job'] });
 
 // ---------------- data ----------------
-clase('InmuebleRepository', { x: 40, y: 800, w: 520, est: 'data/repository', nombre: 'InmuebleRepository', tono: 'azul',
+clase('InmuebleRepository', { x: 40, y: 890, w: 520, est: 'data/repository', nombre: 'InmuebleRepository', tono: 'azul',
   attrs: ['- manager: PreferencesManager', '- dao: InmuebleDao', '- inmuebles: MutableList<Inmueble>'],
-  mets: ['+ cargar(): Boolean  {ApiClient.get → Room}', '+ obtenerInmuebles(): List<Inmueble>', '+ buscarInmueble(id): Inmueble?',
+  mets: ['+ cargar(): Boolean  {API → Room; sin red: Room}', '+ obtenerInmuebles(): List<Inmueble>', '+ buscarInmueble(id): Inmueble?',
     '+ buscarPorCodigo(codigo): Inmueble?', '+ filtrar(filtro, texto): List<Inmueble>', '- llenar(lista)  {solo "disponible"}'] });
-clase('PreferencesManager', { x: 590, y: 800, w: 470, est: 'data/local · DataStore "caracoli_preferences"', nombre: 'PreferencesManager', tono: 'azul',
+clase('PreferencesManager', { x: 590, y: 890, w: 470, est: 'data/local · DataStore "caracoli_preferences"', nombre: 'PreferencesManager', tono: 'azul',
   attrs: ['+ onboardingCompletado, oscuro: Flow<Boolean>', '+ servidor, nombre, telefono: Flow<String>', '+ clienteId: Flow<String>', '+ favoritos: Flow<Set<String>>'],
   mets: ['+ finalizarOnboarding()', '+ guardarOscuro(valor)', '+ guardarServidor(valor)  {borra cliente_id}', '+ guardarDatos(nombre, telefono)', '+ guardarClienteId(id)', '+ cambiarFavorito(id, agregar)'] });
-clase('SolicitudRepository', { x: 1090, y: 800, w: 520, est: 'data/repository', nombre: 'SolicitudRepository', tono: 'azul',
-  attrs: ['- manager: PreferencesManager', '- borradorDao: BorradorDao', '- solicitudDao: SolicitudDao', '- candado: Mutex'],
-  mets: ['+ enviar(…): Envio  {borrador → API}', '+ sincronizarPendientes(): Int', '+ reintentar(localId)', '+ eliminarBorrador(localId)',
+clase('SolicitudRepository', { x: 1090, y: 890, w: 520, est: 'data/repository', nombre: 'SolicitudRepository', tono: 'azul',
+  attrs: ['- manager: PreferencesManager', '- borradorDao: BorradorDao', '- solicitudDao: SolicitudDao', '- enviandoPendientes: Boolean  {evita doble envío}'],
+  mets: ['+ enviar(…): Envio  {borrador → API}', '+ sincronizarPendientes(): Int', '- enviarPendientes(): Int', '+ reintentar(localId)', '+ eliminarBorrador(localId)',
     '+ misSolicitudes(): Pair<List<Solicitud>, Boolean>', '- enviarAhora(b: BorradorEntity): String?'] });
-clase('ApiClient', { x: 1640, y: 800, w: 320, est: '«object» data/remote', nombre: 'ApiClient', tono: 'azul',
+clase('ApiClient', { x: 1640, y: 890, w: 320, est: '«object» data/remote', nombre: 'ApiClient', tono: 'azul',
   attrs: null,
-  mets: ['+ get(url): JSONObject', '+ post(url, datos): JSONObject', '+ inmuebleDesdeJson(j): Inmueble', '+ solicitudDesdeJson(j, porEnviar)', '- leer(conexion): String'] });
-clase('FotoCache', { x: 1640, y: 1000, w: 320, est: '«object» data/remote', nombre: 'FotoCache', tono: 'azul',
-  attrs: null, mets: ['+ cargar(context, servidor, imagen): Bitmap?'] });
+  mets: ['+ get(url): JSONObject', '+ post(url, datos): JSONObject', '+ inmuebleDesdeJson(j): Inmueble', '+ solicitudDesdeJson(j, porEnviar)', '- leer(conexion): String',
+    '- texto(j, campo): String', '- listaDeTexto(j, campo): List<String>'] });
+clase('FotoCache', { x: 1640, y: 1100, w: 320, est: '«object» data/remote', nombre: 'FotoCache', tono: 'azul',
+  attrs: null, mets: ['+ cargar(servidor, imagen): Bitmap?  {suspend}'] });
 
 // ---------------- room ----------------
-clase('CaracoliDatabase', { x: 40, y: 1185, w: 340, est: '@Database · RoomDatabase', nombre: 'CaracoliDatabase', tono: 'ambar', abstracta: true,
-  attrs: ['- instancia: CaracoliDatabase? {static}'],
+clase('CaracoliDatabase', { x: 40, y: 1275, w: 340, est: '@Database · RoomDatabase', nombre: 'CaracoliDatabase', tono: 'ambar', abstracta: true,
+  attrs: ['- instancia: CaracoliDatabase? {static}', '+ MIGRACION_1_2: Migration {static}'],
   mets: ['+ inmuebleDao(): InmuebleDao', '+ solicitudDao(): SolicitudDao', '+ borradorDao(): BorradorDao', '+ obtener(context): CaracoliDatabase {static}'] });
-clase('InmuebleDao', { x: 420, y: 1185, w: 360, est: '@Dao', nombre: 'InmuebleDao', tono: 'ambar', abstracta: true, attrs: null,
+clase('InmuebleDao', { x: 420, y: 1275, w: 360, est: '@Dao', nombre: 'InmuebleDao', tono: 'ambar', abstracta: true, attrs: null,
   mets: ['+ todos(): List<InmuebleEntity>', '+ guardar(lista)  {REPLACE}', '+ borrarTodos()', '+ reemplazar(lista)  {@Transaction}'] });
-clase('SolicitudDao', { x: 420, y: 1345, w: 360, est: '@Dao', nombre: 'SolicitudDao', tono: 'ambar', abstracta: true, attrs: null,
+clase('SolicitudDao', { x: 420, y: 1450, w: 360, est: '@Dao', nombre: 'SolicitudDao', tono: 'ambar', abstracta: true, attrs: null,
   mets: ['+ todas(): List<SolicitudEntity>', '+ guardar(lista) · borrarTodas()', '+ reemplazar(lista)  {@Transaction}'] });
-clase('BorradorDao', { x: 420, y: 1485, w: 360, est: '@Dao', nombre: 'BorradorDao', tono: 'ambar', abstracta: true, attrs: null,
+clase('BorradorDao', { x: 420, y: 1600, w: 360, est: '@Dao', nombre: 'BorradorDao', tono: 'ambar', abstracta: true, attrs: null,
   mets: ['+ todos() · pendientes(): List<BorradorEntity>', '+ buscar(localId): BorradorEntity?', '+ insertar(b): Long · actualizar(b) · eliminar(b)'] });
-clase('InmuebleEntity', { x: 830, y: 1185, w: 400, est: '@Entity "inmuebles"', nombre: 'InmuebleEntity', tono: 'ambar',
-  attrs: ['+ id: String  {@PrimaryKey}', '+ codigo, titulo, tipo, operacion: String', '+ precio: Long · area, habitaciones, banos: Int', '+ barrio, ciudad, descripcion, imagen, estado'], mets: null });
-clase('SolicitudEntity', { x: 830, y: 1345, w: 400, est: '@Entity "solicitudes"', nombre: 'SolicitudEntity', tono: 'ambar',
+clase('InmuebleEntity', { x: 830, y: 1275, w: 400, est: '@Entity "inmuebles"', nombre: 'InmuebleEntity', tono: 'ambar',
+  attrs: ['+ id: String  {@PrimaryKey}', '+ codigo, titulo, tipo, operacion: String', '+ precio: Long · area, habitaciones, banos: Int', '+ barrio, ciudad, descripcion, imagen, estado',
+    '+ imagenes: String = ""  {"a.jpg|b.jpg", v2}', '+ video: String = ""  {v2}'], mets: null });
+clase('SolicitudEntity', { x: 830, y: 1470, w: 400, est: '@Entity "solicitudes"', nombre: 'SolicitudEntity', tono: 'ambar',
   attrs: ['+ id: String  {@PrimaryKey}', '+ inmuebleId, tipo, fechaCita, hora, mensaje,', '  respuesta, estado, fecha: String'], mets: null });
-clase('BorradorEntity', { x: 830, y: 1485, w: 400, est: '@Entity "borradores"', nombre: 'BorradorEntity', tono: 'ambar',
+clase('BorradorEntity', { x: 830, y: 1620, w: 400, est: '@Entity "borradores"', nombre: 'BorradorEntity', tono: 'ambar',
   attrs: ['+ localId: Long  {@PrimaryKey autoGenerate}', '+ inmuebleId, tipo, nombre, telefono, mensaje, …', '+ estadoEnvio: "pendiente" | "error" · error · creada'], mets: null });
+clase('Conversion', { x: 40, y: 1690, w: 360, est: '«funciones» Entidades.kt · @Entity ↔ modelo', nombre: 'Conversión', tono: 'ambar',
+  attrs: null,
+  mets: ['+ inmuebleDesdeTabla(e): Inmueble', '+ inmuebleParaTabla(i): InmuebleEntity', '+ solicitudDesdeTabla(e): Solicitud', '+ solicitudParaTabla(s): SolicitudEntity',
+    '+ borradorDesdeTabla(b): Solicitud  {porEnviar}'] });
 
 // ---------------- model ----------------
-clase('mInmueble', { x: 1320, y: 1185, w: 300, est: 'data class', nombre: 'Inmueble', tono: 'verde',
-  attrs: ['+ id, codigo, titulo: String', '+ tipo, operacion: String', '+ precio: Long', '+ barrio, ciudad: String', '+ area, habitaciones, banos: Int', '+ descripcion, imagen, estado'], mets: null });
-clase('mSolicitud', { x: 1640, y: 1185, w: 320, est: 'data class', nombre: 'Solicitud', tono: 'verde',
+clase('mInmueble', { x: 1320, y: 1275, w: 300, est: 'data class', nombre: 'Inmueble', tono: 'verde',
+  attrs: ['+ id, codigo, titulo: String', '+ tipo, operacion: String', '+ precio: Long', '+ barrio, ciudad: String', '+ area, habitaciones, banos: Int', '+ descripcion, estado: String',
+    '+ imagen: String  {portada}', '+ imagenes: List<String> = []', '+ video: String = ""'], mets: null });
+clase('mSolicitud', { x: 1640, y: 1275, w: 320, est: 'data class', nombre: 'Solicitud', tono: 'verde',
   attrs: ['+ id, inmuebleId, tipo: String', '+ fechaCita, hora, mensaje: String', '+ respuesta, estado, fecha: String', '+ porEnviar: Boolean', '+ localId: Long = 0', '+ errorEnvio: String = ""'], mets: null });
-enumeracion('FiltroOperacion', { x: 1320, y: 1455, w: 190, valores: ['TODOS', 'VENTA', 'ARRIENDO'] });
-clase('Envio', { x: 1530, y: 1455, w: 190, est: 'data class', nombre: 'Envio', tono: 'verde', attrs: ['+ resultado', '+ mensaje: String'], mets: null });
-enumeracion('ResultadoEnvio', { x: 1760, y: 1455, w: 200, valores: ['ENVIADA', 'SIN_CONEXION', 'ERROR'] });
+enumeracion('FiltroOperacion', { x: 1320, y: 1540, w: 190, valores: ['TODOS', 'VENTA', 'ARRIENDO'] });
+clase('Envio', { x: 1530, y: 1540, w: 190, est: 'data class', nombre: 'Envio', tono: 'verde', attrs: ['+ resultado', '+ mensaje: String'], mets: null });
+enumeracion('ResultadoEnvio', { x: 1760, y: 1540, w: 200, valores: ['ENVIADA', 'SIN_CONEXION', 'ERROR'] });
+nota('nModelos', { x: 1320, y: 1700, w: 640, html:
+  'Modelos.kt también tiene <b>formatoPrecio(valor): String</b> (250000000 → $250.000.000) y <b>formatoFecha(fecha): String</b> (AAAA-MM-DD → DD/MM/AAAA).' });
 
 // ---------------- relaciones ----------------
 rel('MainActivity', 'AppNavigation', { tipo: 'dependencia', desde: 't', hasta: 't', fd: 0.85, fh: 0.2, via: [[414, 135], [956, 135]], etiqueta: 'setContent { AppNavigation(...) }', tl: 0.5 });
 rel('AppNavigation', 'Routes', { tipo: 'dependencia', desde: 'l', hasta: 'r', fd: 0.5, recta: 'h' });
 rel('AppNavigation', 'Pantallas', { tipo: 'dependencia', desde: 'r', hasta: 'l', fd: 0.5, recta: 'h', });
-rel('MainActivity', 'pVM', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.5, recta: 'v', etiqueta: 'crea (Factory)', dx: 50 });
+rel('Pantallas', 'Galeria', { tipo: 'dependencia', desde: 'l', hasta: 'r', fd: 0.9, recta: 'h', etiqueta: 'DetailScreen', dy: -12 });
+rel('MainActivity', 'nManifest', { tipo: 'nota', desde: 'b', hasta: 't', fd: 0.4, recta: 'v' });
+rel('MainActivity', 'pVM', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.92, recta: 'v', etiqueta: 'crea (Factory)', tl: 0.6, dx: -55 });
 rel('Pantallas', 'pVM', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.4, recta: 'v', etiqueta: 'collectAsStateWithLifecycle()', dx: 100 });
 
-rel('InmuebleViewModel', 'InmuebleRepository', { tipo: 'agregacion', desde: 'b', hasta: 't', fd: 0.4, recta: 'v', m2: '1' });
+rel('InmuebleViewModel', 'InmuebleRepository', { tipo: 'agregacion', desde: 'b', hasta: 't', fd: 0.6, recta: 'v', m2: '1' });
 rel('PreferencesViewModel', 'PreferencesManager', { tipo: 'agregacion', desde: 'b', hasta: 't', fd: 0.5, recta: 'v', m2: '1' });
 rel('SolicitudViewModel', 'SolicitudRepository', { tipo: 'agregacion', desde: 'b', hasta: 't', fd: 0.25, recta: 'v', m2: '1' });
 
 rel('InmuebleRepository', 'PreferencesManager', { tipo: 'agregacion', desde: 'r', hasta: 'l', fd: 0.2, recta: 'h', m2: '1' });
 rel('SolicitudRepository', 'PreferencesManager', { tipo: 'agregacion', desde: 'l', hasta: 'r', fd: 0.2, recta: 'h', m2: '1' });
 rel('SolicitudRepository', 'ApiClient', { tipo: 'dependencia', desde: 'r', hasta: 'l', fd: 0.3, recta: 'h' });
-rel('Pantallas', 'FotoCache', { tipo: 'dependencia', desde: 'r', hasta: 'r', fd: 0.82, fh: 0.5, via: [[1972, 312], [1972, 1036]], etiqueta: 'FotoInmueble', tl: 0.6, dx: -48 });
+rel('Pantallas', 'FotoCache', { tipo: 'dependencia', desde: 'r', hasta: 'r', fd: 0.82, fh: 0.5, via: [[1972, 335], [1972, 1141]], etiqueta: 'FotoInmueble', tl: 0.117, dx: -60 });
 
 rel('InmuebleRepository', 'InmuebleDao', { tipo: 'agregacion', desde: 'b', hasta: 't', fd: 0.6, fh: 0.15, m2: '1' });
-rel('SolicitudRepository', 'BorradorDao', { tipo: 'agregacion', desde: 'b', hasta: 'r', fd: 0.1, fh: 0.5, via: [[1142, 1142], [812, 1142], [812, 1532]], m2: '1' });
-rel('SolicitudRepository', 'SolicitudDao', { tipo: 'agregacion', desde: 'b', hasta: 'r', fd: 0.04, fh: 0.5, via: [[1111, 1132], [800, 1132], [800, 1390]], m2: '1' });
+rel('SolicitudRepository', 'BorradorDao', { tipo: 'agregacion', desde: 'b', hasta: 'r', fd: 0.1, fh: 0.5, via: [[1142, 1232], [812, 1232], [812, 1656]], m2: '1' });
+rel('SolicitudRepository', 'SolicitudDao', { tipo: 'agregacion', desde: 'b', hasta: 'r', fd: 0.04, fh: 0.5, via: [[1111, 1222], [800, 1222], [800, 1506]], m2: '1' });
 
 rel('CaracoliDatabase', 'InmuebleDao', { tipo: 'composicion', desde: 'r', hasta: 'l', fd: 0.3, recta: 'h' });
 rel('CaracoliDatabase', 'SolicitudDao', { tipo: 'composicion', desde: 'b', hasta: 'l', fd: 0.5, fh: 0.5, orto: true });
-rel('CaracoliDatabase', 'BorradorDao', { tipo: 'composicion', desde: 'b', hasta: 'l', fd: 0.3, fh: 0.5, orto: true });
+rel('CaracoliDatabase', 'BorradorDao', { tipo: 'composicion', desde: 'b', hasta: 'l', fd: 0.3, fh: 0.3, orto: true });
 
-rel('InmuebleEntity', 'mInmueble', { tipo: 'dependencia', desde: 'r', hasta: 'l', fd: 0.5, recta: 'h', etiqueta: 'aModelo()', dy: -12 });
-rel('SolicitudEntity', 'mSolicitud', { tipo: 'dependencia', desde: 'r', hasta: 'b', fd: 0.45, fh: 0.2, orto: true, etiqueta: 'aModelo()', tl: 0.2, dy: -12 });
-rel('BorradorEntity', 'mSolicitud', { tipo: 'dependencia', desde: 'r', hasta: 'b', fd: 0.25, fh: 0.08, via: [[1290, 1510], [1290, 1440], [1665, 1440]], etiqueta: 'aModelo()  {porEnviar = true}', tl: 0.62, dy: -11 });
+rel('Conversion', 'pModel', { tipo: 'dependencia', desde: 'r', hasta: 'l', fd: 0.75, recta: 'h', etiqueta: 'crea Inmueble · Solicitud', tl: 0.5, dy: -12 });
 rel('Envio', 'ResultadoEnvio', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.6, recta: 'h', m2: '1' });
 
 dibujar();

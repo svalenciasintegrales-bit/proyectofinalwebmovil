@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>DIAGRAMA DE PROCESOS - InmoConecta Caracoli</title>
+<link rel="stylesheet" href="pdf-comun.css">
+<style>
+  .sim { display: inline-flex; align-items: center; justify-content: center; }
+  table.pasos td:first-child { width: 12mm; text-align: center; font-weight: bold; color: #E3141B; }
+  table.pasos td:nth-child(3) { width: 42mm; }
+  table.pasos td:last-child { width: 26mm; }
+</style>
+</head>
+<body>
+
+<section class="pagina p-a3">
+  <div class="portada">
+    <img class="logo" src="../../../web-angular/public/img/logo.png" alt="Caracoli">
+    <div class="doc">DIAGRAMA DE PROCESOS</div>
+    <div class="sis">Sistema InmoConecta</div>
+    <div class="linea"></div>
+    <div class="dato">Del letrero con código QR a la visita · ciclo de vida de una solicitud</div>
+    <div class="dato">Cliente: <b>Caracoli Inmobiliaria</b>, Cra 3 # 11-89 Centro, Cartago, Valle del Cauca</div>
+    <div class="dato">Proyecto integrador de Móvil I y Desarrollo Web 2</div>
+    <div class="dato">Ingeniería de Software · Institución Universitaria Visión de las Américas</div>
+    <div class="integrantes"><b>Integrantes:</b><div></div><div></div><div></div></div>
+    <div class="fecha">Cartago, noviembre de 2026</div>
+  </div>
+</section>
+
+<section class="pagina p-a3">
+  <h2>1. Alcance y notación</h2>
+  <p>El diagrama de procesos muestra <b>cómo trabaja la inmobiliaria con InmoConecta</b>, de punta a punta: el asesor publica el inmueble con sus fotos, su video y un aviso con código QR; el cliente encuentra el inmueble escaneando el letrero o escribiendo su código; pide información o agenda una visita desde la app; la inmobiliaria la atiende en el panel y el cliente ve la respuesta. Se usa la notación <b>BPMN</b> con tres franjas: Asesor / Administrador (panel web), Sistema InmoConecta (API REST + MongoDB) y Cliente (app Android).</p>
+  <table class="leyenda-tabla">
+    <tr><th>Símbolo</th><th>Significado</th></tr>
+    <tr><td><span class="sim" style="width:30px;height:30px;border:2.2px solid #15803D;border-radius:50%;background:#F0FBF4"></span></td><td><b>Evento de inicio</b>: lo que dispara el proceso (ej. hay un inmueble para publicar, el cliente ve el letrero).</td></tr>
+    <tr><td><span class="sim" style="width:30px;height:30px;border:5px solid #B91C1C;border-radius:50%;background:#FFF1F1"></span></td><td><b>Evento de fin</b>: cómo termina el camino (visita realizada, información respondida, cancelada, no le interesa).</td></tr>
+    <tr><td><span class="sim" style="width:120px;height:34px;border:1.6px solid #333;border-radius:10px;font-size:9pt">Tarea</span></td><td><b>Tarea</b>: algo que hace un participante. Color verde = la hace el sistema; azul = lo ve el cliente en la app; rojo = acciones clave del proceso; ámbar = trabajo sin conexión.</td></tr>
+    <tr><td><span class="sim" style="width:30px;height:30px;transform:rotate(45deg);border:1.8px solid #8A6D00;background:#FFFBEA"></span></td><td><b>Compuerta exclusiva (✕)</b>: una decisión con una sola salida, por ejemplo «¿Hay internet?» o «¿Es válida?».</td></tr>
+    <tr><td><svg width="150" height="20"><line x1="5" y1="10" x2="140" y2="10" stroke="#333" stroke-width="1.5"/><path d="M130,4 L141,10 L130,16" fill="none" stroke="#333" stroke-width="1.4"/></svg></td><td><b>Flujo de secuencia</b>: el orden de las tareas.</td></tr>
+    <tr><td><svg width="150" height="20"><line x1="5" y1="10" x2="140" y2="10" stroke="#333" stroke-width="1.5" stroke-dasharray="7 5"/><path d="M130,4 L141,10 L130,16" fill="none" stroke="#333" stroke-width="1.4"/></svg></td><td><b>Mensaje</b>: algo que pasa fuera del sistema (el cliente ve el letrero en la calle).</td></tr>
+  </table>
+
+  <h3>Actividades del proceso (Figura 1)</h3>
+  <table class="compacta pasos">
+    <tr><th>N.º</th><th>Actividad</th><th>Participante</th><th>Caso de uso</th></tr>
+    <tr><td>1</td><td><b>Registrar el inmueble</b> con sus datos, varias fotos (elige la portada) y, si quiere, un video de YouTube.</td><td>Asesor / Administrador</td><td>CU-14</td></tr>
+    <tr><td>2</td><td><b>Validar y guardar</b>: código único, precio mayor que 0, fotos de máximo 5 MB y enlace de YouTube válido.</td><td>Sistema</td><td>CU-14</td></tr>
+    <tr><td>3</td><td><b>Generar el aviso con QR</b> e imprimirlo o guardarlo en PDF; <b>colocar el letrero</b> en el inmueble.</td><td>Asesor / Administrador</td><td>CU-19</td></tr>
+    <tr><td>4</td><td>El cliente ve el letrero y <b>escanea el QR</b> (la página /api/qr abre la app en el inmueble) o <b>escribe el código</b> en la app.</td><td>Cliente / Sistema</td><td>CU-20, CU-04</td></tr>
+    <tr><td>5</td><td><b>Ver el detalle</b>: carrusel de fotos, video y simulador de cuota.</td><td>Cliente</td><td>CU-05, CU-06</td></tr>
+    <tr><td>6</td><td><b>Agendar visita o pedir información</b>. Si la fecha es hoy, las horas que ya pasaron salen tachadas.</td><td>Cliente</td><td>CU-07, CU-08</td></tr>
+    <tr><td>7</td><td>Sin internet se <b>guarda un borrador</b> en el celular y se envía solo al volver la conexión.</td><td>Cliente</td><td>CU-07, CU-08, CU-09</td></tr>
+    <tr><td>8</td><td><b>Validar y guardar la solicitud</b> como pendiente: fecha y hora no pasadas, inmueble disponible, sin otra solicitud abierta igual. Si no es válida, el cliente ve el motivo y la corrige.</td><td>Sistema</td><td>CU-07, CU-08</td></tr>
+    <tr><td>9</td><td><b>Atender la solicitud</b>: el panel avisa de las pendientes; el asesor responde y cambia el estado (el sistema valida la transición).</td><td>Asesor / Sistema</td><td>CU-13, CU-15</td></tr>
+    <tr><td>10</td><td><b>Consultar Mis solicitudes</b>: el cliente ve el estado y la respuesta. Si la visita está confirmada, se hace la visita y el asesor la marca como realizada.</td><td>Cliente / Asesor</td><td>CU-09, CU-15</td></tr>
+  </table>
+</section>
+
+<section class="pagina p-a3">
+  <div class="fig-tit"><span class="num">Figura 1.</span><span class="t">Proceso comercial: del letrero a la visita</span></div>
+  <div class="fig-desc">Las tres franjas muestran quién hace cada tarea. El proceso tiene dos inicios: la publicación del inmueble (asesor) y el momento en que el cliente ve el letrero.</div>
+  <div class="fig"><img src="../png/procesos/01-proceso-general.png"></div>
+</section>
+
+<section class="pagina p-a3">
+  <div class="fig-tit"><span class="num">Figura 2.</span><span class="t">Ciclo de vida de una solicitud</span></div>
+  <div class="fig-desc">Arriba, los estados que existen solo en el celular (borrador por enviar o con error); abajo, los estados guardados en MongoDB que el asesor cambia desde el panel. El cliente los ve en «Mis solicitudes».</div>
+  <div class="fig"><img src="../png/procesos/02-ciclo-solicitud.png"></div>
+</section>
+
+</body>
+</html>

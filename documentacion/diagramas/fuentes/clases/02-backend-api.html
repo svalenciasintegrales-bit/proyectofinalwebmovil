@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="tam" content="1900x1125">
+<meta name="tam" content="1900x1255">
 <title>Diagrama de clases - API REST</title>
 <link rel="stylesheet" href="../comun.css">
 <script src="../uml.js"></script>
 </head>
 <body>
-<div id="lienzo" class="lienzo" style="width:1900px;height:1125px">
+<div id="lienzo" class="lienzo" style="width:1900px;height:1255px">
   <div class="diag-cab">
     <div class="barra"></div>
     <img src="../../../../web-angular/public/img/logo.png" alt="">
@@ -23,67 +23,75 @@
 // ---------------- capas ----------------
 paquete('pServidor', { x: 20, y: 120, w: 1860, h: 210, titulo: 'Servidor · index.js / app.js', tono: 'negro' });
 paquete('pRutas', { x: 20, y: 360, w: 1860, h: 150, titulo: 'routers/ · express.Router()', tono: 'azul' });
-paquete('pCtrl', { x: 20, y: 540, w: 1860, h: 395, titulo: 'controller/ · objetos con métodos async (try/catch + await)', tono: 'rojo' });
-paquete('pModelos', { x: 20, y: 960, w: 1860, h: 145, titulo: 'models/ · mongoose.model (ver diagrama de dominio)', tono: 'verde' });
+paquete('pCtrl', { x: 20, y: 540, w: 1860, h: 525, titulo: 'controller/ · objetos con métodos async (try/catch + await) · cada uno valida el :id con validator.isMongoId', tono: 'rojo' });
+paquete('pModelos', { x: 20, y: 1090, w: 1860, h: 145, titulo: 'models/ · mongoose.model (ver diagrama de dominio)', tono: 'verde' });
 
 // ---------------- servidor ----------------
-clase('index', { x: 570, y: 150, w: 330, est: '«módulo» index.js', nombre: 'index', tono: 'negro',
-  attrs: ['- PORT: Number = 3900', '- MONGO_URI: String', '- MAX_FOTO_MB: Number = 5'],
-  mets: ['+ process.loadEnvFile(): void', '+ mongoose.connect(MONGO_URI): Promise', '+ app.listen(PORT): Server'] });
-clase('app', { x: 960, y: 150, w: 360, est: '«módulo» app.js', nombre: 'app : Express', tono: 'negro',
-  attrs: ['- bodyParser.urlencoded / json', '- CORS manual con res.header(...)'],
-  mets: ['+ use("/api", inmueble_routes)', '+ use("/api", cliente_routes)', '+ use("/api", cita_routes)', '+ use("/api", usuario_routes)'] });
-clase('validarid', { x: 1410, y: 150, w: 440, est: '«middleware» routers/validarid.js', nombre: 'validarid', tono: 'gris',
-  attrs: null,
-  mets: ['+ router.param("id", fn): void', '  id no es MongoId → 400 "id inválido"'] });
+clase('index', { x: 570, y: 150, w: 340, est: '«módulo» index.js', nombre: 'index', tono: 'negro',
+  attrs: ['- port: Number = PORT || 3900', '- mongoUri: String = MONGO_URI || …/InmoConecta'],
+  mets: ['+ process.loadEnvFile(): void  {lee .env}', '+ mongoose.connect(mongoUri): Promise', '+ app.listen(port): Server'] });
+clase('app', { x: 960, y: 150, w: 370, est: '«módulo» app.js', nombre: 'app : Express', tono: 'negro',
+  attrs: ['- bodyParser.urlencoded / json', '- CORS manual con res.header(...)  {OPTIONS → 200}'],
+  mets: ['+ use("/api", inmuebleRoutes)', '+ use("/api", clienteRoutes)', '+ use("/api", citaRoutes)', '+ use("/api", usuarioRoutes)'] });
+nota('nRespuestas', { x: 1400, y: 150, w: 450, html:
+  '<b>Formato de las respuestas</b>: JSON <i>{ status, message, … }</i>, excepto:<ul>' +
+  '<li><b>GET /get-image/:image</b> → el archivo de la foto</li>' +
+  '<li><b>GET /qr/:codigo</b> → página HTML del QR del aviso: en Android abre la app con <i>intent://inmueble/CODIGO#Intent;scheme=caracoli;…</i> (o <i>caracoli://inmueble/CODIGO</i>); sin la app muestra los datos y los teléfonos</li></ul>' +
+  'No hay manejador propio de 404: una ruta que no existe la responde Express.' });
 clase('md_upload', { x: 50, y: 150, w: 470, est: '«middleware» Multer (inmuebleroutes.js)', nombre: 'md_upload', tono: 'gris',
-  attrs: ['- storage: diskStorage("./upload/inmuebles")', '- fileFilter: png | jpg | jpeg | gif | webp', '- limits.fileSize: MAX_FOTO_MB · 1024 · 1024'],
-  mets: ['+ single("file0"): RequestHandler'] });
+  attrs: ['- storage: diskStorage("./upload/inmuebles")', '- fileFilter: png | jpg | jpeg | gif | webp', '- limits.fileSize: MAX_FOTO_MB (5) · 1024 · 1024'],
+  mets: ['+ upload.array("file0", 10): RequestHandler', '  error de Multer → 400 con mensaje claro'] });
 
 // ---------------- rutas ----------------
-clase('rInmueble', { x: 50, y: 400, w: 420, est: '«Router» inmuebleroutes.js', nombre: 'InmuebleRoutes', tono: 'azul', attrs: null, mets: ['11 rutas → InmuebleController'] });
+clase('rInmueble', { x: 50, y: 400, w: 440, est: '«Router» inmuebleroutes.js', nombre: 'InmuebleRoutes', tono: 'azul', attrs: null, mets: ['14 rutas → InmuebleController'] });
 clase('rCliente', { x: 1010, y: 400, w: 400, est: '«Router» clienteroutes.js', nombre: 'ClienteRoutes', tono: 'azul', attrs: null, mets: ['7 rutas → ClienteController'] });
-clase('rCita', { x: 520, y: 400, w: 440, est: '«Router» citaroutes.js', nombre: 'CitaRoutes', tono: 'azul', attrs: null, mets: ['9 rutas → CitaController'] });
+clase('rCita', { x: 540, y: 400, w: 420, est: '«Router» citaroutes.js', nombre: 'CitaRoutes', tono: 'azul', attrs: null, mets: ['9 rutas → CitaController'] });
 clase('rUsuario', { x: 1460, y: 400, w: 390, est: '«Router» usuarioroutes.js', nombre: 'UsuarioRoutes', tono: 'azul', attrs: null, mets: ['5 rutas → UsuarioController'] });
 
 // ---------------- controladores ----------------
-clase('cInmueble', { x: 50, y: 580, w: 420, est: '«controller» inmueblecontroller.js', nombre: 'InmuebleController', tono: 'rojo',
+clase('cInmueble', { x: 50, y: 580, w: 440, est: '«controller» inmueblecontroller.js', nombre: 'InmuebleController', tono: 'rojo',
   attrs: null,
   mets: ['+ probando()        POST /inmueble/probando', '+ test()            GET  /inmueble/test',
     '+ save()            POST /save-inmueble', '+ getInmuebles()    GET  /inmuebles?last&operacion',
-    '+ getInmueble()     GET  /inmueble/:id', '+ update()          PUT  /inmueble/:id',
+    '+ getInmueble()     GET  /inmueble/:id', '+ update()          PUT  /inmueble/:id  {lista fija}',
     '+ delete()          DEL  /inmueble/:id', '+ getInmuebleCodigo() GET /inmueble-codigo/:codigo',
-    '+ upload()          POST /upload-image/:id', '+ getImage()        GET  /get-image/:image',
-    '+ search()          GET  /search/:search'] });
+    '+ upload()          POST /upload-image/:id  {agrega}', '+ borrarImagen()    DEL  /inmueble/:id/imagen/:image',
+    '+ getImage()        GET  /get-image/:image', '+ paginaQr()        GET  /qr/:codigo  (HTML)',
+    '+ red()             GET  /red  { ips, puerto }', '+ search()          GET  /search/:search',
+    '- esc(texto): String', '- idYoutube(enlace): String', '- videoNormal(enlace): String | null',
+    '- borrarArchivos(nombres): void', '- precioTexto(valor): String'] });
 clase('cCliente', { x: 1010, y: 580, w: 400, est: '«controller» clientecontroller.js', nombre: 'ClienteController', tono: 'rojo',
   attrs: null,
   mets: ['+ probando()   POST /cliente/probando', '+ test()       GET  /cliente/test', '+ save()       POST /save-cliente',
     '+ getClientes() GET  /clientes?last', '+ getCliente()  GET  /cliente/:id', '+ update()     PUT  /cliente/:id',
     '+ delete()     DEL  /cliente/:id'] });
-clase('cCita', { x: 520, y: 580, w: 440, est: '«controller» citacontroller.js', nombre: 'CitaController', tono: 'rojo',
+clase('cCita', { x: 540, y: 580, w: 420, est: '«controller» citacontroller.js', nombre: 'CitaController', tono: 'rojo',
   attrs: ['- TRANSICIONES: Object {static}'],
   mets: ['+ probando()         POST /cita/probando', '+ test()             GET  /cita/test', '+ save()             POST /save-cita',
     '+ getCitas()         GET  /citas?estado&last', '+ getCitasInmueble() GET  /citas-inmueble/:id',
     '+ getCitasCliente()  GET  /citas-cliente/:id', '+ getCita()          GET  /cita/:id', '+ update()           PUT  /cita/:id',
-    '+ delete()           DEL  /cita/:id', '- hoy(): Date'] });
+    '+ delete()           DEL  /cita/:id', '- hoy(): String  {AAAA-MM-DD}', '- minutosAhora(): Number',
+    '- minutosDeHora(texto): Number'] });
 clase('cUsuario', { x: 1460, y: 580, w: 390, est: '«controller» usuariocontroller.js', nombre: 'UsuarioController', tono: 'rojo',
   attrs: null,
   mets: ['+ probando()    POST /usuario/probando', '+ save()        POST /save-usuario', '+ getUsuarios() GET  /usuarios',
     '+ login()       POST /login', '+ delete()      DEL  /usuario/:id?actual', '- encriptar(c): String', '- comprobar(c, g): Boolean'] });
 
-nota('nCodigos', { x: 1460, y: 810, w: 390, html:
-  '<b>Códigos HTTP</b>: 200 OK · 201 creado · 400 datos/id inválidos · 401 login incorrecto · 404 no existe · 409 regla de negocio o repetido · 500 error del servidor.' });
+nota('nCodigos', { x: 1510, y: 790, w: 340, html:
+  '<b>Códigos HTTP</b>: 200 OK · 201 creado · 400 datos o id inválidos · 401 login incorrecto · 404 no existe · 409 regla de negocio o repetido · 500 error del servidor.' });
+nota('nIds', { x: 1110, y: 790, w: 300, html:
+  '<b>Validación del :id</b>: ya no hay middleware <i>validarid</i>; cada método que recibe un id lo revisa con <i>validator.isMongoId</i> → <b>400</b>.' });
 
 // ---------------- modelos ----------------
-clase('mInmueble', { x: 50, y: 1000, w: 420, est: '«Model» colección Inmuebles', nombre: 'Inmueble', tono: 'verde', attrs: null, mets: ['codigo, titulo, tipo, operacion, precio, …, estado'] });
-clase('mCliente', { x: 1010, y: 1000, w: 400, est: '«Model» colección Clientes', nombre: 'Cliente', tono: 'verde', attrs: null, mets: ['nombre, telefono, correo, fecha'] });
-clase('mCita', { x: 520, y: 1000, w: 440, est: '«Model» colección Citas', nombre: 'Cita', tono: 'verde', attrs: null, mets: ['inmueble_id, cliente_id, tipo, fecha_cita, hora, …'] });
-clase('mUsuario', { x: 1460, y: 1000, w: 390, est: '«Model» colección Usuarios', nombre: 'Usuario', tono: 'verde', attrs: null, mets: ['nombre, usuario, contrasena, rol'] });
+clase('mInmueble', { x: 50, y: 1130, w: 440, est: '«Model» colección Inmuebles', nombre: 'Inmueble', tono: 'verde', attrs: null, mets: ['codigo, titulo, …, imagen, imagenes[], video, estado'] });
+clase('mCliente', { x: 1010, y: 1130, w: 400, est: '«Model» colección Clientes', nombre: 'Cliente', tono: 'verde', attrs: null, mets: ['nombre, telefono, correo, fecha'] });
+clase('mCita', { x: 540, y: 1130, w: 420, est: '«Model» colección Citas', nombre: 'Cita', tono: 'verde', attrs: null, mets: ['inmueble_id, cliente_id, tipo, fecha_cita, hora, …'] });
+clase('mUsuario', { x: 1460, y: 1130, w: 390, est: '«Model» colección Usuarios', nombre: 'Usuario', tono: 'verde', attrs: null, mets: ['nombre, usuario, contrasena, rol'] });
 
 // ---------------- relaciones ----------------
 rel('index', 'app', { tipo: 'dependencia', desde: 'r', hasta: 'l', fd: 0.4, recta: 'h', etiqueta: 'require', dy: -12 });
+rel('app', 'nRespuestas', { tipo: 'nota', desde: 'r', hasta: 'l', fd: 0.4, recta: 'h' });
 rel('app', 'pRutas', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.5, recta: 'v', etiqueta: 'app.use("/api", …)', tl: 0.45, dx: 70 });
-rel('pRutas', 'validarid', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.88, recta: 'v', etiqueta: 'todas las rutas con :id', tl: 0.45, dx: 85 });
 rel('rInmueble', 'md_upload', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.5, recta: 'v', etiqueta: 'POST /upload-image/:id', tl: 0.5, dx: 80 });
 
 rel('rInmueble', 'cInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't' });
@@ -92,13 +100,13 @@ rel('rCliente', 'cCliente', { tipo: 'dependencia', desde: 'b', hasta: 't' });
 rel('rUsuario', 'cUsuario', { tipo: 'dependencia', desde: 'b', hasta: 't' });
 
 rel('cInmueble', 'mInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.4, recta: 'v' });
-rel('cInmueble', 'mCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.85, fh: 0.2, etiqueta: '¿tiene solicitudes?', tl: 0.3 });
-rel('cCita', 'mInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.12, fh: 0.85, etiqueta: '¿existe y disponible?', tl: 0.72 });
+rel('cInmueble', 'mCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.85, fh: 0.08, via: [[424, 1035], [574, 1035]], etiqueta: '¿tiene solicitudes?', tl: 0.45, dy: -12 });
+rel('cCita', 'mInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.12, fh: 0.75, via: [[590, 995], [380, 995]], etiqueta: '¿existe y disponible?', tl: 0.448, dy: -12 });
 rel('cCita', 'mCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.5, recta: 'v' });
-rel('cCita', 'mCliente', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.88, fh: 0.15, etiqueta: '¿existe?', tl: 0.3 });
-rel('cCliente', 'mCliente', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.6, recta: 'v' });
-rel('cCliente', 'mCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.15, fh: 0.8, etiqueta: '¿tiene solicitudes?', tl: 0.72 });
-rel('cUsuario', 'mUsuario', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.5, recta: 'v' });
+rel('cCita', 'mCliente', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.8, fh: 0.22, via: [[876, 1005], [1098, 1005]], etiqueta: '¿existe?', tl: 0.41, dy: -12 });
+rel('cCliente', 'mCliente', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.13, recta: 'v' });
+rel('cCliente', 'mCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.04, fh: 0.92, via: [[1026, 1055], [926, 1055]], etiqueta: '¿tiene solicitudes?', tl: 0.594, dx: -64 });
+rel('cUsuario', 'mUsuario', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.05, recta: 'v' });
 
 dibujar();
 </script>

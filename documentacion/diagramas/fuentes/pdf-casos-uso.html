@@ -14,11 +14,16 @@
   .ficha ul { margin: 0; padding-left: 12pt; }
   .ficha td { font-size: 9pt; line-height: 1.38; }
   .ficha td.clave { width: 30mm; font-size: 8.8pt; }
-  .matriz th, .matriz td { text-align: center; padding: 1.2pt 1.5pt; font-size: 7.6pt; line-height: 1.2; }
+  .matriz th, .matriz td { text-align: center; padding: 0.95pt 1.5pt; font-size: 7.6pt; line-height: 1.12; }
   .matriz td.req { text-align: left; white-space: nowrap; }
   .matriz td.x { color: #E3141B; font-weight: bold; font-size: 7.5pt; }
   .matriz th.v { writing-mode: vertical-rl; transform: rotate(180deg); height: 13mm; padding: 2pt 1pt; }
   .matriz tr.mod td { background: #ECECEC !important; font-weight: bold; color: #111; text-align: left; }
+  .matriz tr.mod.adic td { background: #E6F4EA !important; color: #15803D; }
+  tr.lista-adic td { background: #F3FBF5 !important; }
+  #tablaLista td, #tablaLista th { padding: 0.9pt 4pt; line-height: 1.22; }
+  h3 { margin: 7pt 0 3pt; }
+  #relCasos { font-size: 9pt; margin: 0; line-height: 1.35; }
 </style>
 </head>
 <body>
@@ -40,22 +45,24 @@
 
 <section class="pagina p-vertical">
   <h2>1. Alcance y actores</h2>
-  <p><b>Proceso central:</b> un interesado pide información o agenda una visita a un inmueble desde el celular; la inmobiliaria la atiende en el panel web y le responde; el cliente ve el estado y la respuesta en su app. Los casos de uso se identifican con <b>CU-01 a CU-18</b> y cada ficha indica los requerimientos funcionales que cubre (numeración de la <i>Tabla de requerimientos</i>, módulos 1 a 9) y las historias de usuario del documento técnico (HU-01 a HU-09).</p>
+  <p><b>Proceso central:</b> un interesado pide información o agenda una visita a un inmueble desde el celular; la inmobiliaria la atiende en el panel web y le responde; el cliente ve el estado y la respuesta en su app. Los casos de uso se identifican con <b>CU-01 a CU-20</b> y cada ficha indica los requerimientos funcionales que cubre (numeración de la <i>Tabla de requerimientos</i>, módulos 1 a 9, más los adicionales <b>A.1 a A.5</b>) y las historias de usuario del documento técnico (HU-01 a HU-09).</p>
+  <p><b>Adicionales (plus aprobados):</b> aviso con <b>código QR</b> (CU-19) que abre el inmueble en la app (CU-20), <b>varias fotos con portada</b> y <b>video de YouTube</b> (CU-14 y CU-05) y <b>horas pasadas bloqueadas</b> al agendar (CU-07). Se agregaron después de consultarlos con la profesora y en los diagramas van en verde.</p>
   <table class="compacta">
-    <tr><th style="width:38mm">Actor</th><th style="width:22mm">Tipo</th><th>Descripción</th><th style="width:30mm">Interfaz</th></tr>
-    <tr><td><b>Cliente / interesado</b></td><td>Principal</td><td>Persona que busca casa, apartamento, local, lote o finca en venta o arriendo. No necesita cuenta: la app lo registra en el servidor con su nombre y celular la primera vez que envía una solicitud.</td><td>App Android</td></tr>
-    <tr><td><b>Asesor inmobiliario</b></td><td>Principal</td><td>Persona del equipo de Caracoli que publica inmuebles, atiende las solicitudes y gestiona los clientes.</td><td>Panel web</td></tr>
+    <tr><th style="width:34mm">Actor</th><th style="width:22mm">Tipo</th><th>Descripción</th><th style="width:25mm">Interfaz</th></tr>
+    <tr><td><b>Cliente / interesado</b></td><td>Principal</td><td>Persona que busca casa, apartamento, local, lote o finca en venta o arriendo. No necesita cuenta: la app lo registra en el servidor con su nombre y celular la primera vez que envía una solicitud. También puede escanear el QR del aviso.</td><td>App Android</td></tr>
+    <tr><td><b>Asesor inmobiliario</b></td><td>Principal</td><td>Persona del equipo de Caracoli que publica inmuebles (con fotos y video), imprime el aviso con QR, atiende las solicitudes y gestiona los clientes.</td><td>Panel web</td></tr>
     <tr><td><b>Administrador</b></td><td>Principal</td><td>Dueño de la inmobiliaria. Hereda todos los casos del asesor y además genera reportes y gestiona los usuarios del panel.</td><td>Panel web</td></tr>
-    <tr><td><b>API REST</b></td><td>Secundario (sistema)</td><td>Servidor Node.js + Express que valida las reglas de negocio y guarda en MongoDB. Participa en los casos que envían o consultan datos.</td><td>HTTP :3900/api</td></tr>
+    <tr><td><b>API REST</b></td><td>Secundario (sistema)</td><td>Servidor Node.js + Express que valida las reglas de negocio y guarda en MongoDB. Participa en los casos que envían o consultan datos; también sirve la página del QR y la IP del computador.</td><td>HTTP :3900/api</td></tr>
   </table>
   <h3>Lista de casos de uso</h3>
   <table class="compacta" id="tablaLista">
-    <tr><th style="width:16mm">Código</th><th>Caso de uso</th><th style="width:34mm">Actor</th><th style="width:28mm">Interfaz</th><th style="width:36mm">Requerimientos</th></tr>
+    <tr><th style="width:16mm">Código</th><th>Caso de uso</th><th style="width:34mm">Actor</th><th style="width:28mm">Interfaz</th><th style="width:46mm">Requerimientos</th></tr>
   </table>
   <h3>Relaciones entre casos</h3>
-  <ul style="font-size:9pt">
-    <li><b>«include»</b>: el caso base siempre ejecuta el incluido (ej. CU-07 Agendar visita incluye "Registrar cliente en el servidor").</li>
-    <li><b>«extend»</b>: el caso extendido se ejecuta solo bajo una condición (ej. "Guardar borrador sin conexión" extiende CU-07 y CU-08 cuando no hay internet).</li>
+  <ul id="relCasos">
+    <li><b>«include»</b>: el caso base siempre ejecuta el incluido (ej. CU-07 Agendar visita incluye "Registrar cliente en el servidor"; CU-20 Abrir inmueble desde el QR incluye CU-05 Ver detalle).</li>
+    <li><b>«extend»</b>: el caso extendido se ejecuta solo bajo una condición (ej. "Guardar borrador sin conexión" extiende CU-07 y CU-08 cuando no hay internet; "Ver video del inmueble" extiende CU-05 solo si el inmueble tiene video).</li>
+    <li><b>Dependencia entre interfaces</b>: el aviso de CU-19 (panel) inicia CU-20 (app).</li>
     <li><b>Generalización de actores</b>: el Administrador hereda todos los casos del Asesor.</li>
   </ul>
 </section>
@@ -79,7 +86,7 @@
 
 <section class="pagina p-vertical">
   <h2>3. Matriz de trazabilidad: requerimientos × casos de uso</h2>
-  <p style="font-size:8.5pt;margin:0 0 2pt">Cada requerimiento funcional de la tabla de requerimientos queda cubierto por al menos un caso de uso.</p>
+  <p style="font-size:8.5pt;margin:0 0 2pt">Cada requerimiento funcional de la tabla de requerimientos (módulos 1 a 9) y cada adicional aprobado (A.1 a A.5) queda cubierto por al menos un caso de uso.</p>
   <table class="matriz" id="matriz"></table>
 </section>
 
@@ -105,20 +112,20 @@ var CU = [
     f: ['El cliente toca <b>Código del letrero</b>.', 'El sistema abre el diálogo "Escribe el código que aparece en el letrero de Caracoli (ej: CAR-102)".', 'El cliente escribe el código y toca <b>Buscar</b>.', 'El sistema busca el código sin distinguir mayúsculas.', 'Abre el detalle del inmueble («include» CU-05).'],
     alt: ['4a. No existe o no está disponible: muestra "Inmueble no encontrado" en el diálogo.', '3a. Toca <b>Cancelar</b>: se cierra el diálogo.'],
     post: 'El cliente queda en el detalle del inmueble del letrero.' },
-  { c: 'CU-05', n: 'Ver detalle del inmueble', a: 'Cliente', i: 'App', r: ['7.5'], hu: 'HU-01, HU-02',
-    pre: 'El cliente tocó una tarjeta, un favorito, una solicitud o buscó por código.',
-    f: ['El sistema muestra la foto con la etiqueta de operación, el título, barrio, ciudad y código.', 'Muestra el precio (con "/mes" si es arriendo), área, habitaciones, baños y la descripción.', 'Muestra los botones <b>Agendar visita</b> (CU-07) y <b>Pedir información</b> (CU-08) y el corazón de favorito (CU-10).', 'Si el inmueble es de venta, muestra el simulador de cuota («extend» CU-06).'],
-    alt: ['1a. El inmueble ya no está en el catálogo: "Inmueble no encontrado".'],
+  { c: 'CU-05', n: 'Ver detalle del inmueble', a: 'Cliente', i: 'App', r: ['7.5', 'A.3', 'A.4'], hu: 'HU-01, HU-02',
+    pre: 'El cliente tocó una tarjeta, un favorito o una solicitud, buscó por código (CU-04) o escaneó el QR del aviso (CU-20).',
+    f: ['El sistema muestra el carrusel de fotos (primero la portada; las demás se pasan deslizando con el dedo) con la etiqueta de operación, el título, barrio, ciudad y código.', 'Muestra el precio (con "/mes" si es arriendo), área, habitaciones, baños y la descripción.', 'Si el inmueble tiene video, lo reproduce dentro de la app con el reproductor de YouTube («extend» Ver video del inmueble).', 'Muestra los botones <b>Agendar visita</b> (CU-07) y <b>Pedir información</b> (CU-08) y el corazón de favorito (CU-10).', 'Si el inmueble es de venta, muestra el simulador de cuota («extend» CU-06).'],
+    alt: ['1a. El inmueble ya no está en el catálogo: "Inmueble no encontrado".', '1b. El inmueble no tiene fotos: el carrusel muestra el símbolo de imagen vacía.', '3a. El inmueble no tiene video: no se muestra el reproductor.', '3b. Al salir del detalle se cierra el reproductor y el video deja de sonar.'],
     post: 'Ninguna (solo consulta).' },
   { c: 'CU-06', n: 'Simular cuota del crédito', a: 'Cliente', i: 'App', r: ['9.1'], hu: '—',
     pre: 'Detalle abierto de un inmueble en <b>venta</b>.',
     f: ['El sistema muestra "Simulador de cuota" con valores por defecto: Inicial 30 %, 20 años, tasa 12 % E.A.', 'El cliente cambia la cuota inicial, los años o la tasa.', 'El sistema calcula el préstamo = precio × (1 − inicial), la tasa mensual = (1 + E.A.)<sup>1/12</sup> − 1 y la cuota fija mensual.', 'Muestra la "Cuota mensual aproximada" (ej. $250.000.000 → ≈ $1.852.590) y el aviso "Valor de referencia. La cuota real depende del banco."'],
     alt: ['2a. Campo vacío o no numérico: se toma como 0 y la cuota se recalcula.', '0a. Inmueble en arriendo: el simulador no se muestra.'],
     post: 'Nada se guarda; es solo un cálculo de referencia.' },
-  { c: 'CU-07', n: 'Agendar visita', a: 'Cliente · API REST', i: 'App', r: ['8.2', '8.4', '8.5', '5.1'], hu: 'HU-03',
+  { c: 'CU-07', n: 'Agendar visita', a: 'Cliente · API REST', i: 'App', r: ['8.2', '8.4', '8.5', '5.1', 'A.5'], hu: 'HU-03',
     pre: 'Detalle abierto de un inmueble <i>disponible</i>.',
-    f: ['El cliente toca <b>Agendar visita</b>.', 'El sistema muestra el formulario con nombre y celular ya llenos desde DataStore.', 'El cliente escribe la fecha (AAAA-MM-DD), elige la hora en los chips (8:00 a.m. a 5:00 p.m.) y un comentario opcional.', 'Toca <b>Confirmar visita</b>.', 'La app guarda la solicitud como borrador en Room.', 'Si el celular aún no tiene id de cliente, la app hace <code>POST /save-cliente</code> y guarda el id («include» Registrar cliente).', 'La app hace <code>POST /save-cita</code>; la API valida (inmueble disponible, fecha ≥ hoy, sin otra solicitud abierta igual) y guarda la cita en estado <i>pendiente</i> (201).', 'La app borra el borrador y muestra "¡Visita agendada!" con el botón <b>Ver mis solicitudes</b> (CU-09).'],
-    alt: ['3a. Fecha con formato inválido: "Escribe la fecha así: 2026-11-20". Fecha pasada: "La fecha no puede ser anterior a hoy".', '5a. Sin conexión («extend» Guardar borrador): "Guardada sin conexión"; se envía sola después.', '7a. La API responde 409 (inmueble no disponible o ya tiene una solicitud abierta): "No se pudo enviar" con el mensaje del servidor; el borrador queda con error.', '7b. La API responde 409 con la misma cita (reintento): se toma como enviada, sin duplicar.'],
+    f: ['El cliente toca <b>Agendar visita</b>.', 'El sistema muestra el formulario con nombre y celular ya llenos desde DataStore.', 'El cliente escribe la fecha (AAAA-MM-DD), elige la hora en los chips (8:00 a.m. a 5:00 p.m.) y un comentario opcional. Si la fecha es hoy, las horas que ya pasaron salen tachadas y no se pueden elegir (la lista se revisa cada 30 s).', 'Toca <b>Confirmar visita</b>.', 'La app guarda la solicitud como borrador en Room.', 'Si el celular aún no tiene id de cliente, la app hace <code>POST /save-cliente</code> y guarda el id («include» Registrar cliente).', 'La app hace <code>POST /save-cita</code>; la API valida (inmueble disponible, fecha no anterior a hoy, si es hoy que la hora no haya pasado, sin otra solicitud abierta igual) y guarda la cita en estado <i>pendiente</i> (201).', 'La app borra el borrador y muestra "¡Visita agendada!" con el botón <b>Ver mis solicitudes</b> (CU-09).'],
+    alt: ['3a. Fecha con formato inválido (la app solo revisa el formato): "Escribe la fecha así: 2026-11-20".', '3b. La fecha es hoy y ya pasaron todas las horas: "Hoy ya no quedan horas disponibles. Elige otra fecha."', '3c. La hora elegida pasa mientras el cliente llena el formulario: se quita la selección y debe elegir otra.', '5a. Sin conexión («extend» Guardar borrador): "Guardada sin conexión"; se envía sola después.', '7a. Fecha pasada (400): "La fecha de la visita no puede ser anterior a hoy". Hora que ya pasó (400): "Esa hora ya pasó. Elige una hora más tarde u otro día". La app muestra "No se pudo enviar" con el mensaje y el formulario conserva lo escrito.', '7b. La API responde 409 (inmueble no disponible o ya tiene una solicitud abierta): "No se pudo enviar" con el mensaje del servidor; si era un borrador enviado después, queda con error (CU-09).', '7c. La API responde 409 con la misma cita (reintento): se toma como enviada, sin duplicar.'],
     post: 'Cita pendiente en la colección Citas; aparece en el panel (CU-15).' },
   { c: 'CU-08', n: 'Pedir información', a: 'Cliente · API REST', i: 'App', r: ['8.1', '8.4', '8.5', '5.1'], hu: 'HU-04',
     pre: 'Detalle abierto de un inmueble <i>disponible</i>.',
@@ -150,11 +157,11 @@ var CU = [
     f: ['El usuario abre <b>Tablero</b>.', 'El panel consulta inmuebles, solicitudes y clientes.', 'Muestra el saludo con el número de solicitudes pendientes y 6 indicadores (pendientes, visitas de 7 días, disponibles, portafolio en venta, clientes y tasa de atención).', 'Muestra 4 gráficas: actividad de 14 días, estado de solicitudes, inmuebles más solicitados y venta vs arriendo.', 'Muestra la agenda de próximas visitas, las últimas solicitudes y el inmueble más pedido.', 'El menú y la campana actualizan el contador de pendientes cada 10 s («extend»).'],
     alt: ['2a. Error de conexión: el tablero muestra el mensaje de error.'],
     post: 'Ninguna (solo consulta).' },
-  { c: 'CU-14', n: 'Gestionar inmuebles', a: 'Asesor · Administrador · API', i: 'Panel', r: ['3.1', '3.2', '3.3', '3.4', '3.5'], hu: 'HU-07',
+  { c: 'CU-14', n: 'Gestionar inmuebles', a: 'Asesor · Administrador · API', i: 'Panel', r: ['3.1', '3.2', '3.3', '3.4', '3.5', 'A.3', 'A.4'], hu: 'HU-07',
     pre: 'Sesión iniciada.',
-    f: ['El usuario abre <b>Inmuebles</b>; el panel lista los inmuebles con foto, código, operación, precio y estado, con búsqueda y filtros.', 'Toca <b>Nuevo inmueble</b> y llena código, título, tipo, operación, precio, barrio, ciudad, área, habitaciones, baños y descripción.', 'Toca <b>Guardar</b>; el panel hace <code>POST /save-inmueble</code>.', 'La API valida código único y precio &gt; 0 («include») y responde 201.', 'Para editar toca el lápiz, cambia los datos o el estado (disponible, arrendado, vendido) y guarda (<code>PUT</code>).', 'Para la foto toca la cámara y elige el archivo («extend» Subir foto: <code>POST /upload-image/:id</code>, key file0).', 'Para eliminar toca la papelera y confirma (<code>DELETE</code>).'],
-    alt: ['4a. Código repetido (409): "Ya existe un inmueble con el código CAR-…".', '4b. Precio vacío o ≤ 0: error 400 en el campo.', '6a. Foto con formato distinto de png, jpg, jpeg, gif o webp, o de más de 5 MB: error.', '7a. Inmueble con solicitudes (409): no se borra; se sugiere marcarlo vendido o arrendado.'],
-    post: 'El cambio se ve en la app del cliente al actualizar el catálogo.' },
+    f: ['El usuario abre <b>Inmuebles</b>; el panel lista los inmuebles con la portada, el número de fotos, el ícono de video si lo tiene, código, operación, precio y estado, con búsqueda y filtros.', 'Toca <b>Nuevo inmueble</b> y llena código, título, tipo, operación, precio, barrio, ciudad, área, habitaciones, baños y descripción.', 'En <b>Fotos</b> toca <b>Agregar fotos</b> y elige una o varias; con la estrella marca la portada y con la X quita una foto nueva («extend» Subir fotos y elegir portada).', 'Si quiere, pega el enlace de YouTube y ve la vista previa del video («extend» Agregar video de YouTube).', 'Toca <b>Guardar</b>; el panel hace <code>POST /save-inmueble</code> y después sube las fotos nuevas con <code>POST /upload-image/:id</code> (key file0).', 'La API valida código único, precio &gt; 0, que el video sea de YouTube y que la portada sea una de sus fotos («include»), y responde 201.', 'Para editar toca el lápiz y cambia los datos, el estado (disponible, arrendado, vendido), la portada, el video o las fotos (<code>PUT /inmueble/:id</code>; una foto guardada se borra con su papelera: <code>DELETE /inmueble/:id/imagen/:image</code>).', 'Para eliminar el inmueble toca la papelera de la tabla y confirma (<code>DELETE</code>).'],
+    alt: ['3a. Foto con formato distinto de png, jpg, jpeg, gif o webp, de más de 5 MB, o más de 10 fotos a la vez: muestra el error y esa foto no se agrega.', '4a. El enlace no es de YouTube: "Pega un enlace de YouTube" (la API también lo rechaza con 400).', '6a. Código repetido (409): "Ya existe un inmueble con el código CAR-…". Precio vacío o ≤ 0: error 400 en el campo.', '6b. Los datos se guardan pero las fotos no suben: "Los datos se guardaron, pero las fotos no…".', '7a. Se borra la foto de portada: la siguiente foto queda de portada.', '8a. Inmueble con solicitudes (409): no se borra; se sugiere marcarlo vendido o arrendado.'],
+    post: 'El cambio, con el carrusel de fotos y el video, se ve en la app del cliente al actualizar el catálogo.' },
   { c: 'CU-15', n: 'Atender solicitudes', a: 'Asesor · Administrador · API', i: 'Panel', r: ['4.1', '4.2', '4.3', '4.4', '4.5'], hu: 'HU-06',
     pre: 'Sesión iniciada y solicitudes enviadas desde la app (CU-07, CU-08).',
     f: ['El usuario abre <b>Solicitudes</b>; el panel las lista de la más reciente a la más antigua.', 'Filtra por tipo (visitas, información) y por estado.', 'Toca <b>Responder</b>; el panel muestra el resumen: cliente, teléfono, inmueble, fecha y hora o pregunta.', 'Elige el nuevo estado (solo las transiciones permitidas) y escribe la respuesta para el cliente.', 'Toca <b>Enviar respuesta</b>; el panel hace <code>PUT /cita/:id</code>.', 'La API valida la transición («include») y guarda estado y respuesta (200).', 'El cliente ve la respuesta en la app (CU-09).'],
@@ -174,7 +181,17 @@ var CU = [
     pre: 'Sesión iniciada con rol <i>administrador</i>.',
     f: ['El administrador abre <b>Usuarios</b>; el panel lista nombre, usuario, rol, permisos y fecha, sin contraseñas.', 'Toca <b>Nuevo usuario</b> y escribe nombre, usuario, contraseña (mínimo 4) y rol (asesor o administrador).', 'Toca <b>Guardar</b>; la API encripta la contraseña con sal + sha256 («include») y responde 201.', 'Para eliminar toca la papelera y confirma (<code>DELETE /usuario/:id?actual=</code>).'],
     alt: ['3a. Usuario repetido (409).', '3b. Contraseña de menos de 4 caracteres (400).', '4a. Intenta borrarse a sí mismo o al último administrador (409); en su propia fila la papelera está deshabilitada.', '1a. Entra un asesor: "Solo el administrador puede gestionar los usuarios".'],
-    post: 'El nuevo usuario ya puede iniciar sesión (CU-12).' }
+    post: 'El nuevo usuario ya puede iniciar sesión (CU-12).' },
+  { c: 'CU-19', n: 'Generar aviso con QR', a: 'Asesor · Administrador · API', i: 'Panel', r: ['A.1'], hu: '—', adic: true,
+    pre: 'Sesión iniciada e inmueble creado (CU-14). El computador de la API y los celulares están en la misma red WiFi.',
+    f: ['En <b>Inmuebles</b> el usuario toca el botón del QR de un inmueble; el panel abre <code>/panel/aviso/:id</code>.', 'Si el panel se abrió con localhost, pide a la API <code>GET /api/red</code> la IP del computador en la red («include» Obtener IP del servidor); si se abrió con la IP, usa esa misma.', 'El panel arma el enlace <code>http://IP-del-PC:3900/api/qr/CÓDIGO</code> y lo convierte en imagen QR (librería qrcode).', 'Muestra el aviso: logo, teléfonos, SE VENDE o SE ARRIENDA, la foto de portada, los datos básicos y el QR, con la ayuda "El QR lleva…".', 'Si la IP no es la correcta, el usuario la corrige en "IP del servidor" y el QR se vuelve a generar.', 'Toca <b>Imprimir / Guardar PDF</b>; el navegador imprime solo el aviso o lo guarda como PDF («extend»).'],
+    alt: ['1a. El inmueble no existe: "No se encontró el inmueble."', '2a. La API no responde o no encuentra la IP: el QR queda con localhost y el usuario escribe la IP a mano.', '3a. No se puede generar la imagen: "No se pudo generar el código QR." y el botón de imprimir queda deshabilitado.', '4a. El inmueble no está disponible: aviso en rojo de que al escanear el QR la app dirá que ya no está disponible.'],
+    post: 'Aviso impreso o en PDF para poner en el inmueble. Si la IP del computador cambia, hay que volver a imprimirlo.' },
+  { c: 'CU-20', n: 'Abrir inmueble desde el QR del aviso', a: 'Cliente · API REST', i: 'App', r: ['A.2'], hu: '—', adic: true,
+    pre: 'Aviso impreso (CU-19). Celular Android con la app instalada y en la misma red WiFi que el computador de la API.',
+    f: ['El cliente escanea el QR del aviso con la cámara del celular.', 'El celular abre la página <code>GET /api/qr/:codigo</code> que sirve la API («include» Abrir la página del QR).', 'En Android, la página abre sola la app con el enlace <code>caracoli://inmueble/CÓDIGO</code>.', 'La app vuelve a cargar el catálogo (de la API o, sin internet, de Room) y busca el código.', 'La app abre el detalle del inmueble («include» CU-05).'],
+    alt: ['2a. El código no existe: la página muestra "Inmueble no encontrado" (404).', '3a. La app no está instalada (o el celular no es Android): la página muestra la foto, SE VENDE / SE ARRIENDA, título, barrio, precio, área y los teléfonos de Caracoli.', '3b. El lector de QR no abre la app: el cliente toca "¿No se abrió? Toca aquí".', '4a. El inmueble no está en el catálogo (vendido, arrendado o la app conectada a otro servidor): la app muestra "Inmueble no encontrado".'],
+    post: 'El cliente queda en el detalle del inmueble del aviso y puede agendar la visita (CU-07) o pedir información (CU-08).' }
 ];
 
 var REQ = [
@@ -186,7 +203,8 @@ var REQ = [
   ['REPORTES (WEB)', [['6.1', 'Solicitudes por fechas (CSV/PDF)'], ['6.2', 'Inventario de inmuebles']]],
   ['CATÁLOGO (MÓVIL)', [['7.1', 'Bienvenida la primera vez'], ['7.2', 'Listar disponibles'], ['7.3', 'Buscar'], ['7.4', 'Filtrar venta / arriendo'], ['7.5', 'Detalle'], ['7.6', 'Buscar por código del letrero'], ['7.7', 'Catálogo sin conexión']]],
   ['SOLICITUDES (MÓVIL)', [['8.1', 'Pedir información'], ['8.2', 'Agendar visita'], ['8.3', 'Mis solicitudes'], ['8.4', 'Cola sin conexión'], ['8.5', 'Recordar nombre y celular']]],
-  ['HERRAMIENTAS (MÓVIL)', [['9.1', 'Simulador de cuota'], ['9.2', 'Favoritos'], ['9.3', 'Modo oscuro']]]
+  ['HERRAMIENTAS (MÓVIL)', [['9.1', 'Simulador de cuota'], ['9.2', 'Favoritos'], ['9.3', 'Modo oscuro']]],
+  ['ADICIONALES (plus aprobados)', [['A.1', 'Aviso con código QR'], ['A.2', 'Abrir el inmueble con el QR'], ['A.3', 'Varias fotos y portada'], ['A.4', 'Video de YouTube'], ['A.5', 'Horas pasadas bloqueadas']], true]
 ];
 
 function lista(t) { return '<ol>' + t.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol>'; }
@@ -196,6 +214,7 @@ function viñetas(t) { return '<ul>' + t.map(function (x) { return '<li>' + x + 
 var tl = document.getElementById('tablaLista');
 CU.forEach(function (u) {
   var tr = document.createElement('tr');
+  if (u.adic) tr.className = 'lista-adic';
   tr.innerHTML = '<td><b>' + u.c + '</b></td><td>' + u.n + '</td><td>' + u.a.replace(' · API REST', '').replace(' · API', '') + '</td><td>' + (u.i === 'App' ? 'App Android' : 'Panel web') + '</td><td>' + u.r.join(', ') + '</td>';
   tl.appendChild(tr);
 });
@@ -220,7 +239,7 @@ CU.forEach(function (u) {
 var m = document.getElementById('matriz');
 var h = '<tr><th style="text-align:left">Requerimiento</th>' + CU.map(function (u) { return '<th class="v">' + u.c + '</th>'; }).join('') + '</tr>';
 REQ.forEach(function (mod) {
-  h += '<tr class="mod"><td colspan="' + (CU.length + 1) + '">' + mod[0] + '</td></tr>';
+  h += '<tr class="mod' + (mod[2] ? ' adic' : '') + '"><td colspan="' + (CU.length + 1) + '">' + mod[0] + '</td></tr>';
   mod[1].forEach(function (r) {
     h += '<tr><td class="req"><b>' + r[0] + '</b> ' + r[1] + '</td>' + CU.map(function (u) { return u.r.indexOf(r[0]) >= 0 ? '<td class="x">●</td>' : '<td></td>'; }).join('') + '</tr>';
   });

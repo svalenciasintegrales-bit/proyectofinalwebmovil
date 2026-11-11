@@ -2,37 +2,37 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="tam" content="2000x1385">
+<meta name="tam" content="2000x1540">
 <title>Diagrama de clases - Panel Angular</title>
 <link rel="stylesheet" href="../comun.css">
 <script src="../uml.js"></script>
 </head>
 <body>
-<div id="lienzo" class="lienzo" style="width:2000px;height:1385px">
+<div id="lienzo" class="lienzo" style="width:2000px;height:1540px">
   <div class="diag-cab">
     <div class="barra"></div>
     <img src="../../../../web-angular/public/img/logo.png" alt="">
     <div>
       <div class="t">Diagrama de clases · Panel web del administrador</div>
-      <div class="s">Angular 21 (componentes standalone) + Bootstrap 5.3 + ng2-charts · servicios con HttpClient · sesión en sessionStorage · web-angular/src/app</div>
+      <div class="s">Angular 21 (componentes standalone) + Bootstrap 5.3 + ng2-charts + qrcode · servicios con HttpClient · sesión en sessionStorage · web-angular/src/app</div>
     </div>
     <div class="der">Sistema InmoConecta<br>Caracoli Inmobiliaria</div>
   </div>
 </div>
 <script>
 // ---------------- capas ----------------
-paquete('pApp', { x: 20, y: 115, w: 1000, h: 250, titulo: 'app · configuración, rutas y guard', tono: 'negro' });
-paquete('pEstr', { x: 1040, y: 115, w: 940, h: 250, titulo: 'estructura · layout del panel', tono: 'negro' });
-paquete('pMod1', { x: 20, y: 395, w: 1960, h: 360, titulo: 'modulos · componentes de página', tono: 'rojo' });
-paquete('pServ', { x: 20, y: 785, w: 1960, h: 220, titulo: 'servicios · @Injectable({ providedIn: "root" }) · url = http://{hostname}:3900/api', tono: 'azul' });
-paquete('pMod2', { x: 20, y: 1035, w: 1960, h: 330, titulo: 'modulos · componentes de página (continuación)', tono: 'rojo' });
+paquete('pApp', { x: 20, y: 115, w: 1000, h: 295, titulo: 'app · configuración, rutas y guard', tono: 'negro' });
+paquete('pEstr', { x: 1040, y: 115, w: 940, h: 295, titulo: 'estructura · layout del panel', tono: 'negro' });
+paquete('pMod1', { x: 20, y: 440, w: 1960, h: 480, titulo: 'modulos · componentes de página', tono: 'rojo' });
+paquete('pServ', { x: 20, y: 950, w: 1960, h: 230, titulo: 'servicios · @Injectable({ providedIn: "root" }) · url = http://{hostname}:3900/api', tono: 'azul' });
+paquete('pMod2', { x: 20, y: 1210, w: 1960, h: 310, titulo: 'modulos · componentes de página (continuación)', tono: 'rojo' });
 
 // ---------------- app ----------------
-clase('appConfig', { x: 40, y: 145, w: 300, est: '«ApplicationConfig» app.config.ts', nombre: 'appConfig', tono: 'negro', attrs: null,
-  mets: ['provideRouter(routes)', 'provideHttpClient()', 'provideCharts(...)', 'provideZonelessChangeDetection()'] });
-clase('routes', { x: 365, y: 145, w: 320, est: '«Routes» app.routes.ts', nombre: 'routes', tono: 'negro', attrs: null,
-  mets: ['/login → Login', '/panel → Main (layout)', '  /tablero /inmuebles /solicitudes', '  /clientes /reportes /usuarios', '  canActivate: [validaruserGuard]', '** → NoEncontro'] });
-clase('guard', { x: 710, y: 145, w: 290, est: '«CanActivate» guard/', nombre: 'validaruserGuard', tono: 'negro',
+clase('appConfig', { x: 40, y: 145, w: 330, est: '«ApplicationConfig» app.config.ts', nombre: 'appConfig', tono: 'negro', attrs: null,
+  mets: ['provideBrowserGlobalErrorListeners()', 'provideZonelessChangeDetection()', 'provideRouter(routes,', '  withInMemoryScrolling(top))', 'provideHttpClient()', 'provideCharts(withDefaultRegisterables())'] });
+clase('routes', { x: 390, y: 145, w: 310, est: '«Routes» app.routes.ts', nombre: 'routes', tono: 'negro', attrs: null,
+  mets: ['/login → Login', '/panel → Main (layout)', '  /tablero /inmuebles /aviso/:id', '  /solicitudes /clientes', '  /reportes /usuarios', '  canActivate: [validaruserGuard]', '** → NoEncontro'] });
+clase('guard', { x: 720, y: 145, w: 280, est: '«CanActivate» guard/', nombre: 'validaruserGuard', tono: 'negro',
   attrs: ['- id_user: any', '- router: Router'],
   mets: ['+ canActivate(route, state): boolean', '  sin sessionStorage "id" → /login'] });
 
@@ -40,80 +40,95 @@ clase('guard', { x: 710, y: 145, w: 290, est: '«CanActivate» guard/', nombre: 
 clase('Main', { x: 1060, y: 145, w: 250, est: '«Component» estructura/main', nombre: 'Main', tono: 'negro',
   attrs: ['+ isSidebarActive: boolean', '+ isCollapsed: boolean'],
   mets: ['+ toggleSidebar()', '+ toggleCollapse()'] });
-clase('Header', { x: 1340, y: 145, w: 300, est: '«Component» header', nombre: 'Header', tono: 'negro',
-  attrs: ['- scita: Cita', '+ titulo, descripcion, hoy: string', '+ pendientes: number', '+ @Output toggleSidebar'],
-  mets: ['+ actualizarTitulo(url)', '+ contarPendientes()  {cada 10 s}'] });
+clase('Header', { x: 1335, y: 145, w: 305, est: '«Component» header', nombre: 'Header', tono: 'negro',
+  attrs: ['- router: Router · scita: Cita', '+ titulo, descripcion, hoy: string', '+ pendientes: number · paginas: any', '+ @Output toggleSidebar'],
+  mets: ['+ ngOnInit()  {setInterval 10 s}', '+ actualizarTitulo(url)', '+ contarPendientes()', '+ onToggleSidebar()'] });
 clase('Nav', { x: 1665, y: 145, w: 295, est: '«Component» nav', nombre: 'Nav', tono: 'negro',
-  attrs: ['- scita: Cita', '+ @Input isSidebarActive, isCollapsed', '+ nombre: string', '+ esAdministrador: boolean', '+ pendientes: number'],
-  mets: ['+ contarPendientes()', '+ iniciales(): string', '+ cerrarSesion()'] });
+  attrs: ['- scita: Cita · intervalo: any', '+ @Input isSidebarActive, isCollapsed', '+ @Output toggleSidebar/Collapse', '+ nombre · esAdministrador · pendientes'],
+  mets: ['+ contarPendientes()  {cada 10 s}', '+ iniciales(): string', '+ cerrarEnCelular() · cerrarSesion()', '+ ngOnDestroy()  {clearInterval}'] });
 
 // ---------------- modulos (fila 1) ----------------
-clase('Login', { x: 40, y: 425, w: 380, est: '«Component» modulos/login', nombre: 'Login', tono: 'rojo',
+clase('Login', { x: 40, y: 470, w: 300, est: '«Component» modulos/login', nombre: 'Login', tono: 'rojo',
   attrs: ['- slogin: Login (servicio)', '+ usuario, contrasena: string', '+ error: string', '+ enviando: boolean'],
-  mets: ['+ consulta()', '  guarda id, usuario, nombre, rol', '  en sessionStorage → /panel/tablero'] });
-clase('Tablero', { x: 445, y: 425, w: 500, est: '«Component» modulos/tablero', nombre: 'Tablero', tono: 'rojo',
-  attrs: ['+ inmuebles, solicitudes, clientes: any[]', '+ kpi: any · agenda, ultimas: any[]', '+ destacado: any',
-    '+ actividadData, estadosData: ChartData', '+ topData, portafolioData: ChartData'],
-  mets: ['+ ngOnInit()', '+ listo() · calcular()', '+ inmuebleDe(id) · clienteDe(id)', '+ millones(valor): string', '+ colorEstado(estado): string'] });
-clase('Inmuebles', { x: 970, y: 425, w: 480, est: '«Component» modulos/inmuebles', nombre: 'Inmuebles', tono: 'rojo',
-  attrs: ['+ inmuebles: any[] · objInmueble: any', '+ editingId: string · codigoRepetido: boolean', '+ texto, filtroOperacion, filtroEstado: string', '+ validarFormulario: boolean'],
-  mets: ['+ consultar() · visibles() · limpiarFiltros()', '+ errorCampo(c) · formularioValido()', '+ guardar() · editar(i) · eliminar(i) · nuevo()',
-    '+ subirFoto(i, evento)  {Multer file0}', '+ cerrarModal() · mostrarMensaje(m)'] });
-clase('Solicitudes', { x: 1475, y: 425, w: 485, est: '«Component» modulos/solicitudes', nombre: 'Solicitudes', tono: 'rojo',
-  attrs: ['+ solicitudes, inmuebles, clientes: any[]', '+ estado, tipo: string', '+ transiciones: any  {copia del servidor}', '+ seleccionada: any · objRespuesta: any'],
-  mets: ['+ consultar() · filtrar() · visibles() · contar()', '+ abrirRespuesta(s) · opcionesEstado()', '+ guardarRespuesta()', '+ cambiarEstado(s, estado) · eliminar(s)'] });
+  mets: ['+ ngOnInit()  {borra la sesión}', '+ consulta()', '  guarda id, usuario, nombre, rol', '  en sessionStorage → /panel/tablero'] });
+clase('Tablero', { x: 900, y: 470, w: 450, est: '«Component» modulos/tablero', nombre: 'Tablero', tono: 'rojo',
+  attrs: ['+ inmuebles, solicitudes, clientes: any[]', '+ cargando: boolean · respuestas: number', '+ nombre, saludo: string · kpi: any', '+ agenda, ultimas: any[]',
+    '+ destacado: any · destacadoTotal: number', '+ actividadData, estadosData: ChartData', '+ topData, portafolioData: ChartData'],
+  mets: ['+ ngOnInit() · listo() · calcular()', '+ inmuebleDe(id) · clienteDe(id)', '+ textoFecha(f) · ordenar(lista, campo, …)', '+ millones(valor): string', '+ colorEstado(estado): string'] });
+clase('Inmuebles', { x: 360, y: 470, w: 520, est: '«Component» modulos/inmuebles', nombre: 'Inmuebles', tono: 'rojo',
+  attrs: ['+ inmuebles: any[] · objInmueble: any', '+ editingId: string | null · codigoRepetido: string', '+ texto, filtroOperacion, filtroEstado: string',
+    '+ mensaje, error, errorTabla: string', '+ validarFormulario, enviando: boolean',
+    '+ fotosActuales: string[] · portada: string', '+ nuevasFotos: any[] · portadaNueva: number', '+ errorFotos: string',
+    '+ videoSeguro: SafeResourceUrl | null', '+ videoId: string'],
+  mets: ['+ consultar() · visibles() · limpiarFiltros()', '+ errorCampo(c) · formularioValido() · vacio()', '+ guardar() · respuesta(r, texto) · editar(i)',
+    '+ eliminar(i) · nuevo() · cerrarModal() · mostrarMensaje(m)', '+ leerFotos(i) · limpiarFotos() · agregarFotos(evento)',
+    '+ quitarNueva(i) · quitarActual(nombre)  {borra ya}', '+ elegirPortadaActual(n) · elegirPortadaNueva(i)', '+ esPortadaActual(n) · esPortadaNueva(i)',
+    '+ subirNuevas(id, texto)  {file0, máx. 10}', '+ idYoutube(enlace) · actualizarVideo()'] });
+clase('Solicitudes', { x: 1370, y: 470, w: 590, est: '«Component» modulos/solicitudes', nombre: 'Solicitudes', tono: 'rojo',
+  attrs: ['+ solicitudes, inmuebles, clientes: any[]', '+ estado, tipo: string · estados: string[]', '+ transiciones: any  {copia del servidor}', '+ seleccionada, objRespuesta: any',
+    '+ mensaje, error, errorTabla: string', '+ enviando, validarFormulario: boolean'],
+  mets: ['+ consultar() · filtrar(estado) · visibles() · contar(tipo)', '+ inmuebleDe(id) · clienteDe(id)', '+ abrirRespuesta(s) · opcionesEstado(s)', '+ guardarRespuesta()',
+    '+ cambiarEstado(s, estado) · eliminar(s)', '+ colorEstado(e) · cerrarModal() · mostrarMensaje(m)'] });
 
 // ---------------- servicios ----------------
-var metsServ = function (lista) { return lista; };
-clase('sLogin', { x: 40, y: 820, w: 300, est: '«Injectable» servicios/login.ts', nombre: 'Login', tono: 'azul',
+clase('sLogin', { x: 40, y: 985, w: 260, est: '«Injectable» servicios/login.ts', nombre: 'Login', tono: 'azul',
   attrs: ['- http: HttpClient', '- url: string'], mets: ['+ consultar(usuario, contrasena)', '  POST /login'] });
-clase('sInmueble', { x: 365, y: 820, w: 400, est: '«Injectable» servicios/inmueble.ts', nombre: 'Inmueble', tono: 'azul',
+clase('sInmueble', { x: 320, y: 985, w: 400, est: '«Injectable» servicios/inmueble.ts', nombre: 'Inmueble', tono: 'azul',
   attrs: ['- http: HttpClient · url: string'],
-  mets: ['+ consulta(operacion) · consultaUno(id)', '+ consultaCodigo(codigo) · buscar(texto)', '+ insertar(p) · editar(id, p) · eliminar(id)', '+ subirFoto(id, archivo) · urlFoto(imagen)'] });
-clase('sCita', { x: 790, y: 820, w: 400, est: '«Injectable» servicios/cita.ts', nombre: 'Cita', tono: 'azul',
+  mets: ['+ consulta(operacion) · consultaUno(id)', '+ consultaCodigo(codigo) · buscar(texto)', '+ insertar(p) · editar(id, p) · eliminar(id)',
+    '+ subirFotos(id, archivos: File[])  {file0}', '+ borrarFoto(id, imagen) · urlFoto(imagen)', '+ red()  {GET /red}'] });
+clase('sCita', { x: 745, y: 985, w: 380, est: '«Injectable» servicios/cita.ts', nombre: 'Cita', tono: 'azul',
   attrs: ['- http: HttpClient · url: string'],
   mets: ['+ consulta(estado) · insertar(p)', '+ cambiarEstado(id, estado)', '+ responder(id, estado, respuesta)', '+ eliminar(id)'] });
-clase('sCliente', { x: 1215, y: 820, w: 300, est: '«Injectable» servicios/cliente.ts', nombre: 'Cliente', tono: 'azul',
+clase('sCliente', { x: 1150, y: 985, w: 300, est: '«Injectable» servicios/cliente.ts', nombre: 'Cliente', tono: 'azul',
   attrs: ['- http: HttpClient · url: string'], mets: ['+ consulta() · insertar(p)', '+ editar(id, p) · eliminar(id)'] });
-clase('sUsuario', { x: 1540, y: 820, w: 250, est: '«Injectable» usuario.ts', nombre: 'Usuario', tono: 'azul',
-  attrs: ['- http: HttpClient'], mets: ['+ consulta() · insertar(p)', '+ eliminar(id, actual)'] });
-clase('API', { x: 1815, y: 830, w: 145, est: '«REST» externo', nombre: 'API :3900', tono: 'gris', attrs: null, mets: ['Express +', 'MongoDB'] });
+clase('sUsuario', { x: 1475, y: 985, w: 270, est: '«Injectable» usuario.ts', nombre: 'Usuario', tono: 'azul',
+  attrs: ['- http: HttpClient · url: string'], mets: ['+ consulta() · insertar(p)', '+ eliminar(id, actual)'] });
+clase('API', { x: 1790, y: 995, w: 170, est: '«REST» externo', nombre: 'API :3900', tono: 'gris', attrs: null, mets: ['Express +', 'MongoDB'] });
 
 // ---------------- modulos (fila 2) ----------------
-clase('NoEncontro', { x: 40, y: 1070, w: 260, est: '«Component» no-encontro', nombre: 'NoEncontro', tono: 'rojo', attrs: null, mets: ['página 404 (ruta **)'] });
-clase('errores', { x: 40, y: 1200, w: 260, est: '«function» servicios/errores.ts', nombre: 'mensajeError', tono: 'gris', attrs: null, mets: ['+ mensajeError(err): string', '  status 0 → API apagada'] });
-clase('Reportes', { x: 365, y: 1070, w: 500, est: '«Component» modulos/reportes  (solo administrador)', nombre: 'Reportes', tono: 'rojo',
-  attrs: ['+ esAdministrador: boolean · pestana: string', '+ desde, hasta: string', '+ filas: any[] · totales, resumen: any', '+ inventario: any[]'],
-  mets: ['+ generar()  {solicitudes por fechas}', '+ armarInventario()', '+ descargar()  {CSV para Excel}', '+ imprimir()  {PDF del navegador}', '+ celda(v) · inmuebleDe(id) · clienteDe(id)'] });
-clase('Clientes', { x: 1000, y: 1070, w: 440, est: '«Component» modulos/clientes', nombre: 'Clientes', tono: 'rojo',
-  attrs: ['+ clientes: any[] · objCliente: any', '+ editingId: string'],
-  mets: ['+ consultar() · errorCampo(c)', '+ guardar() · respuesta(r)', '+ editar(c) · eliminar(c) · nuevo()'] });
-clase('Usuarios', { x: 1500, y: 1070, w: 460, est: '«Component» modulos/usuarios  (solo administrador)', nombre: 'Usuarios', tono: 'rojo',
-  attrs: ['+ usuarios: any[] · objUsuario: any', '+ esAdministrador: boolean', '+ idActual: string'],
-  mets: ['+ consultar() · guardar()', '+ eliminar(u)  {no a sí mismo}', '+ nuevo() · iniciales(nombre)'] });
+clase('NoEncontro', { x: 40, y: 1245, w: 220, est: '«Component» no-encontro', nombre: 'NoEncontro', tono: 'rojo', attrs: null, mets: ['página 404 (ruta **)'] });
+clase('qrcode', { x: 40, y: 1375, w: 220, est: '«librería npm» qrcode', nombre: 'QRCode', tono: 'gris', attrs: null, mets: ['+ toDataURL(texto, opciones):', '    Promise<string>'] });
+clase('Aviso', { x: 280, y: 1245, w: 430, est: '«Component» modulos/aviso  (ruta /panel/aviso/:id)', nombre: 'Aviso', tono: 'rojo',
+  attrs: ['+ inmueble: any · error: string', '+ servidorQr: string  {IP del computador}', '+ enlaceQr: string  {http://IP:3900/api/qr/COD}', '+ imagenQr: string  {data:image/png;base64}',
+    '+ esLocal: boolean  {abierto con localhost}', '+ telefono1, telefono2, direccion: string'],
+  mets: ['+ ngOnInit()  {consultaUno(id de la ruta)}', '+ buscarServidor()  {localhost → red()}', '+ generarQr()  {QRCode.toDataURL}', '+ precioTexto(valor): string', '+ imprimir()  {window.print}'] });
+clase('Reportes', { x: 730, y: 1245, w: 480, est: '«Component» modulos/reportes  (solo administrador)', nombre: 'Reportes', tono: 'rojo',
+  attrs: ['+ esAdministrador: boolean · pestana: string', '+ solicitudes, inmuebles, clientes: any[]', '+ desde, hasta, hoyTexto, error: string', '+ generado: boolean · filas: any[]',
+    '+ totales, resumen: any · inventario: any[]'],
+  mets: ['+ generar()  {solicitudes por fechas}', '+ armarInventario()', '+ descargar()  {CSV para Excel} · linea(v)', '+ imprimir()  {PDF del navegador}',
+    '+ celda(v) · inmuebleDe(id) · clienteDe(id)', '+ textoFecha(f) · ordenar(…) · colorEstado(e)'] });
+clase('Clientes', { x: 1230, y: 1245, w: 350, est: '«Component» modulos/clientes', nombre: 'Clientes', tono: 'rojo',
+  attrs: ['+ clientes: any[] · objCliente: any', '+ editingId: string | null', '+ validarFormulario, enviando: boolean', '+ mensaje, error, errorTabla: string'],
+  mets: ['+ consultar() · errorCampo(c)', '+ guardar() · respuesta(r, texto)', '+ editar(c) · eliminar(c) · nuevo()', '+ cerrarModal() · mostrarMensaje(m)'] });
+clase('Usuarios', { x: 1600, y: 1245, w: 360, est: '«Component» modulos/usuarios  (solo admin.)', nombre: 'Usuarios', tono: 'rojo',
+  attrs: ['+ usuarios: any[] · objUsuario: any', '+ esAdministrador: boolean', '+ idActual: string', '+ validarFormulario, enviando: boolean', '+ mensaje, error, errorTabla: string'],
+  mets: ['+ consultar() · guardar()', '+ eliminar(u)  {no a sí mismo}', '+ nuevo() · iniciales(nombre)', '+ cerrarModal() · mostrarMensaje(m)'] });
 
 // ---------------- relaciones ----------------
 rel('routes', 'guard', { tipo: 'dependencia', desde: 'r', hasta: 'l', fd: 0.45, recta: 'h' });
-rel('routes', 'Main', { tipo: 'dependencia', desde: 't', hasta: 't', fd: 0.7, fh: 0.5, via: [[589, 132], [1185, 132]], etiqueta: '/panel', tl: 0.5 });
+rel('routes', 'Main', { tipo: 'dependencia', desde: 't', hasta: 't', fd: 0.7, fh: 0.5, via: [[607, 132], [1185, 132]], etiqueta: '/panel', tl: 0.5 });
 rel('routes', 'pMod1', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.5, recta: 'v', etiqueta: 'component', dx: 45 });
 rel('Main', 'Header', { tipo: 'composicion', desde: 'r', hasta: 'l', fd: 0.4, recta: 'h', m2: '1' });
 rel('Header', 'Nav', { tipo: 'asociacion', desde: 'r', hasta: 'l', fd: 0.4, recta: 'h' });
-rel('Main', 'Nav', { tipo: 'composicion', desde: 'b', hasta: 'b', fd: 0.5, fh: 0.5, via: [[1185, 352], [1812, 352]], m2: '1' });
+rel('Main', 'Nav', { tipo: 'composicion', desde: 'b', hasta: 'b', fd: 0.5, fh: 0.5, via: [[1185, 397], [1812, 397]], m2: '1' });
 
-rel('Login', 'sLogin', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.4, recta: 'v' });
-rel('Tablero', 'sInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.2, fh: 0.5 });
-rel('Tablero', 'sCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.6, fh: 0.2 });
-rel('Tablero', 'sCliente', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.9, fh: 0.15 });
-rel('Inmuebles', 'sInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.15, fh: 0.85 });
-rel('Solicitudes', 'sCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.1, fh: 0.8 });
-rel('Solicitudes', 'sInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.05, fh: 0.95 });
-rel('Solicitudes', 'sCliente', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.25, fh: 0.7 });
+rel('Login', 'sLogin', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.433, recta: 'v' });
+rel('Inmuebles', 'sInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.308, recta: 'v' });
+rel('Tablero', 'sInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.044, fh: 0.9, via: [[920, 933], [680, 933]] });
+rel('Tablero', 'sCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.222, recta: 'v' });
+rel('Tablero', 'sCliente', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.889, recta: 'v' });
+rel('Solicitudes', 'sCita', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.0712, fh: 0.908, via: [[1412, 946], [1090, 946]] });
+rel('Solicitudes', 'sCliente', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.1186, recta: 'v' });
+rel('Solicitudes', 'sInmueble', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.025, fh: 0.95, via: [[1385, 962], [700, 962]] });
 
-rel('Reportes', 'sInmueble', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.1, fh: 0.3 });
-rel('Reportes', 'sCita', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.7, fh: 0.3 });
-rel('Reportes', 'sCliente', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.95, fh: 0.2 });
-rel('Clientes', 'sCliente', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.6, fh: 0.5 });
-rel('Usuarios', 'sUsuario', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.3, fh: 0.5 });
+rel('Aviso', 'sInmueble', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.512, recta: 'v', etiqueta: 'consultaUno · red', tl: 0.5, dx: 62 });
+rel('Aviso', 'qrcode', { tipo: 'dependencia', desde: 'l', hasta: 'r', fd: 0.75, recta: 'h' });
+rel('Reportes', 'sInmueble', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.042, fh: 0.925, via: [[750, 1195], [690, 1195]] });
+rel('Reportes', 'sCita', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.458, recta: 'v' });
+rel('Reportes', 'sCliente', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.958, recta: 'v' });
+rel('Clientes', 'sCliente', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.343, recta: 'v' });
+rel('Usuarios', 'sUsuario', { tipo: 'dependencia', desde: 't', hasta: 'b', fd: 0.139, recta: 'v' });
 rel('sUsuario', 'API', { tipo: 'dependencia', desde: 'r', hasta: 'l', fd: 0.4, recta: 'h' });
 
 dibujar();
