@@ -142,8 +142,8 @@ pendiente ──► confirmada ──► realizada
   - `DELETE /api/inmueble/:id/imagen/:image` quita una foto; si era la portada, la siguiente queda de portada.
 - **Video de YouTube (opcional):** campo `video` en guardar y actualizar. Se acepta youtube.com/watch, youtu.be y shorts, y se guarda como `https://www.youtube.com/watch?v=ID`. En la app se reproduce dentro del detalle (WebView con el reproductor de YouTube).
 - **Actualizar:** `PUT /api/inmueble/:id` solo cambia los campos del inmueble (código, título, tipo, operación, precio, barrio, ciudad, área, habitaciones, baños, descripción, estado, video y portada); los demás campos que lleguen se ignoran.
-- **Postman:** `backend/postman/InmoConecta.postman_collection.json` tiene 59 peticiones con pruebas. Se ejecutan en orden.
-  - Con newman pasan 109 de 112 verificaciones.
+- **Postman:** `backend/postman/InmoConecta.postman_collection.json` tiene 62 peticiones con pruebas, incluidas la página del QR y la IP del computador. Se ejecutan en orden.
+  - Con newman pasan 113 de 116 verificaciones.
   - Las 3 restantes son las de la foto, que necesitan elegir el archivo a mano.
 
 ## 8. Limitaciones conocidas
@@ -155,8 +155,10 @@ pendiente ──► confirmada ──► realizada
   - Para recuperarla: `mongorestore respaldo/`.
   - Las fotos están en `backend/upload/inmuebles`.
 
-## 9. Lo que se usó que no se vio en clase (lo pide la rúbrica)
+## 9. Lo que se usó que no se vio en clase (lo pide la rúbrica o es un plus aprobado)
 Todo lo demás sigue lo visto en clase: el proyecto de Node y la biblioteca, el minimarket en Angular, y MiRuta y los demás proyectos de Android.
+
+Las últimas cuatro filas (QR, enlace `caracoli://`, video de YouTube y migración de Room) son **plus**: no los pide la rúbrica, y se agregaron después de consultarlos con la profesora.
 
 | Qué | Dónde | Lo que pide la rúbrica |
 |---|---|---|

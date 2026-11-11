@@ -747,7 +747,7 @@
             "method": "POST",
             "header": [],
             "url": "{{url}}/upload-image/{{id_inmueble}}",
-            "description": "En Postman: Body -> form-data -> key file0 (tipo File) -> elegir una imagen png, jpg, jpeg, gif o webp de maximo 5 MB (Multer).",
+            "description": "En Postman: Body -> form-data -> key file0 (tipo File) -> elegir una o varias imagenes (hasta 10) png, jpg, jpeg, gif o webp de maximo 5 MB (Multer).",
             "body": {
               "mode": "formdata",
               "formdata": [
@@ -807,6 +807,66 @@
                 "exec": [
                   "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
                   "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "14. IP del computador (para el QR)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/red",
+            "description": "Plus aprobado: el aviso con QR usa esta IP para que el celular abra el inmueble."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "15. Pagina del QR de un inmueble",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/qr/CAR-101",
+            "description": "Plus aprobado: es la pagina que abre el QR del letrero (HTML)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "16. QR de un codigo que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/qr/NOEXISTE"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 404', function () { pm.response.to.have.status(404); });"
                 ]
               }
             }
