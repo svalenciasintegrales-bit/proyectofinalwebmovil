@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="500x1000">
+<title>Android - Detalle con carrusel y video</title>
+<link rel="stylesheet" href="android.css">
+<script src="../../iconos.js"></script>
+<script src="android.js"></script>
+<style>
+  /* CarruselFotos (ui/components/Galeria.kt): HorizontalPager de 280dp, aqui en la foto 2 de 4 */
+  .carrusel { position: relative; height: 280px; background: #1B1B1B center/cover no-repeat; }
+  .carrusel .etiqueta-op { bottom: 14px; }
+  .contador-fotos { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,.6); color: #fff;
+                    font-size: 13px; line-height: 18px; padding: 3px 10px; border-radius: 12px; letter-spacing: .3px; }
+  .puntos { position: absolute; bottom: 16px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; }
+  .puntos span { height: 8px; width: 8px; border-radius: 4px; background: rgba(255,255,255,.6); }
+  .puntos span.actual { width: 22px; background: #fff; }
+
+  .bloque { padding: 16px; }
+  .precio-g { font-family: var(--serif); font-weight: bold; color: var(--rojo); font-size: 30px; line-height: 40px; }
+  .datos3 { display: flex; gap: 8px; }
+  .dato { flex: 1; background: var(--tarjeta); border-radius: 12px; padding: 10px; text-align: center; }
+  .dato b { display: block; color: var(--rojo); font-size: 18px; line-height: 24px; }
+  .dato span { font-size: 12px; line-height: 16px; letter-spacing: .4px; }
+
+  /* VideoYoutube: WebView 16:9 con el reproductor de YouTube, esquinas de 12dp. Aqui, la imagen
+     del reproductor antes de darle play (dibujada a mano, sin imagenes externas). */
+  .video { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden;
+           background: #000 url('../../../../../backend/upload/inmuebles/car-103.jpg') center 58%/cover no-repeat; }
+  .video::before { content: ''; position: absolute; inset: 0;
+           background: linear-gradient(rgba(0,0,0,.72) 0%, rgba(0,0,0,.25) 34%, rgba(0,0,0,.25) 70%, rgba(0,0,0,.55) 100%); }
+  .yt-cab { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; align-items: center; gap: 9px; color: #fff; }
+  .yt-cab .canal { width: 32px; height: 32px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; flex: none; }
+  .yt-cab .canal img { width: 22px; height: 22px; }
+  .yt-cab .t { font-family: Arial, sans-serif; font-size: 15px; line-height: 19px; text-shadow: 0 1px 2px rgba(0,0,0,.5);
+               white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .yt-play { position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; margin: -24px 0 0 -34px; }
+  .yt-marca { position: absolute; right: 12px; bottom: 34px; /* el borde de abajo del video queda tapado por el scroll */ display: flex; align-items: center; gap: 4px;
+              color: #fff; font-family: Arial, sans-serif; font-weight: bold; font-size: 15px; letter-spacing: -.4px; }
+</style>
+</head>
+<body>
+<div class="dispositivo"><div class="pantalla">
+  <div class="estado"></div>
+  <div class="appbar">
+    <span class="icono-btn nav"><i data-i="atras" data-s="24"></i></span>
+    <div class="titulo">CAR-101</div>
+    <span class="icono-btn" style="color:var(--rojo)"><i data-i="corazon" data-s="24"></i></span>
+  </div>
+  <div class="contenido">
+    <!-- fotos del carrusel: car-101 (portada), car-102, car-103, car-104; se muestra la 2 -->
+    <div class="carrusel" style="background-image:url('../../../../../backend/upload/inmuebles/car-102.jpg')">
+      <span class="contador-fotos">2/4</span>
+      <span class="etiqueta-op venta">SE VENDE</span>
+      <div class="puntos"><span></span><span class="actual"></span><span></span><span></span></div>
+    </div>
+    <div class="bloque">
+      <h1 class="headline">Casa nueva para estrenar</h1>
+      <div class="lugar-linea body"><i data-i="lugar" data-s="18" style="color:var(--rojo)"></i>&nbsp;Centro, Cartago · Código CAR-101</div>
+      <div style="height:8px"></div>
+      <div class="precio-g">$250.000.000</div>
+      <div style="height:14px"></div>
+      <div class="datos3">
+        <div class="dato"><b>120 m²</b><span>Área</span></div>
+        <div class="dato"><b>3</b><span>Habitaciones</span></div>
+        <div class="dato"><b>2</b><span>Baños</span></div>
+      </div>
+      <div style="height:16px"></div>
+      <h2 class="title-l">Descripción</h2>
+      <p class="body">Casa nueva de dos niveles con cocina integral.</p>
+      <div style="height:18px"></div>
+      <h2 class="title-l">Video del inmueble</h2>
+      <div style="height:8px"></div>
+      <div class="video">
+        <div class="yt-cab">
+          <span class="canal"><img src="../../../../../android/app/src/main/res/drawable/simbolo.png" alt=""></span>
+          <span class="t">Recorrido · Casa nueva para estrenar</span>
+        </div>
+        <svg class="yt-play" viewBox="0 0 68 48"><path d="M66.5 7.7c-.8-2.9-3-5.2-5.9-6C55.3.3 34 .3 34 .3s-21.3 0-26.6 1.4c-2.9.8-5.1 3.1-5.9 6C.1 13 .1 24 .1 24s0 11 1.4 16.3c.8 2.9 3 5.2 5.9 6C12.7 47.7 34 47.7 34 47.7s21.3 0 26.6-1.4c2.9-.8 5.1-3.1 5.9-6C67.9 35 67.9 24 67.9 24s0-11-1.4-16.3z" fill="#FF0000"/><path d="M27 34l18-10-18-10z" fill="#fff"/></svg>
+        <div class="yt-marca">
+          <svg width="22" height="16" viewBox="0 0 68 48"><path d="M66.5 7.7c-.8-2.9-3-5.2-5.9-6C55.3.3 34 .3 34 .3s-21.3 0-26.6 1.4c-2.9.8-5.1 3.1-5.9 6C.1 13 .1 24 .1 24s0 11 1.4 16.3c.8 2.9 3 5.2 5.9 6C12.7 47.7 34 47.7 34 47.7s21.3 0 26.6-1.4c2.9-.8 5.1-3.1 5.9-6C67.9 35 67.9 24 67.9 24s0-11-1.4-16.3z" fill="#FF0000"/><path d="M27 34l18-10-18-10z" fill="#fff"/></svg>
+          YouTube
+        </div>
+      </div>
+      <div style="height:18px"></div>
+      <span class="btn alto"><i data-i="calendario" data-s="24" style="margin-right:8px"></i>Agendar visita</span>
+    </div>
+  </div>
+  <div class="gestos"></div>
+</div></div>
+</body>
+</html>

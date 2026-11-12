@@ -32,8 +32,12 @@ function datosCortos(x) {
 function tarjetaInmueble(codigo, favorito) {
   var x = INMUEBLES[codigo];
   var venta = x.operacion === 'venta';
-  return '<div class="inm">' +
-    '<div class="foto" style="background-image:url(\'' + RAIZ + 'backend/upload/inmuebles/' + x.imagen + '\')">' +
+  // sin internet la foto no se descarga (FotoCache.kt): FotoInmueble muestra el simbolo sobre fondo #1B1B1B
+  var sinRed = document.body.classList.contains('sin-red');
+  var foto = sinRed
+    ? '<div class="foto sin-foto"><img src="' + RAIZ + 'android/app/src/main/res/drawable/simbolo.png" alt="">'
+    : '<div class="foto" style="background-image:url(\'' + RAIZ + 'backend/upload/inmuebles/' + x.imagen + '\')">';
+  return '<div class="inm">' + foto +
       '<span class="etiqueta-op ' + x.operacion + '" style="top:12px">' + (venta ? 'SE VENDE' : 'SE ARRIENDA') + '</span>' +
       '<span class="corazon-btn"><i data-i="' + (favorito ? 'corazon' : 'corazonBorde') + '" data-s="24"></i></span>' +
     '</div>' +
@@ -49,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.estado').forEach(function (e) {
     // <body class="sin-red">: celular sin internet (wifi apagado y sin datos)
     var sinRed = document.body.classList.contains('sin-red');
-    e.innerHTML = '<span>9:41</span><span class="camara"></span>' +
+    e.innerHTML = '<span>' + (document.body.getAttribute('data-hora') || '9:41') + '</span><span class="camara"></span>' +
       '<span class="iconos">' + (sinRed ? '<i data-i="sinRed" data-s="17"></i><i data-i="senal" data-s="15" style="opacity:.3"></i>'
                                         : '<i data-i="wifi" data-s="17"></i><i data-i="senal" data-s="15"></i>') +
       '<i data-i="bateria" data-s="17"></i></span>';

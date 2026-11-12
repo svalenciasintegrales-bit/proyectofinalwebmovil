@@ -119,7 +119,7 @@ var CU = [
     post: 'Ninguna (solo consulta).' },
   { c: 'CU-06', n: 'Simular cuota del crédito', a: 'Cliente', i: 'App', r: ['9.1'], hu: '—',
     pre: 'Detalle abierto de un inmueble en <b>venta</b>.',
-    f: ['El sistema muestra "Simulador de cuota" con valores por defecto: Inicial 30 %, 20 años, tasa 12 % E.A.', 'El cliente cambia la cuota inicial, los años o la tasa.', 'El sistema calcula el préstamo = precio × (1 − inicial), la tasa mensual = (1 + E.A.)<sup>1/12</sup> − 1 y la cuota fija mensual.', 'Muestra la "Cuota mensual aproximada" (ej. $250.000.000 → ≈ $1.852.590) y el aviso "Valor de referencia. La cuota real depende del banco."'],
+    f: ['El sistema muestra "Simulador de cuota" con valores por defecto: Inicial 30 %, 20 años, tasa 12 % anual.', 'El cliente cambia la cuota inicial, los años o la tasa.', 'El sistema calcula el préstamo = precio × (1 − inicial), la tasa mensual = tasa anual ÷ 12 y la cuota fija mensual.', 'Muestra la "Cuota mensual aproximada" (ej. $250.000.000 → ≈ $1.926.900) y el aviso "Valor de referencia. La cuota real depende del banco."'],
     alt: ['2a. Campo vacío o no numérico: se toma como 0 y la cuota se recalcula.', '0a. Inmueble en arriendo: el simulador no se muestra.'],
     post: 'Nada se guarda; es solo un cálculo de referencia.' },
   { c: 'CU-07', n: 'Agendar visita', a: 'Cliente · API REST', i: 'App', r: ['8.2', '8.4', '8.5', '5.1', 'A.5'], hu: 'HU-03',

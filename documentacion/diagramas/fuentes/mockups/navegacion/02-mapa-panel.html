@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="tam" content="1900x1100">
+<meta name="tam" content="1960x1100">
 <title>Mapa de navegacion - Panel</title>
 <link rel="stylesheet" href="../../comun.css">
 <script src="../../uml.js"></script>
 <script src="_pant.js"></script>
 </head>
 <body>
-<div id="lienzo" class="lienzo" style="width:1900px;height:1100px">
+<div id="lienzo" class="lienzo" style="width:1960px;height:1100px">
   <div class="diag-cab">
     <div class="barra"></div>
     <img src="../../../../../web-angular/public/img/logo.png" alt="">
@@ -32,6 +32,7 @@ pant('w08', { x: 900,  y: 830, w: W, h: H, img: P + '08-reportes.png', titulo: '
 pant('w09', { x: 1300, y: 830, w: W, h: H, img: P + '09-usuarios.png', titulo: 'Usuarios', sub: 'solo administrador' });
 pant('w04', { x: 1300, y: 110, w: W, h: H, img: P + '04-nuevo-inmueble.png', titulo: 'Modal Nuevo / Editar inmueble', sub: 'mismo componente' });
 pant('w06', { x: 1300, y: 350, w: W, h: H, img: P + '06-responder-solicitud.png', titulo: 'Modal Responder solicitud', sub: 'mismo componente' });
+pant('w11', { x: 1630, y: 110, w: 300, h: H, img: P + '11-aviso-qr.png', titulo: 'Aviso con QR', sub: '/panel/aviso/:id · imprimir o PDF' });
 pant('w10', { x: 40,   y: 830, w: W, h: H, img: P + '10-no-encontrado.png', titulo: 'Página no encontrada', sub: 'ruta **' });
 
 rel('w01', 'w02', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.45, recta: 'h', etiqueta: 'Entrar', dy: -12 });
@@ -39,6 +40,7 @@ rel('w02', 'w03', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.2, fh: 0.45
 rel('w02', 'w05', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.35, fh: 0.5, orto: true, etiqueta: 'menú / campana', tl: 0.6, dy: -12 });
 rel('w02', 'w07', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.5, fh: 0.45, orto: true });
 rel('w02', 'w08', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.65, fh: 0.45, orto: true, etiqueta: 'menú Administración', tl: 0.86, dy: -12 });
+rel('w03', 'w11', { tipo: 'navegable', desde: 't', hasta: 't', fd: 0.85, fh: 0.5, via: [[1155, 100], [1780, 100]], etiqueta: 'botón QR', tl: 0.62 });
 rel('w08', 'w09', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.45, recta: 'h' });
 rel('w03', 'w04', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.45, recta: 'h', etiqueta: 'Nuevo / lápiz', dy: -12 });
 rel('w05', 'w06', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.45, recta: 'h', etiqueta: 'Responder', dy: -12 });

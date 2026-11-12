@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="500x1000">
+<title>Android - Pagina del codigo QR</title>
+<link rel="stylesheet" href="android.css">
+<script src="../../iconos.js"></script>
+<script src="android.js"></script>
+<style>
+  /* ---------- Chrome para Android (tema claro) ---------- */
+  .pantalla.chrome, .chrome .estado, .chrome .gestos { background: #ffffff; }
+  .barra-chrome { height: 56px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 4px 0 12px;
+                  background: #ffffff; border-bottom: 1px solid #E3E3E3; position: relative; z-index: 2; }
+  .omnibox { flex: 1; height: 40px; border-radius: 20px; background: #EEF0F3; display: flex; align-items: center;
+             padding: 0 14px 0 12px; gap: 10px; color: #444746; overflow: hidden; }
+  .omnibox .url { font-family: var(--sans); font-size: 15px; color: #1F1F1F; white-space: nowrap; letter-spacing: .1px; }
+  .omnibox .url span { color: #5E5E5E; }
+  .chrome-btn { width: 44px; height: 48px; display: flex; align-items: center; justify-content: center; color: #444746; flex: none; }
+  .pestanas { width: 20px; height: 20px; border: 2px solid #444746; border-radius: 4px; font: 700 11px/16px Arial, sans-serif;
+              text-align: center; color: #444746; }
+  .progreso { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; background: #0B57D0; }
+
+  /* ---------- La pagina: el mismo HTML y CSS que arma paginaQr() en backend/controller/inmueblecontroller.js ---------- */
+  .vista { flex: 1; position: relative; overflow: hidden; background: #f4f4f4; }
+  .web { margin-top: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #111; font-size: 16px; line-height: normal; letter-spacing: normal; }
+  .web .marca { background: #e3141b; color: #fff; padding: 14px 18px; font-weight: bold; letter-spacing: 1px; }
+  .web .caja { max-width: 520px; margin: 0 auto; padding: 18px; background: #fff; }
+  .web img { display: inline; width: 100%; border-radius: 10px; margin-bottom: 12px; vertical-align: baseline; }
+  .web .etiqueta { background: #e3141b; color: #fff; font-weight: 800; padding: 4px 10px; font-size: 13px; letter-spacing: 1px; }
+  .web .etiqueta.negra { background: #111; }
+  .web h1 { font-family: 'DigitosApp', Georgia, serif; font-size: 24px; margin: 12px 0 4px; }
+  .web p { margin: 16px 0; }
+  .web .lugar { color: #4a4a4a; margin: 0 0 8px; }
+  .web .precio { color: #e3141b; font-family: 'DigitosApp', Georgia, serif; font-size: 26px; font-weight: bold; margin: 6px 0; }
+  .web .boton { display: block; text-align: center; background: #e3141b; color: #fff; text-decoration: none; font-weight: bold; padding: 14px; border-radius: 26px; margin: 16px 0; }
+  .web .enlace { display: block; text-align: center; color: #e3141b; font-weight: bold; margin-bottom: 8px; text-decoration: underline; }
+  .web .pie { color: #4a4a4a; font-size: 14px; text-align: center; padding: 12px; }
+</style>
+</head>
+<body>
+<div class="dispositivo"><div class="pantalla chrome">
+  <div class="estado"></div>
+  <div class="barra-chrome">
+    <span class="omnibox">
+      <i data-i="info" data-s="20"></i>
+      <span class="url">10.5.10.196:3900<span>/api/qr/CAR-102</span></span>
+    </span>
+    <span class="chrome-btn"><span class="pestanas">1</span></span>
+    <span class="chrome-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></span>
+  </div>
+  <div class="vista">
+    <div class="web" id="web">
+      <div class="marca">CARACOLI INMOBILIARIA</div>
+      <div class="caja"><img src="../../../../../backend/upload/inmuebles/car-102.jpg" alt=""><span class="etiqueta negra">SE ARRIENDA</span><h1>Apartamento con balcon</h1><p class="lugar">El Prado, Cartago · Código CAR-102</p><p class="precio">$1.200.000 /mes</p><p>75 m² · 2 hab. · 2 baños</p><a class="boton">Abrir en la app Caracoli</a><a class="enlace">¿No se abrió? Toca aquí</a></div>
+      <div class="pie">Cra 3 # 11-89 Centro, Cartago<br>Tel. 314 780 2883 · 310 650 1884</div>
+    </div>
+  </div>
+  <div class="gestos"></div>
+</div></div>
+</body>
+</html>

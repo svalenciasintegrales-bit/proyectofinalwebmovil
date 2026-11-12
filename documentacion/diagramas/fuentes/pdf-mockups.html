@@ -20,7 +20,7 @@
   .sw div { height: 8mm; border-radius: 3mm; border: 1px solid #ddd; margin-bottom: 1.5mm; }
   .tipos { display: flex; gap: 8mm; margin-bottom: 4mm; }
   .tipos > div { flex: 1; border: 1px solid #BFBFBF; border-radius: 3mm; padding: 2.5mm 4mm; }
-  #indice td, #indice th { padding: 1.6pt 4pt; font-size: 8pt; }
+  .indice td, .indice th { padding: 1.6pt 4pt; font-size: 8pt; }
 </style>
 </head>
 <body>
@@ -67,9 +67,15 @@
   </div>
   <p style="font-size:9.5pt">Iconos con estilo Material (Android) y Bootstrap Icons (panel). Las animaciones Lottie de la bienvenida se representan con una ilustración fija.</p>
   <h3>Índice de pantallas</h3>
-  <table class="compacta" id="indice" style="font-size:8pt">
-    <tr><th style="width:14mm">N.º</th><th style="width:22mm">Interfaz</th><th>Pantalla</th><th style="width:44mm">Requerimientos</th></tr>
-  </table>
+  <!-- dos columnas: app y panel web, para que la guia quepa en una hoja -->
+  <div style="display:flex; gap:5mm; align-items:flex-start">
+    <table class="compacta indice" id="indiceApp" style="font-size:8pt">
+      <tr><th style="width:11mm">N.º</th><th>App Android</th><th style="width:30mm">Req.</th></tr>
+    </table>
+    <table class="compacta indice" id="indiceWeb" style="font-size:8pt">
+      <tr><th style="width:11mm">N.º</th><th>Panel web</th><th style="width:30mm">Req.</th></tr>
+    </table>
+  </div>
 </section>
 
 <section class="pagina p-horizontal">
@@ -89,25 +95,29 @@ var APP = [
   ['01-onboarding', 'Bienvenida', 'Primera página de la bienvenida: logo, ilustración, texto sobre Cartago, indicador de página 1 de 3 y botón "Siguiente". Solo aparece la primera vez.', '7.1'],
   ['02-inicio', 'Inicio (catálogo)', 'Saludo con el nombre guardado, buscador, "Código del letrero", "Actualizar", filtro Todos / Venta / Arriendo, contador de disponibles y tarjetas con foto, etiqueta SE VENDE / SE ARRIENDA y favorito. Arriba: favoritos, solicitudes y ajustes.', '7.2 · 7.3 · 7.4 · 9.2'],
   ['03-codigo-letrero', 'Código del letrero', 'Diálogo para escribir el código que aparece en el letrero del inmueble (ej. CAR-102) y abrir su detalle.', '7.6'],
-  ['04-detalle', 'Detalle del inmueble', 'Foto, precio, área, habitaciones, baños, descripción, botones "Agendar visita" y "Pedir información" y simulador de cuota (30 %, 20 años, 12 % E.A.).', '7.5 · 9.1 · 8.1 · 8.2'],
+  ['04-detalle', 'Detalle del inmueble', 'Foto, precio, área, habitaciones, baños, descripción, botones "Agendar visita" y "Pedir información" y simulador de cuota (30 %, 20 años, 12 % anual).', '7.5 · 9.1 · 8.1 · 8.2'],
   ['05-agendar-visita', 'Agendar visita', 'Formulario con nombre y celular ya llenos, fecha, chips de hora, comentario opcional y botón "Confirmar visita".', '8.2 · 8.5'],
   ['06-visita-agendada', '¡Visita agendada!', 'Diálogo de confirmación cuando la API guarda la solicitud. Lleva a "Mis solicitudes".', '8.2'],
   ['07-mis-solicitudes', 'Mis solicitudes', 'Solicitudes con su estado: por enviar (guardada sin conexión), error al enviar (Reintentar / Eliminar), pendiente y confirmada con la "Respuesta de Caracoli".', '8.3 · 8.4 · 7.7'],
   ['08-favoritos', 'Mis favoritos', 'Inmuebles marcados con el corazón, guardados en el celular.', '9.2'],
   ['09-ajustes', 'Ajustes', 'Mis datos, dirección del servidor con prueba de conexión, modo oscuro y datos de contacto de la inmobiliaria.', '8.5 · 9.3'],
-  ['10-inicio-sin-conexion', 'Inicio sin conexión', 'Variante sin internet: aviso del catálogo guardado en Room y filtro "Venta" aplicado.', '7.7 · 7.4']
+  ['10-inicio-sin-conexion', 'Inicio sin conexión', 'Variante sin internet: aviso del catálogo guardado en Room y filtro "Venta" aplicado.', '7.7 · 7.4'],
+  ['11-detalle-carrusel-video', 'Detalle con carrusel y video', 'Carrusel de fotos (portada primero, contador y puntos) y el video de YouTube que se reproduce dentro de la app.', '7.5 · A.3 · A.4'],
+  ['12-qr-pagina-web', 'Página del QR', 'Lo que abre la cámara al escanear el aviso: la página de la API salta sola a la app; si no la tiene, muestra los datos y los teléfonos.', 'A.2'],
+  ['13-horas-tachadas', 'Agendar visita para hoy', 'Si la fecha es hoy, las horas que ya pasaron salen tachadas y no se pueden elegir.', '8.2 · A.5']
 ];
 var WEB = [
   ['01-login', 'Login', 'Acceso exclusivo para el equipo: usuario, contraseña y botón "Entrar".', '1.1 · 1.2', 'h'],
   ['02-tablero', 'Tablero', 'Saludo con pendientes, 6 indicadores, actividad de 14 días, estado de solicitudes, agenda de visitas, últimas solicitudes, inmuebles más solicitados, el más pedido y portafolio.', '2.1 · 2.2 · 2.3 · 2.4', 'v'],
-  ['03-inmuebles', 'Inmuebles', 'Tabla con foto, código, inmueble, operación, precio y estado; búsqueda, filtros y acciones (foto, editar, eliminar).', '3.2 · 3.3 · 3.4 · 3.5', 'h'],
-  ['04-nuevo-inmueble', 'Nuevo inmueble', 'Modal de creación con validaciones: el ejemplo muestra el error 409 de código repetido.', '3.1', 'h'],
+  ['03-inmuebles', 'Inmuebles', 'Tabla con la portada (cuántas fotos tiene y si tiene video), código, inmueble, operación, precio y estado; búsqueda, filtros y acciones (aviso QR, editar, eliminar).', '3.2 · 3.3 · 3.4 · A.1', 'h'],
+  ['04-nuevo-inmueble', 'Nuevo inmueble', 'Modal de creación con los datos, varias fotos (la estrella elige la portada) y el video de YouTube con vista previa.', '3.1 · 3.5 · A.3 · A.4', 'h'],
   ['05-solicitudes', 'Solicitudes', 'Filtros por tipo y estado, y tabla con cliente, inmueble, detalle, respuesta, estado y acciones según el estado.', '4.1 · 4.2 · 4.4 · 4.5', 'v'],
   ['06-responder-solicitud', 'Responder solicitud', 'Modal con el resumen de la solicitud, el nuevo estado (solo transiciones permitidas) y la respuesta que verá el cliente en la app.', '4.3', 'h'],
   ['07-clientes', 'Clientes', 'Clientes registrados desde la app o a mano, con editar y eliminar.', '5.1 · 5.2 · 5.3 · 5.4', 'h'],
   ['08-reportes', 'Reportes', 'Solicitudes por rango de fechas con totales, descarga a Excel (CSV) e impresión a PDF. Solo administrador.', '6.1 · 6.2', 'h'],
   ['09-usuarios', 'Usuarios', 'Cuentas del panel con rol y permisos; no se puede borrar la propia cuenta. Solo administrador.', '1.4 · 1.5 · 1.6', 'h'],
-  ['10-no-encontrado', 'Página no encontrada', 'Ruta inexistente (**) con botón para volver al inicio.', '1.2', 'h']
+  ['10-no-encontrado', 'Página no encontrada', 'Ruta inexistente (**) con botón para volver al inicio.', '1.2', 'h'],
+  ['11-aviso-qr', 'Aviso con QR', 'Letrero imprimible del inmueble: logo, teléfonos, SE VENDE / SE ARRIENDA, portada, datos y el código QR que abre el inmueble en la app.', 'A.1', 'h']
 ];
 
 function pie(num, t, d, r) {
@@ -115,11 +125,12 @@ function pie(num, t, d, r) {
 }
 
 // indice
-var ind = document.getElementById('indice'), n = 0, filas = '';
-APP.forEach(function (a) { n++; filas += '<tr><td>A-' + String(n).padStart(2, '0') + '</td><td>App</td><td>' + a[1] + '</td><td>' + a[3] + '</td></tr>'; });
-n = 0;
-WEB.forEach(function (w) { n++; filas += '<tr><td>W-' + String(n).padStart(2, '0') + '</td><td>Panel web</td><td>' + w[1] + '</td><td>' + w[3] + '</td></tr>'; });
-ind.insertAdjacentHTML('beforeend', filas);
+var n = 0, filas = '';
+APP.forEach(function (a) { n++; filas += '<tr><td>A-' + String(n).padStart(2, '0') + '</td><td>' + a[1] + '</td><td>' + a[3] + '</td></tr>'; });
+document.getElementById('indiceApp').insertAdjacentHTML('beforeend', filas);
+n = 0; filas = '';
+WEB.forEach(function (w) { n++; filas += '<tr><td>W-' + String(n).padStart(2, '0') + '</td><td>' + w[1] + '</td><td>' + w[3] + '</td></tr>'; });
+document.getElementById('indiceWeb').insertAdjacentHTML('beforeend', filas);
 
 // android: 2 por pagina
 var h = '';

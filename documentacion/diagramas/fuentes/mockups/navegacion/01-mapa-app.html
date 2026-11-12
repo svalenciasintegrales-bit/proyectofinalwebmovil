@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="tam" content="1900x1100">
+<meta name="tam" content="1900x1200">
 <title>Mapa de navegacion - App</title>
 <link rel="stylesheet" href="../../comun.css">
 <script src="../../uml.js"></script>
 <script src="_pant.js"></script>
 </head>
 <body>
-<div id="lienzo" class="lienzo" style="width:1900px;height:1100px">
+<div id="lienzo" class="lienzo" style="width:1900px;height:1200px">
   <div class="diag-cab">
     <div class="barra"></div>
     <img src="../../../../../web-angular/public/img/logo.png" alt="">
@@ -26,12 +26,14 @@ var W = 160, H = 320;
 pant('p01', { x: 40,   y: 360, w: W, h: H, img: P + '01-onboarding.png', titulo: 'Bienvenida', sub: 'solo la primera vez' });
 pant('p02', { x: 300,  y: 360, w: W, h: H, img: P + '02-inicio.png', titulo: 'Inicio (home)', sub: 'catálogo' });
 pant('p03', { x: 560,  y: 110, w: W, h: H, img: P + '03-codigo-letrero.png', titulo: 'Código del letrero', sub: 'diálogo' });
-pant('p04', { x: 820,  y: 360, w: W, h: H, img: P + '04-detalle.png', titulo: 'Detalle', sub: 'detail/{id}' });
+pant('p04', { x: 820,  y: 360, w: W, h: H, img: P + '11-detalle-carrusel-video.png', titulo: 'Detalle', sub: 'carrusel, video y simulador' });
 pant('p05', { x: 1080, y: 360, w: W, h: H, img: P + '05-agendar-visita.png', titulo: 'Agendar visita', sub: 'solicitud/{id}/visita' });
 pant('p06', { x: 1340, y: 360, w: W, h: H, img: P + '06-visita-agendada.png', titulo: '¡Visita agendada!', sub: 'diálogo de resultado' });
 pant('p07', { x: 1640, y: 360, w: W, h: H, img: P + '07-mis-solicitudes.png', titulo: 'Mis solicitudes', sub: 'mis_solicitudes' });
 pant('p08', { x: 560,  y: 700, w: W, h: H - 30, img: P + '08-favoritos.png', titulo: 'Mis favoritos', sub: 'favoritos' });
 pant('p09', { x: 300,  y: 740, w: W, h: H - 60, img: P + '09-ajustes.png', titulo: 'Ajustes', sub: 'ajustes' });
+pant('p12', { x: 1080, y: 760, w: W, h: H - 30, img: P + '12-qr-pagina-web.png', titulo: 'Página del QR', sub: 'al escanear el aviso' });
+pant('p13', { x: 1340, y: 760, w: W, h: H - 30, img: P + '13-horas-tachadas.png', titulo: 'Visita para hoy', sub: 'horas pasadas tachadas', variante: true });
 pant('p10', { x: 40,   y: 740, w: W, h: H - 60, img: P + '10-inicio-sin-conexion.png', titulo: 'Inicio sin conexión', sub: 'variante (copia Room)', variante: true });
 
 rel('p01', 'p02', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.45, recta: 'h', etiqueta: 'Empezar', dy: -12 });
@@ -45,7 +47,9 @@ rel('p02', 'p07', { tipo: 'navegable', desde: 't', hasta: 't', fd: 0.3, fh: 0.5,
 rel('p02', 'p08', { tipo: 'navegable', desde: 'r', hasta: 'l', fd: 0.85, fh: 0.4, orto: true, etiqueta: '♥ favoritos', tl: 0.25, dy: -12 });
 rel('p08', 'p04', { tipo: 'navegable', desde: 'r', hasta: 'b', fd: 0.4, fh: 0.5, orto: true, etiqueta: 'toca una tarjeta', tl: 0.3, dy: -12 });
 rel('p02', 'p09', { tipo: 'navegable', desde: 'b', hasta: 't', fd: 0.5, recta: 'v', etiqueta: '⚙ ajustes', dx: 40 });
-rel('p07', 'p04', { tipo: 'navegable', desde: 'b', hasta: 'b', fd: 0.5, fh: 0.75, via: [[1725, 1070], [945, 1070]], etiqueta: 'toca una solicitud', tl: 0.5 });
+rel('p07', 'p04', { tipo: 'navegable', desde: 'b', hasta: 'b', fd: 0.5, fh: 0.75, via: [[1725, 1175], [945, 1175]], etiqueta: 'toca una solicitud', tl: 0.5 });
+rel('p12', 'p04', { tipo: 'navegable', desde: 'l', hasta: 'b', fd: 0.4, fh: 0.95, orto: true, etiqueta: 'abre la app', tl: 0.3, dy: -12 });
+rel('p05', 'p13', { tipo: 'dependencia', desde: 'b', hasta: 't', orto: true, etiqueta: 'fecha de hoy', tl: 0.5, dy: -12 });
 rel('p02', 'p10', { tipo: 'dependencia', desde: 'b', hasta: 't', fd: 0.15, fh: 0.85, etiqueta: 'sin internet', tl: 0.5, dx: -30 });
 dibujar();
 </script>

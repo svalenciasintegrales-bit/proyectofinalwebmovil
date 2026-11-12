@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="tam" content="1440x1240">
+  <meta name="escala" content="1.5">
+  <title>Aviso con QR | Panel InmoConecta</title>
+  <link rel="stylesheet" href="bootstrap-lite.css">
+  <link rel="stylesheet" href="panel.css">
+  <link rel="stylesheet" href="c-aviso.css">
+  <style>
+    .tel i[data-i] { vertical-align: -0.12em; }
+  </style>
+</head>
+<!-- /panel/aviso/:id  (web-angular/src/app/modulos/aviso) con el inmueble CAR-101 -->
+<body data-pagina="aviso">
+  <div class="app-container">
+    <aside id="nav"></aside>
+    <main class="main-content">
+      <header id="header"></header>
+      <div class="content-wrapper">
+
+        <!-- barra de opciones (no sale al imprimir) -->
+        <div class="barra no-imprimir">
+          <a class="btn btn-light"><i data-i="atras" class="me-1"></i> Volver a inmuebles</a>
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <div class="input-group servidor">
+              <span class="input-group-text"><i data-i="servidor" class="me-1"></i> IP del servidor</span>
+              <input type="text" class="form-control" value="10.5.10.196">
+            </div>
+            <button class="btn btn-rojo"><i data-i="imprimir" class="me-1"></i> Imprimir / Guardar PDF</button>
+          </div>
+        </div>
+
+        <div class="ayuda no-imprimir">
+          <i data-i="infoBorde" class="me-1"></i>
+          El QR lleva <b>http://10.5.10.196:3900/api/qr/CAR-101</b>. El celular debe estar en la misma red WiFi que este computador.
+          Si la IP del computador cambia, corrígela arriba y vuelve a imprimir el aviso.
+        </div>
+
+        <!-- EL AVISO: es lo unico que sale al imprimir -->
+        <div class="hoja">
+          <div class="cabecera">
+            <img src="../../../../../web-angular/public/img/logo.png" alt="Caracoli Inmobiliaria" class="logo">
+            <div class="contacto">
+              <div class="tel"><i data-i="telefono"></i> 314 780 2883</div>
+              <div class="tel"><i data-i="whatsapp"></i> 310 650 1884</div>
+            </div>
+          </div>
+
+          <div class="operacion venta">SE VENDE</div>
+
+          <img src="../../../../../backend/upload/inmuebles/car-101.jpg" class="foto" alt="">
+
+          <div class="cuerpo">
+            <div class="datos">
+              <h2 class="titulo">Casa nueva para estrenar</h2>
+              <div class="lugar"><i data-i="lugar"></i> Centro, Cartago</div>
+              <div class="precio">$250.000.000</div>
+              <div class="caracteristicas">
+                <span><b>120</b> m²</span>
+                <span><b>3</b> habitaciones</span>
+                <span><b>2</b> baños</span>
+                <span>Casa</span>
+              </div>
+              <div class="codigo">Código <b>CAR-101</b></div>
+            </div>
+
+            <div class="qr">
+              <!-- QR real generado con la libreria qrcode (la misma del panel) para http://10.5.10.196:3900/api/qr/CAR-101 -->
+              <img src="qr-car-101.png" alt="Código QR">
+              <div class="qr-texto">Escanea con la cámara de tu celular y mira fotos, detalles y agenda tu visita en la app</div>
+            </div>
+          </div>
+
+          <div class="pie">
+            Cra 3 # 11-89 Centro, Cartago · Tu confianza, nuestra prioridad
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <script src="../../iconos.js"></script>
+  <script src="layout.js"></script>
+</body>
+</html>

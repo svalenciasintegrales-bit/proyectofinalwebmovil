@@ -140,6 +140,8 @@ body {
        box-shadow: 0 2px 4px rgba(0,0,0,.18), 0 4px 10px rgba(0,0,0,.10); }
 .inm .foto { position: relative; height: 190px; background: #1B1B1B center/cover no-repeat; }
 .inm .datos { padding: 14px; }
+.inm .foto.sin-foto { display: flex; align-items: center; justify-content: center; }
+.inm .foto.sin-foto img { width: 70px; height: 70px; }
 .precio { font-family: var(--serif); font-weight: bold; color: var(--rojo); font-size: 22px; line-height: 28px; }
 .precio small { font-family: var(--sans); font-weight: normal; color: var(--texto); font-size: 13px; }
 .lugar-linea { display: flex; align-items: center; font-size: 14px; line-height: 20px; letter-spacing: .25px; }

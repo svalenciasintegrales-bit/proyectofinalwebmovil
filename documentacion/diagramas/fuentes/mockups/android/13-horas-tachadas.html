@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="tam" content="500x1000">
+<title>Android - Horas tachadas</title>
+<link rel="stylesheet" href="android.css">
+<link rel="stylesheet" href="solicitud.css">
+<style>
+  /* Button deshabilitado (enabled = false) de las horas que ya pasaron: SolicitudScreen.kt */
+  .btn-pasada { display: inline-flex; align-items: center; justify-content: center; height: 40px; border-radius: 20px; padding: 0 24px;
+                white-space: nowrap; font-family: var(--sans); font-size: 14px; font-weight: 600; letter-spacing: .1px;
+                background: #F2F2F2; color: #A6A6A6; text-decoration: line-through; }
+  /* la fila de horas (LazyRow) esta deslizada a la izquierda para ver la hora elegida, 2:00 p.m. */
+  .horas .riel { display: flex; margin-left: -210px; }
+  .nota-horas { font-size: 12px; line-height: 16px; letter-spacing: .4px; color: var(--texto); }
+</style>
+<script src="../../iconos.js"></script>
+<script src="android.js"></script>
+</head>
+<body data-hora="10:30">
+<div class="dispositivo"><div class="pantalla">
+  <div class="estado"></div>
+  <div class="appbar">
+    <span class="icono-btn nav"><i data-i="atras" data-s="24"></i></span>
+    <div class="titulo">Agendar visita</div>
+  </div>
+  <div class="contenido">
+    <div class="form">
+      <h1 class="title-l">Apartamento con balcon</h1>
+      <p class="body">Código CAR-102 · El Prado</p>
+      <div style="height:16px"></div>
+
+      <div class="campo"><span class="etiqueta">Nombre completo *</span><div class="caja">Laura Gomez</div></div>
+      <div style="height:8px"></div>
+      <div class="campo"><span class="etiqueta">Celular *</span><div class="caja">3001234567</div></div>
+      <div style="height:8px"></div>
+      <div class="campo"><span class="etiqueta">Fecha * (AAAA-MM-DD)</span><div class="caja">2026-11-12</div></div>
+      <div style="height:12px"></div>
+      <p class="body">Hora *</p>
+      <div class="horas"><div class="riel">
+        <span class="btn-pasada">8:00 a.m.</span>
+        <span class="btn-pasada">9:00 a.m.</span>
+        <span class="btn-pasada">10:00 a.m.</span>
+        <span class="btn-gris">11:00 a.m.</span>
+        <span class="btn">2:00 p.m.</span>
+        <span class="btn-gris">3:00 p.m.</span>
+        <span class="btn-gris">4:00 p.m.</span>
+      </div></div>
+      <div class="nota-horas">Las horas tachadas ya pasaron.</div>
+      <div style="height:12px"></div>
+      <div class="campo"><span class="etiqueta">Comentario (opcional)</span><div class="caja multi">Quiero ver el balcón y el parqueadero.</div></div>
+      <div style="height:20px"></div>
+      <span class="btn alto">Confirmar visita</span>
+      <p class="body" style="padding-top:8px">La inmobiliaria responde por la app, en "Mis solicitudes".</p>
+    </div>
+  </div>
+  <div class="gestos"></div>
+</div></div>
+</body>
+</html>
