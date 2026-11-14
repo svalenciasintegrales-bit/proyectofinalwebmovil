@@ -8,8 +8,8 @@
   <!-- pestañas y acciones -->
   <div class="barra no-imprimir">
     <div class="pestanas">
-      <button [class.activo]="pestana === 'solicitudes'" (click)="pestana = 'solicitudes'"><i class="bi bi-inbox"></i>Solicitudes por fechas</button>
-      <button [class.activo]="pestana === 'inventario'" (click)="pestana = 'inventario'"><i class="bi bi-buildings"></i>Inventario de inmuebles</button>
+      <button [class.activo]="pestana === 'solicitudes'" (click)="pestana = 'solicitudes'"><i class="bi bi-graph-up-arrow"></i>Solicitudes</button>
+      <button [class.activo]="pestana === 'inventario'" (click)="pestana = 'inventario'"><i class="bi bi-buildings"></i>Inventario</button>
     </div>
     <div class="d-flex gap-2">
       <button class="btn btn-success" (click)="descargar()" [disabled]="pestana === 'solicitudes' && !generado">
@@ -19,18 +19,27 @@
     </div>
   </div>
 
-  <!-- ===== REPORTE 1: SOLICITUDES POR FECHAS ===== -->
+  <!-- ===================== REPORTE 1: SOLICITUDES ===================== -->
   <div class="reporte" *ngIf="pestana === 'solicitudes'">
     <div class="filtros no-imprimir">
-      <div>
-        <label class="form-label small fw-bold">Desde</label>
-        <input type="date" class="form-control" name="desde" [(ngModel)]="desde">
+      <div class="rapidos">
+        <span class="rotulo">Periodo</span>
+        <button [class.activo]="rapido === '7'" (click)="rango('7')">7 días</button>
+        <button [class.activo]="rapido === '30'" (click)="rango('30')">30 días</button>
+        <button [class.activo]="rapido === 'mes'" (click)="rango('mes')">Este mes</button>
+        <button [class.activo]="rapido === 'anio'" (click)="rango('anio')">Este año</button>
       </div>
-      <div>
-        <label class="form-label small fw-bold">Hasta</label>
-        <input type="date" class="form-control" name="hasta" [(ngModel)]="hasta">
+      <div class="d-flex flex-wrap gap-2 align-items-end ms-lg-auto">
+        <div>
+          <label class="form-label small fw-bold mb-1">Desde</label>
+          <input type="date" class="form-control form-control-sm" name="desde" [(ngModel)]="desde" (ngModelChange)="rapido = ''">
+        </div>
+        <div>
+          <label class="form-label small fw-bold mb-1">Hasta</label>
+          <input type="date" class="form-control form-control-sm" name="hasta" [(ngModel)]="hasta" (ngModelChange)="rapido = ''">
+        </div>
+        <button class="btn btn-rojo btn-sm" (click)="generar()"><i class="bi bi-arrow-repeat me-1"></i>Generar</button>
       </div>
-      <button class="btn btn-rojo align-self-end" (click)="generar()"><i class="bi bi-bar-chart-line me-2"></i>Generar reporte</button>
     </div>
     <div *ngIf="error" class="alert alert-danger py-2 no-imprimir"><i class="bi bi-exclamation-circle me-2"></i>{{ error }}</div>
 
@@ -43,17 +52,100 @@
         </div>
       </div>
 
-      <div class="totales">
-        <div class="total principal"><b>{{ totales.total }}</b><span>Solicitudes</span></div>
-        <div class="total"><b>{{ totales.visitas }}</b><span>Visitas</span></div>
-        <div class="total"><b>{{ totales.informacion }}</b><span>Información</span></div>
-        <div class="total"><b>{{ totales.pendiente }}</b><span>Pendientes</span></div>
-        <div class="total"><b>{{ totales.confirmada }}</b><span>Confirmadas</span></div>
-        <div class="total"><b>{{ totales.realizada }}</b><span>Realizadas</span></div>
-        <div class="total"><b>{{ totales.cancelada }}</b><span>Canceladas</span></div>
+      <!-- KPI con la variacion frente al periodo anterior -->
+      <div class="kpis">
+        <div class="kpi">
+          <div class="kpi-top"><span>Solicitudes</span><i class="bi bi-inbox-fill rojo"></i></div>
+          <b>{{ totales.total }}</b>
+          <ng-container *ngTemplateOutlet="delta; context: { v: variacion(totales.total, anterior.total) }"></ng-container>
+        </div>
+        <div class="kpi">
+          <div class="kpi-top"><span>Visitas agendadas</span><i class="bi bi-calendar-event-fill azul"></i></div>
+          <b>{{ totales.visitas }}</b>
+          <ng-container *ngTemplateOutlet="delta; context: { v: variacion(totales.visitas, anterior.visitas) }"></ng-container>
+        </div>
+        <div class="kpi">
+          <div class="kpi-top"><span>Tasa de atención</span><i class="bi bi-check2-circle verde"></i></div>
+          <b>{{ indicadores.atencion }}%</b>
+          <ng-container *ngTemplateOutlet="delta; context: { v: indicadores.atencion - anterior.atencion, puntos: true }"></ng-container>
+        </div>
+        <div class="kpi">
+          <div class="kpi-top"><span>Clientes nuevos</span><i class="bi bi-person-plus-fill ambar"></i></div>
+          <b>{{ indicadores.clientesNuevos }}</b>
+          <ng-container *ngTemplateOutlet="delta; context: { v: variacion(indicadores.clientesNuevos, anterior.clientes) }"></ng-container>
+        </div>
       </div>
 
-      <div class="tarjeta">
+      <!-- fila: tendencia + estados -->
+      <div class="row g-3 mb-3">
+        <div class="col-xl-8">
+          <div class="panel">
+            <div class="panel-cab">
+              <div><h3><i class="bi bi-graph-up"></i>Tendencia de solicitudes</h3><small>{{ totales.visitas }} visitas · {{ totales.informacion }} de información</small></div>
+            </div>
+            <div class="grafica"><canvas baseChart [data]="tendenciaData" [options]="tendenciaOptions" [type]="'line'"></canvas></div>
+          </div>
+        </div>
+        <div class="col-xl-4">
+          <div class="panel">
+            <div class="panel-cab"><div><h3><i class="bi bi-pie-chart-fill"></i>Por estado</h3><small>Cómo van las solicitudes del periodo</small></div></div>
+            <div class="grafica dona">
+              <canvas baseChart [data]="estadosData" [options]="donaOptions" [type]="'doughnut'"></canvas>
+              <div class="dona-centro"><b>{{ totales.total }}</b><span>solicitudes</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- fila: ranking, dias de la semana, resumen -->
+      <div class="row g-3 mb-3">
+        <div class="col-lg-4">
+          <div class="panel">
+            <div class="panel-cab"><div><h3><i class="bi bi-trophy-fill"></i>Inmuebles más pedidos</h3><small>Top 5 del periodo</small></div></div>
+            <div class="p-3">
+              <div class="ranking" *ngFor="let f of topInmuebles; let i = index">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span class="text-truncate"><b class="puesto">{{ i + 1 }}</b>{{ f.inmueble.codigo }} · {{ f.inmueble.titulo }}</span>
+                  <b>{{ f.total }}</b>
+                </div>
+                <div class="barra-progreso"><div [style.width.%]="f.porcentaje"></div></div>
+              </div>
+              <p *ngIf="topInmuebles.length === 0" class="text-muted small mb-0">Sin solicitudes en el periodo.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="panel">
+            <div class="panel-cab"><div><h3><i class="bi bi-calendar-week-fill"></i>Días preferidos para visitar</h3><small>Según la fecha de la cita</small></div></div>
+            <div class="p-3">
+              <div class="semana" *ngFor="let d of semana">
+                <span class="dia">{{ d.dia }}</span>
+                <div class="barra-progreso grande"><div [class.mejor]="mejorDia && d.dia === mejorDia.dia" [style.width.%]="d.porcentaje"></div></div>
+                <b>{{ d.total }}</b>
+              </div>
+              <p class="nota" *ngIf="mejorDia">El día más pedido es el <b>{{ mejorDia.dia }}</b> ({{ mejorDia.total }} visitas). Hora favorita: <b>{{ indicadores.horaTop }}</b>.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="panel">
+            <div class="panel-cab"><div><h3><i class="bi bi-list-check"></i>Resumen del periodo</h3><small>{{ textoAnterior }}</small></div></div>
+            <ul class="resumen">
+              <li><span><i class="punto ambar"></i>Pendientes</span><b>{{ totales.pendiente }}</b></li>
+              <li><span><i class="punto azul"></i>Confirmadas</span><b>{{ totales.confirmada }}</b></li>
+              <li><span><i class="punto verde"></i>Realizadas</span><b>{{ totales.realizada }}</b></li>
+              <li><span><i class="punto gris"></i>Canceladas</span><b>{{ totales.cancelada }}</b></li>
+              <li class="linea"><span>Respondidas al cliente</span><b>{{ indicadores.respondidas }} de {{ totales.total }}</b></li>
+              <li><span>Visitas realizadas</span><b>{{ indicadores.conversion }}%</b></li>
+              <li><span>Cancelación</span><b [class.text-danger]="indicadores.cancelacion > 20">{{ indicadores.cancelacion }}%</b></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- detalle -->
+      <div class="panel">
+        <div class="panel-cab"><div><h3><i class="bi bi-table"></i>Detalle de solicitudes</h3><small>{{ filas.length }} registros</small></div></div>
         <div class="table-responsive">
           <table class="table align-middle mb-0">
             <thead>
@@ -81,29 +173,84 @@
     </div>
   </div>
 
-  <!-- ===== REPORTE 2: INVENTARIO ===== -->
+  <!-- ===================== REPORTE 2: INVENTARIO ===================== -->
   <div class="reporte" *ngIf="pestana === 'inventario'">
     <div class="encabezado-reporte">
       <img src="img/logo.png" alt="Caracoli Inmobiliaria">
       <div>
         <h2>Reporte de inventario</h2>
-        <p>Portafolio de inmuebles y número de solicitudes de cada uno</p>
+        <p>Portafolio de inmuebles y número de solicitudes de cada uno · {{ hoyTexto }}</p>
       </div>
     </div>
 
-    <div class="totales">
-      <div class="total principal"><b>{{ resumen.total }}</b><span>Inmuebles</span></div>
-      <div class="total"><b>{{ resumen.disponibles }}</b><span>Disponibles</span></div>
-      <div class="total"><b>{{ resumen.arrendados }}</b><span>Arrendados</span></div>
-      <div class="total"><b>{{ resumen.vendidos }}</b><span>Vendidos</span></div>
-      <div class="total ancho"><b>${{ resumen.valorVenta | number:'1.0-0' }}</b><span>Valor en venta</span></div>
+    <div class="kpis">
+      <div class="kpi">
+        <div class="kpi-top"><span>Inmuebles</span><i class="bi bi-buildings-fill rojo"></i></div>
+        <b>{{ resumen.total }}</b>
+        <small class="kpi-nota">{{ resumen.disponibles }} disponibles</small>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><span>Valor en venta</span><i class="bi bi-cash-stack verde"></i></div>
+        <b class="dinero">${{ resumen.valorVenta | number:'1.0-0' }}</b>
+        <small class="kpi-nota">Promedio ${{ resumen.promedioVenta | number:'1.0-0' }}</small>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><span>Canon de arriendo</span><i class="bi bi-key-fill azul"></i></div>
+        <b class="dinero">${{ resumen.canonArriendo | number:'1.0-0' }}</b>
+        <small class="kpi-nota">Mensual de los disponibles</small>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><span>Negocios cerrados</span><i class="bi bi-patch-check-fill ambar"></i></div>
+        <b>{{ resumen.ocupacion }}%</b>
+        <small class="kpi-nota">{{ resumen.arrendados }} arrendados · {{ resumen.vendidos }} vendidos</small>
+      </div>
     </div>
 
-    <div class="tarjeta">
+    <div class="row g-3 mb-3">
+      <div class="col-lg-4">
+        <div class="panel">
+          <div class="panel-cab"><div><h3><i class="bi bi-pie-chart-fill"></i>Estado del portafolio</h3><small>Disponibles, arrendados y vendidos</small></div></div>
+          <div class="grafica dona">
+            <canvas baseChart [data]="portafolioData" [options]="donaOptions" [type]="'doughnut'"></canvas>
+            <div class="dona-centro"><b>{{ resumen.total }}</b><span>inmuebles</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="panel">
+          <div class="panel-cab"><div><h3><i class="bi bi-arrow-left-right"></i>Venta vs. arriendo</h3><small>Tipo de negocio</small></div></div>
+          <div class="grafica dona">
+            <canvas baseChart [data]="operacionData" [options]="donaOptions" [type]="'doughnut'"></canvas>
+            <div class="dona-centro"><b>{{ resumen.total }}</b><span>inmuebles</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="panel">
+          <div class="panel-cab"><div><h3><i class="bi bi-house-fill"></i>Por tipo de inmueble</h3><small>Composición del portafolio</small></div></div>
+          <div class="p-3">
+            <div class="ranking" *ngFor="let t of tipos">
+              <div class="d-flex justify-content-between small mb-1">
+                <span>{{ t.tipo | titlecase }}</span><span><b>{{ t.total }}</b> <span class="text-muted">· {{ t.porcentaje }}%</span></span>
+              </div>
+              <div class="barra-progreso"><div class="negra" [style.width.%]="t.porcentaje"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel mb-3">
+      <div class="panel-cab"><div><h3><i class="bi bi-bar-chart-fill"></i>Solicitudes por inmueble</h3><small>Los más pedidos desde la app (histórico)</small></div></div>
+      <div class="grafica baja"><canvas baseChart [data]="solicitudesInmuebleData" [options]="barrasOptions" [type]="'bar'"></canvas></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-cab"><div><h3><i class="bi bi-table"></i>Detalle del inventario</h3><small>{{ inventario.length }} inmuebles</small></div></div>
       <div class="table-responsive">
         <table class="table align-middle mb-0">
           <thead>
-            <tr><th class="ps-3">Código</th><th>Inmueble</th><th>Operación</th><th class="text-end">Precio</th><th>Estado</th><th class="text-center pe-3">Solicitudes</th></tr>
+            <tr><th class="ps-3">Código</th><th>Inmueble</th><th>Operación</th><th class="text-end">Precio</th><th>Estado</th><th class="pe-3" style="width: 22%">Solicitudes</th></tr>
           </thead>
           <tbody>
             <tr *ngFor="let f of inventario">
@@ -112,7 +259,12 @@
               <td>{{ f.inmueble.operacion | titlecase }}</td>
               <td class="text-end text-nowrap">${{ f.inmueble.precio | number:'1.0-0' }}</td>
               <td><span class="estado" [ngClass]="colorEstado(f.inmueble.estado)">{{ f.inmueble.estado }}</span></td>
-              <td class="text-center pe-3"><b class="cantidad">{{ f.solicitudes }}</b></td>
+              <td class="pe-3">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="barra-progreso flex-grow-1"><div [style.width.%]="porcentaje(f.solicitudes, maxSolicitudes)"></div></div>
+                  <b class="cantidad">{{ f.solicitudes }}</b>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -120,3 +272,12 @@
     </div>
   </div>
 </div>
+
+<!-- variacion frente al periodo anterior: verde si sube, rojo si baja -->
+<ng-template #delta let-v="v" let-puntos="puntos">
+  <span class="delta neutro" *ngIf="v === null"><i class="bi bi-stars"></i>Nuevo en el periodo</span>
+  <span class="delta" *ngIf="v !== null" [class.sube]="v > 0" [class.baja]="v < 0" [class.neutro]="v === 0">
+    <i class="bi" [ngClass]="v > 0 ? 'bi-arrow-up-right' : (v < 0 ? 'bi-arrow-down-right' : 'bi-dash')"></i>
+    {{ v > 0 ? '+' : '' }}{{ v }}{{ puntos ? ' pts' : '%' }} <small>vs. periodo anterior</small>
+  </span>
+</ng-template>

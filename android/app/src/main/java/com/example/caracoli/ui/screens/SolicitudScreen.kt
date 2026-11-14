@@ -3,7 +3,9 @@
 // Sin internet queda guardada en el celular (DataStore) y se envia sola cuando vuelve la conexion.
 package com.example.caracoli.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -46,6 +48,7 @@ fun SolicitudScreen(
     var fecha by rememberSaveable { mutableStateOf("") }
     var hora by rememberSaveable { mutableStateOf("") }
     var intentoEnviar by remember { mutableStateOf(false) }
+    var verCalendario by remember { mutableStateOf(false) }
 
     // Si el cliente ya escribio sus datos antes (DataStore), se llenan solos
     LaunchedEffect(nombreGuardado, telefonoGuardado) {
@@ -107,13 +110,30 @@ fun SolicitudScreen(
                 Spacer(Modifier.height(8.dp))
 
                 if (esVisita) {
-                    OutlinedTextField(
-                        value = fecha, onValueChange = { fecha = it }, label = { Text("Fecha * (AAAA-MM-DD)") },
-                        placeholder = { Text("2026-11-20") },
-                        isError = intentoEnviar && !fechaValida, singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth()
-                    )
-                    if (intentoEnviar && !fechaValida) Text("Escribe la fecha así: 2026-11-20", color = RojoCaracoli)
+                    // La fecha se elige en un calendario (DatePickerDialog), no se escribe.
+                    // El campo es de solo lectura: al tocarlo (o el icono) se abre el calendario.
+                    Box {
+                        OutlinedTextField(
+                            value = fechaBonita(fecha), onValueChange = { }, readOnly = true,
+                            label = { Text("Fecha de la visita *") }, placeholder = { Text("Toca para elegir el día") },
+                            trailingIcon = {
+                                IconButton(onClick = { verCalendario = true }) {
+                                    Icon(Icons.Default.DateRange, contentDescription = "Elegir fecha", tint = RojoCaracoli)
+                                }
+                            },
+                            isError = intentoEnviar && !fechaValida, singleLine = true, modifier = Modifier.fillMaxWidth()
+                        )
+                        // capa transparente encima del campo para que todo el campo abra el calendario
+                        Box(Modifier.matchParentSize().padding(end = 48.dp).clickable { verCalendario = true })
+                    }
+                    if (intentoEnviar && !fechaValida) Text("Elige la fecha de la visita", color = RojoCaracoli)
+                    if (verCalendario) {
+                        CalendarioVisita(
+                            fechaActual = fecha,
+                            onElegir = { fecha = it; verCalendario = false },
+                            onCerrar = { verCalendario = false }
+                        )
+                    }
                     Spacer(Modifier.height(12.dp))
                     Text("Hora *", color = if (intentoEnviar && hora.isBlank()) RojoCaracoli else MaterialTheme.colorScheme.onBackground)
                     // LazyRow: las horas en una fila que se desliza; la elegida se pinta de rojo.
@@ -202,4 +222,59 @@ fun SolicitudScreen(
 fun minutosDelDia(): Int {
     val ahora = java.time.LocalTime.now()
     return ahora.hour * 60 + ahora.minute
+}
+
+// CALENDARIO para elegir la fecha de la visita (DatePickerDialog de Material 3).
+// No deja elegir dias que ya pasaron. El DatePicker trabaja con milisegundos en UTC,
+// por eso se convierte de milisegundos a fecha (y al reves) con la zona UTC.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CalendarioVisita(fechaActual: String, onElegir: (String) -> Unit, onCerrar: () -> Unit) {
+    val hoy = java.time.LocalDate.now()
+    val hoyMillis = hoy.atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli()
+    val inicial = if (fechaActual.length == 10)
+        java.time.LocalDate.parse(fechaActual).atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli()
+    else hoyMillis
+    val estado = rememberDatePickerState(
+        initialSelectedDateMillis = inicial,
+        yearRange = hoy.year..hoy.year + 1,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis >= hoyMillis
+            override fun isSelectableYear(year: Int) = year >= hoy.year
+        }
+    )
+    DatePickerDialog(
+        onDismissRequest = onCerrar,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val millis = estado.selectedDateMillis
+                    if (millis != null) {
+                        val elegida = java.time.Instant.ofEpochMilli(millis).atZone(java.time.ZoneOffset.UTC).toLocalDate()
+                        onElegir(elegida.toString()) // queda AAAA-MM-DD, como lo pide la API
+                    }
+                },
+                enabled = estado.selectedDateMillis != null
+            ) { Text("Aceptar", color = RojoCaracoli) }
+        },
+        dismissButton = { TextButton(onClick = onCerrar) { Text("Cancelar") } }
+    ) {
+        DatePicker(
+            state = estado,
+            title = { Text("Fecha de la visita", modifier = Modifier.padding(start = 24.dp, top = 16.dp)) },
+            colors = DatePickerDefaults.colors(
+                selectedDayContainerColor = RojoCaracoli,
+                todayDateBorderColor = RojoCaracoli,
+                todayContentColor = RojoCaracoli,
+                selectedYearContainerColor = RojoCaracoli
+            )
+        )
+    }
+}
+
+// muestra la fecha AAAA-MM-DD de forma facil de leer. Ej: 2026-11-20 -> viernes, 20 de noviembre de 2026
+fun fechaBonita(fecha: String): String {
+    if (fecha.length != 10) return ""
+    val formato = java.time.format.DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy", java.util.Locale("es", "CO"))
+    return java.time.LocalDate.parse(fecha).format(formato)
 }

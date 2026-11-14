@@ -5,7 +5,11 @@
     <button [class.activo]="tipo === 'visita'" (click)="tipo = 'visita'"><i class="bi bi-calendar-event"></i>Visitas <b>{{ contar('visita') }}</b></button>
     <button [class.activo]="tipo === 'informacion'" (click)="tipo = 'informacion'"><i class="bi bi-chat-left-text"></i>Información <b>{{ contar('informacion') }}</b></button>
   </div>
-  <div class="filtro-grupo estados">
+  <div class="filtro-grupo vistas">
+    <button [class.activo]="vista === 'lista'" (click)="cambiarVista('lista')" title="Ver en tabla"><i class="bi bi-list-ul"></i>Lista</button>
+    <button [class.activo]="vista === 'tablero'" (click)="cambiarVista('tablero')" title="Ver por estados (Kanban)"><i class="bi bi-kanban"></i>Tablero</button>
+  </div>
+  <div class="filtro-grupo estados" *ngIf="vista === 'lista'">
     <button [class.activo]="estado === ''" (click)="filtrar('')">Todos los estados</button>
     <button *ngFor="let e of estados" [class.activo]="estado === e" (click)="filtrar(e)">{{ e | titlecase }}</button>
   </div>
@@ -19,7 +23,43 @@
   <i class="bi bi-exclamation-circle me-2"></i>{{ errorTabla }}
 </div>
 
-<div class="tarjeta">
+<!-- ===== VISTA TABLERO (KANBAN): una columna por estado ===== -->
+<div class="kanban" *ngIf="vista === 'tablero'">
+  <div class="columna" *ngFor="let e of estados" [ngClass]="'col-' + e">
+    <div class="columna-cab">
+      <span><i class="bi" [ngClass]="iconoEstado(e)"></i>{{ e | titlecase }}</span>
+      <b>{{ columna(e).length }}</b>
+    </div>
+    <div class="columna-cuerpo">
+      <div class="ficha" *ngFor="let s of columna(e)" data-bs-toggle="modal" data-bs-target="#respuestaModal"
+        (click)="abrirRespuesta(s)" title="Ver y responder la solicitud">
+        <div class="ficha-cab">
+          <span class="tipo-mini" [ngClass]="s.tipo === 'informacion' ? 'tipo-info' : 'tipo-visita'">
+            <i class="bi" [ngClass]="s.tipo === 'informacion' ? 'bi-chat-left-text-fill' : 'bi-calendar-event-fill'"></i>
+            {{ s.tipo === 'informacion' ? 'Información' : 'Visita' }}
+          </span>
+          <small class="text-muted">{{ s.fecha | date:'dd/MM HH:mm' }}</small>
+        </div>
+        <div class="fw-bold">{{ clienteDe(s.cliente_id)?.nombre || 'Cliente borrado' }}</div>
+        <small class="text-muted d-block"><i class="bi bi-house-door me-1"></i>{{ inmuebleDe(s.inmueble_id)?.codigo || '—' }} · {{ inmuebleDe(s.inmueble_id)?.titulo || 'Inmueble borrado' }}</small>
+        <div class="ficha-cita" *ngIf="s.tipo !== 'informacion'">
+          <i class="bi bi-calendar3 me-1"></i>{{ s.fecha_cita | date:'dd/MM/yyyy':'UTC' }} · {{ s.hora }}
+        </div>
+        <p class="ficha-msg" *ngIf="s.observaciones">“{{ s.observaciones }}”</p>
+        <div class="ficha-pie">
+          <small *ngIf="s.respuesta" class="text-success"><i class="bi bi-reply-fill me-1"></i>Respondida</small>
+          <small *ngIf="!s.respuesta" class="text-muted fst-italic">Sin responder</small>
+          <i class="bi bi-chevron-right text-muted"></i>
+        </div>
+      </div>
+      <div class="vacia" *ngIf="columna(e).length === 0">
+        <i class="bi bi-inbox"></i>Sin solicitudes
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tarjeta" *ngIf="vista === 'lista'">
   <div class="table-responsive">
     <table class="table align-middle table-hover mb-0">
       <thead>
@@ -101,6 +141,10 @@
       </div>
       <div class="modal-body" *ngIf="seleccionada">
         <div class="resumen mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <small class="text-muted">{{ seleccionada.tipo === 'informacion' ? 'Información' : 'Visita' }} · recibida el {{ seleccionada.fecha | date:'dd/MM/yyyy HH:mm' }}</small>
+            <span class="estado" [ngClass]="colorEstado(seleccionada.estado)">{{ seleccionada.estado }}</span>
+          </div>
           <div class="fw-bold">{{ clienteDe(seleccionada.cliente_id)?.nombre }} · {{ clienteDe(seleccionada.cliente_id)?.telefono }}</div>
           <small class="text-muted">
             {{ seleccionada.tipo === 'informacion' ? 'Pide información sobre' : 'Quiere visitar' }}

@@ -21,6 +21,7 @@ export class Solicitudes implements OnInit {
   estado: string = ''; // filtro por estado: '' = todas
   tipo: string = ''; // filtro por tipo: '' = todas, 'visita' o 'informacion'
   estados: string[] = ['pendiente', 'confirmada', 'realizada', 'cancelada'];
+  vista: string = 'lista'; // 'lista' (tabla) o 'tablero' (kanban por estado)
   mensaje: string = '';
   error: string = '';
   errorTabla: string = ''; // ej: cambio de estado que el servidor no permite
@@ -75,6 +76,30 @@ export class Solicitudes implements OnInit {
   filtrar(estado: string) {
     this.estado = estado;
     this.consultar();
+  }
+
+  // ---------- VISTA TABLERO (KANBAN) ----------
+  // 'lista' = la tabla de siempre; 'tablero' = una columna por estado con tarjetas
+  cambiarVista(vista: string) {
+    this.vista = vista;
+    // en el tablero cada columna ya es un estado, por eso se traen todas
+    if (vista === 'tablero' && this.estado !== '') this.filtrar('');
+  }
+
+  // solicitudes de una columna del tablero (respeta el filtro de tipo)
+  columna(estado: string) {
+    const lista: any[] = [];
+    for (const s of this.visibles()) {
+      if (s.estado === estado) lista.push(s);
+    }
+    return lista;
+  }
+
+  iconoEstado(estado: string) {
+    if (estado === 'pendiente') return 'bi-hourglass-split';
+    if (estado === 'confirmada') return 'bi-calendar-check';
+    if (estado === 'realizada') return 'bi-check2-circle';
+    return 'bi-x-circle';
   }
 
   // filtro por tipo: se hace aqui con la lista que ya llego de la api
