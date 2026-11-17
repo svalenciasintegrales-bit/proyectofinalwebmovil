@@ -23,8 +23,19 @@
   <i class="bi bi-exclamation-circle me-2"></i>{{ errorTabla }}
 </div>
 
+<!-- la lista NO se pudo cargar (API apagada o error): es distinto de "no hay solicitudes" -->
+<div *ngIf="errorCarga" class="alert alert-danger d-flex align-items-center justify-content-between gap-2" role="alert">
+  <span><i class="bi bi-wifi-off me-2"></i>{{ errorCarga }}</span>
+  <button class="btn btn-sm btn-outline-danger" (click)="reintentar()" [disabled]="cargando">
+    <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+  </button>
+</div>
+<div *ngIf="cargando && !errorCarga" class="text-muted small mb-2">
+  <span class="spinner-border spinner-border-sm me-2"></span>Cargando solicitudes…
+</div>
+
 <!-- ===== VISTA TABLERO (KANBAN): una columna por estado ===== -->
-<div class="kanban" *ngIf="vista === 'tablero'">
+<div class="kanban" *ngIf="vista === 'tablero' && !errorCarga">
   <div class="columna" *ngFor="let e of estados" [ngClass]="'col-' + e">
     <div class="columna-cab">
       <span><i class="bi" [ngClass]="iconoEstado(e)"></i>{{ e | titlecase }}</span>
@@ -59,7 +70,7 @@
   </div>
 </div>
 
-<div class="tarjeta" *ngIf="vista === 'lista'">
+<div class="tarjeta" *ngIf="vista === 'lista' && !errorCarga">
   <div class="table-responsive">
     <table class="table align-middle table-hover mb-0">
       <thead>
@@ -114,9 +125,6 @@
             </button>
             <button class="btn btn-sm btn-light me-1" title="Cancelar" *ngIf="s.estado === 'pendiente' || s.estado === 'confirmada'" (click)="cambiarEstado(s, 'cancelada')">
               <i class="bi bi-x-lg text-secondary"></i>
-            </button>
-            <button class="btn btn-sm btn-light text-danger" title="Eliminar" (click)="eliminar(s)">
-              <i class="bi bi-trash3"></i>
             </button>
           </td>
         </tr>

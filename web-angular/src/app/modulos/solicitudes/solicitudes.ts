@@ -26,6 +26,8 @@ export class Solicitudes implements OnInit {
   error: string = '';
   errorTabla: string = ''; // ej: cambio de estado que el servidor no permite
   enviando: boolean = false; // bloquea el boton mientras la api responde
+  cargando: boolean = false; // mientras llega la lista
+  errorCarga: string = ''; // la lista NO se pudo cargar (distinto de 'no hay solicitudes')
 
   // a que estados se puede pasar desde cada uno (la misma regla la revisa el servidor)
   transiciones: any = {
@@ -48,7 +50,12 @@ export class Solicitudes implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // se cargan inmuebles y clientes para mostrar los nombres en vez de los ids
+    this.cargarNombres();
+    this.consultar();
+  }
+
+  // se cargan inmuebles y clientes para mostrar los nombres en vez de los ids
+  cargarNombres() {
     this.sinmueble.consulta().subscribe({
       next: (res: any) => { this.inmuebles = res.inmuebles; this.cdr.detectChanges(); },
       error: () => { this.inmuebles = []; }
@@ -57,17 +64,33 @@ export class Solicitudes implements OnInit {
       next: (res: any) => { this.clientes = res.clientes; this.cdr.detectChanges(); },
       error: () => { this.clientes = []; }
     });
+  }
+
+  // boton Reintentar: vuelve a pedir la lista y tambien los nombres (si la API estaba apagada no llegaron)
+  reintentar() {
+    this.cargarNombres();
     this.consultar();
   }
 
   consultar() {
+    this.cargando = true;
+    this.errorCarga = '';
     this.scita.consulta(this.estado).subscribe({
       next: (res: any) => {
         this.solicitudes = res.citas;
+        this.cargando = false;
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.solicitudes = [];
+      error: (err: any) => {
+        // 404 = la API respondio que no hay registros: es una lista VACIA de verdad.
+        // Cualquier otro error (API apagada = status 0, error 500) NO es una lista vacia:
+        // se muestra el aviso de error con el boton Reintentar.
+        if (err.status === 404) {
+          this.solicitudes = [];
+        } else {
+          this.errorCarga = 'No se pudieron cargar las solicitudes: no hay conexión con el servidor.';
+        }
+        this.cargando = false;
         this.cdr.detectChanges();
       }
     });
@@ -197,22 +220,6 @@ export class Solicitudes implements OnInit {
         this.cdr.detectChanges();
       }
     });
-  }
-
-  eliminar(s: any) {
-    if (confirm('¿Está seguro de eliminar esta solicitud?')) {
-      this.errorTabla = '';
-      this.scita.eliminar(s._id).subscribe({
-        next: () => {
-          this.consultar();
-          this.mostrarMensaje('Solicitud eliminada con éxito.');
-        },
-        error: (err: any) => {
-          this.errorTabla = (err.error && err.error.message ? err.error.message : 'No hay conexión con el servidor.');
-          this.cdr.detectChanges();
-        }
-      });
-    }
   }
 
   colorEstado(estado: string) {

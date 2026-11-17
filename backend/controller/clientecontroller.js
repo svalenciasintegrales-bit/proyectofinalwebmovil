@@ -10,6 +10,19 @@ var Cliente = require('../models/cliente'); // traemos el modelo Cliente para us
 var Cita = require('../models/cita'); // para saber si el cliente tiene solicitudes antes de borrarlo
 
 // objeto controller: guarda todos los metodos de clientes
+// VALIDACION EN EL SERVIDOR (las mismas reglas del formulario de Angular y de la app):
+// nombre minimo 3 letras, telefono de 7 a 10 numeros y correo opcional pero valido.
+// Devuelve null si todo esta bien o el mensaje de error.
+function validarCliente(params) {
+    var nombre = String(params.nombre || '').trim();
+    var telefono = String(params.telefono || '').trim();
+    var correo = String(params.correo || '').trim();
+    if (!validator.isLength(nombre, { min: 3, max: 80 })) return 'El nombre debe tener minimo 3 letras !!!';
+    if (!validator.isNumeric(telefono, { no_symbols: true }) || !validator.isLength(telefono, { min: 7, max: 10 })) return 'El telefono debe tener entre 7 y 10 numeros !!!';
+    if (correo && !validator.isEmail(correo)) return 'El correo no es valido !!!';
+    return null;
+}
+
 var controller = {
 
     // ---------------- METODO DE PRUEBA (POST /api/cliente/probando) ----------------
@@ -41,25 +54,16 @@ var controller = {
             });
         }
 
-        // 2. validar con validator: nombre y telefono no vacios, correo valido (si lo envian)
-        try {
-            var validate_nombre = !validator.isEmpty(params.nombre);
-            var validate_telefono = !validator.isEmpty(params.telefono);
-            var validate_correo = !params.correo || validator.isEmail(params.correo); // el correo es opcional
-        } catch (err) {
-            return res.status(400).send({
-                status: 'error',
-                message: 'Faltan datos por enviar !!!'
-            });
-        }
+        // 2. validar formato y rangos en el servidor (no basta con que Angular o la app lo revisen antes)
+        var errorDatos = validarCliente(params);
 
-        // 3. si los datos son validos se guarda el cliente
-        if (validate_nombre && validate_telefono && validate_correo) {
+        // 3. si los datos son validos se guarda el cliente (solo nombre, telefono y correo)
+        if (!errorDatos) {
             var cliente = new Cliente();
 
-            cliente.nombre = params.nombre;
-            cliente.telefono = params.telefono;
-            cliente.correo = params.correo;
+            cliente.nombre = String(params.nombre).trim();
+            cliente.telefono = String(params.telefono).trim();
+            cliente.correo = String(params.correo || '').trim();
 
             try {
                 const clienteStored = await cliente.save(); // save(): inserta el documento en la coleccion Clientes
@@ -76,7 +80,7 @@ var controller = {
         } else {
             return res.status(400).send({
                 status: 'error',
-                message: 'Los datos no son validos !!!'
+                message: errorDatos
             });
         }
     },
@@ -160,19 +164,20 @@ var controller = {
         }
         var params = req.body;
 
-        try {
-            var validate_nombre = !validator.isEmpty(params.nombre);
-            var validate_telefono = !validator.isEmpty(params.telefono);
-        } catch (err) {
-            return res.status(400).send({
-                status: 'error',
-                message: 'Faltan datos por enviar !!!'
-            });
-        }
+        // mismas reglas que al crear
+        var errorDatos = validarCliente(params);
 
-        if (validate_nombre && validate_telefono) {
+        if (!errorDatos) {
             try {
-                const clienteUpdated = await Cliente.findOneAndUpdate({ _id: clienteId }, params, { returnDocument: 'after' });
+                // CAMPOS PERMITIDOS: solo se cambian nombre, telefono y correo.
+                // ANTES se guardaba todo el body (params) y se podian colar campos que no existen o cambiar la fecha.
+                var cambios = {
+                    nombre: String(params.nombre).trim(),
+                    telefono: String(params.telefono).trim(),
+                    correo: String(params.correo || '').trim()
+                };
+                // runValidators: true -> tambien se revisan las restricciones del modelo
+                const clienteUpdated = await Cliente.findOneAndUpdate({ _id: clienteId }, cambios, { returnDocument: 'after', runValidators: true });
 
                 if (!clienteUpdated) {
                     return res.status(404).send({
@@ -194,7 +199,7 @@ var controller = {
         } else {
             return res.status(400).send({
                 status: 'error',
-                message: 'La validacion no es correcta !!!'
+                message: errorDatos
             });
         }
     },

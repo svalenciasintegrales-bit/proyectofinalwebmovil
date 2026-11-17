@@ -142,7 +142,21 @@ var controller = {
                     inmueble: inmuebleStored
                 });
             } catch (err) {
-                return res.status(404).send({ // si no se pudo guardar
+                // el modelo rechazo el dato (required, enum, min): es un error de los datos (400), no del servidor
+                if (err.name == 'ValidationError') {
+                    return res.status(400).send({
+                        status: 'error',
+                        message: 'Datos no validos en: ' + Object.keys(err.errors).join(', ') + ' !!!'
+                    });
+                }
+                // indice unico del modelo: MongoDB no deja repetir el valor (codigo 11000)
+                if (err.code == 11000) {
+                    return res.status(409).send({
+                        status: 'error',
+                        message: 'Ya existe un registro con ese dato unico !!!'
+                    });
+                }
+                return res.status(500).send({ // 500 = error del servidor
                     status: 'error',
                     message: 'El inmueble no se ha guardado !!!'
                 });
@@ -433,7 +447,8 @@ var controller = {
 
                 // findOneAndUpdate(condicion, datos nuevos, opciones)
                 // { returnDocument: 'after' } -> devuelve el inmueble ya actualizado (sin esto devuelve el viejo)
-                const inmuebleUpdated = await Inmueble.findOneAndUpdate({ _id: inmuebleId }, cambios, { returnDocument: 'after' });
+                // runValidators: true -> al actualizar tambien se revisan las restricciones del modelo (enum, min, required)
+                const inmuebleUpdated = await Inmueble.findOneAndUpdate({ _id: inmuebleId }, cambios, { returnDocument: 'after', runValidators: true });
 
                 // si no encontro un inmueble con ese id
                 if (!inmuebleUpdated) {
@@ -449,6 +464,20 @@ var controller = {
                     inmueble: inmuebleUpdated
                 });
             } catch (err) {
+                // el modelo rechazo el dato (required, enum, min): es un error de los datos (400), no del servidor
+                if (err.name == 'ValidationError') {
+                    return res.status(400).send({
+                        status: 'error',
+                        message: 'Datos no validos en: ' + Object.keys(err.errors).join(', ') + ' !!!'
+                    });
+                }
+                // indice unico del modelo: MongoDB no deja repetir el valor (codigo 11000)
+                if (err.code == 11000) {
+                    return res.status(409).send({
+                        status: 'error',
+                        message: 'Ya existe un registro con ese dato unico !!!'
+                    });
+                }
                 return res.status(500).send({ // 500 = error del servidor (ej: id con formato invalido)
                     status: 'error',
                     message: 'Error al actualizar el inmueble !!!'

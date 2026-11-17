@@ -21,6 +21,8 @@ export class Inmuebles implements OnInit {
   mensaje: string = '';
   error: string = '';
   errorTabla: string = ''; // ej: no se puede eliminar porque tiene solicitudes
+  cargando: boolean = false; // mientras llega la lista
+  errorCarga: string = ''; // la lista NO se pudo cargar (distinto de 'no hay inmuebles')
   enviando: boolean = false; // mientras la api responde se bloquea el boton (no se envia dos veces)
   codigoRepetido: string = ''; // codigo que la api rechazo por estar repetido (se muestra debajo del campo)
 
@@ -54,13 +56,24 @@ export class Inmuebles implements OnInit {
   }
 
   consultar() {
+    this.cargando = true;
+    this.errorCarga = '';
     this.sinmueble.consulta().subscribe({
       next: (res: any) => {
         this.inmuebles = res.inmuebles;
+        this.cargando = false;
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.inmuebles = [];
+      error: (err: any) => {
+        // 404 = la API respondio que no hay inmuebles: es una lista VACIA de verdad.
+        // Cualquier otro error (API apagada = status 0, error 500) NO es una lista vacia:
+        // se muestra el aviso de error con el boton Reintentar.
+        if (err.status === 404) {
+          this.inmuebles = [];
+        } else {
+          this.errorCarga = 'No se pudieron cargar los inmuebles: no hay conexión con el servidor.';
+        }
+        this.cargando = false;
         this.cdr.detectChanges();
       }
     });

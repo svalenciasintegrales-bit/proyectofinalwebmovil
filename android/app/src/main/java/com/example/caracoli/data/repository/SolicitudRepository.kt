@@ -48,6 +48,12 @@ class SolicitudRepository(
         // los datos del cliente quedan en el celular para no escribirlos otra vez
         manager.guardarDatos(nombre, telefono)
 
+        // si el cliente corrige una solicitud que el servidor le rechazo (mismo inmueble y tipo),
+        // la version corregida REEMPLAZA al borrador con error para que no queden dos iguales
+        borradorDao.todos().forEach {
+            if (it.estadoEnvio == "error" && it.inmuebleId == inmuebleId && it.tipo == tipo) borradorDao.eliminar(it)
+        }
+
         // 1. primero se guarda el BORRADOR en Room (si la app se cierra, no se pierde)
         val borrador = BorradorEntity(
             inmuebleId = inmuebleId, tipo = tipo, nombre = nombre.trim(), telefono = telefono.trim(),
@@ -63,8 +69,11 @@ class SolicitudRepository(
                 borradorDao.eliminar(guardado) // el servidor la guardo: ya no es borrador
                 Envio(ResultadoEnvio.ENVIADA, "")
             } else {
-                // el servidor la rechazo: el formulario conserva lo escrito para corregirlo
-                borradorDao.eliminar(guardado)
+                // el servidor la rechazo (400 o 409): el formulario conserva lo escrito para corregirlo.
+                // ANTES el borrador se BORRABA de Room: si el cliente cerraba la app, perdia lo que escribio.
+                // AHORA queda guardado con estado "error" y el motivo: aparece en "Mis solicitudes"
+                // (aunque se cierre la app) para corregirlo, reintentar o eliminarlo.
+                borradorDao.actualizar(guardado.copy(estadoEnvio = "error", error = error))
                 Envio(ResultadoEnvio.ERROR, error)
             }
         } catch (e: IOException) {

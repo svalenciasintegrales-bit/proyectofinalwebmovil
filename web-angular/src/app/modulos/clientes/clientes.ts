@@ -20,6 +20,8 @@ export class Clientes implements OnInit {
   error: string = '';
   errorTabla: string = ''; // ej: no se puede eliminar porque tiene solicitudes
   enviando: boolean = false; // bloquea el boton mientras la api responde
+  cargando: boolean = false; // mientras llega la lista
+  errorCarga: string = ''; // la lista NO se pudo cargar (distinto de 'no hay clientes')
 
   constructor(private scliente: Cliente, private cdr: ChangeDetectorRef) { }
 
@@ -28,13 +30,22 @@ export class Clientes implements OnInit {
   }
 
   consultar() {
+    this.cargando = true;
+    this.errorCarga = '';
     this.scliente.consulta().subscribe({
       next: (res: any) => {
         this.clientes = res.clientes;
+        this.cargando = false;
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.clientes = [];
+      error: (err: any) => {
+        // 404 = la API respondio que no hay clientes (lista vacia de verdad); otro error = sin conexion
+        if (err.status === 404) {
+          this.clientes = [];
+        } else {
+          this.errorCarga = 'No se pudieron cargar los clientes: no hay conexión con el servidor.';
+        }
+        this.cargando = false;
         this.cdr.detectChanges();
       }
     });

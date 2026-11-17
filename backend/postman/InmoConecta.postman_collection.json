@@ -534,6 +534,40 @@
           ]
         },
         {
+          "name": "03c. Guardar con un tipo que no existe (lo frena el modelo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-inmueble",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"codigo\": \"CAR-110\",\n    \"titulo\": \"Tipo malo\",\n    \"tipo\": \"castillo\",\n    \"operacion\": \"venta\",\n    \"precio\": 100000000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "04. Listar inmuebles",
           "request": {
             "method": "GET",
@@ -1633,14 +1667,84 @@
               }
             }
           ]
+        },
+        {
+          "name": "04. Actualizar con telefono no valido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/cliente/{{id_cliente}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Maria Lopez\",\n    \"telefono\": \"30A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05. Actualizar enviando campos de mas (no se guardan)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/cliente/{{id_cliente}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Maria Lopez\",\n    \"telefono\": \"3015556600\",\n    \"fecha\": \"2000-01-01\",\n    \"rol\": \"administrador\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "pm.test('No guarda campos que no existen', function () { pm.expect(pm.response.json().cliente.rol).to.be.undefined; });",
+                  "pm.test('No cambia la fecha de registro', function () { pm.expect(pm.response.json().cliente.fecha).to.not.include('2000-01-01'); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "7. Eliminar (al final)",
+      "name": "7. Cancelar y eliminar (al final)",
       "item": [
         {
-          "name": "Eliminar visita",
+          "name": "Cancelar la visita (no se borra: queda cancelada en el historial)",
           "request": {
             "method": "DELETE",
             "header": [],
@@ -1653,14 +1757,35 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
-                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "pm.test('Queda con estado cancelada', function () { pm.expect(pm.response.json().cita.estado).to.eql('cancelada'); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Eliminar informacion",
+          "name": "Cancelar otra vez la misma visita (ya estaba cancelada)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{url}}/cita/{{id_cita}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar una solicitud realizada (es historial, no se permite)",
           "request": {
             "method": "DELETE",
             "header": [],
@@ -1672,15 +1797,36 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
-                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Eliminar inmueble (ya sin solicitudes)",
+          "name": "La visita cancelada sigue guardada",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{url}}/cita/{{id_cita}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "pm.test('Sigue en la base con estado cancelada', function () { pm.expect(pm.response.json().cita.estado).to.eql('cancelada'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar inmueble con historial (no se permite)",
           "request": {
             "method": "DELETE",
             "header": [],
@@ -1692,15 +1838,15 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
-                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Eliminar cliente",
+          "name": "Eliminar cliente con historial (no se permite)",
           "request": {
             "method": "DELETE",
             "header": [],
@@ -1712,8 +1858,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Responde 200', function () { pm.response.to.have.status(200); });",
-                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
                 ]
               }
             }

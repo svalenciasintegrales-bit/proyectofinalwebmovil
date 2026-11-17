@@ -83,6 +83,14 @@ fun SolicitudScreen(
         if (horaPasada) hora = ""
     }
 
+    // ERRORES POR CAMPO: las mismas reglas que revisan el Repository y la API.
+    // null = el campo esta bien; si no, el texto sale DEBAJO del campo (supportingText) y lo escrito no se borra.
+    val nombreLimpio = nombre.trim()
+    val errorNombre = if (nombreLimpio.length < 3 || !nombreLimpio.all { it.isLetter() || it == ' ' || it == '.' || it == '-' || it == '\'' })
+        "Escribe tu nombre completo (mínimo 3 letras y sin números)" else null
+    val errorTelefono = if (telefono.length !in 7..10) "El celular debe tener de 7 a 10 números" else null
+    val errorMensaje = if (!esVisita && mensaje.isBlank()) "Escribe qué quieres saber del inmueble" else null
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -99,12 +107,17 @@ fun SolicitudScreen(
 
                 OutlinedTextField(
                     value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre completo *") },
-                    isError = intentoEnviar && nombre.isBlank(), singleLine = true, modifier = Modifier.fillMaxWidth()
+                    isError = intentoEnviar && errorNombre != null,
+                    supportingText = { if (intentoEnviar && errorNombre != null) Text(errorNombre) },
+                    singleLine = true, modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
+                // el celular solo acepta numeros (se quitan espacios y letras) y maximo 10
                 OutlinedTextField(
-                    value = telefono, onValueChange = { telefono = it }, label = { Text("Celular *") },
-                    isError = intentoEnviar && telefono.isBlank(), singleLine = true,
+                    value = telefono, onValueChange = { telefono = it.filter { c -> c.isDigit() }.take(10) }, label = { Text("Celular *") },
+                    isError = intentoEnviar && errorTelefono != null,
+                    supportingText = { if (intentoEnviar && errorTelefono != null) Text(errorTelefono) },
+                    singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone), modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(8.dp))
@@ -157,6 +170,7 @@ fun SolicitudScreen(
                             }
                         }
                     }
+                    if (intentoEnviar && hora.isBlank() && !hoySinHoras) Text("Elige la hora de la visita", color = RojoCaracoli)
                     if (hoySinHoras) Text("Hoy ya no quedan horas disponibles. Elige otra fecha.", color = RojoCaracoli)
                     else if (esHoy) Text("Las horas tachadas ya pasaron.", style = MaterialTheme.typography.bodySmall)
                     Spacer(Modifier.height(12.dp))
@@ -166,7 +180,8 @@ fun SolicitudScreen(
                     value = mensaje, onValueChange = { mensaje = it },
                     label = { Text(if (esVisita) "Comentario (opcional)" else "¿Qué quieres saber? *") },
                     placeholder = { Text(if (esVisita) "Ej: voy con mi familia" else "Ej: ¿el precio es negociable?") },
-                    isError = intentoEnviar && !esVisita && mensaje.isBlank(),
+                    isError = intentoEnviar && errorMensaje != null,
+                    supportingText = { if (intentoEnviar && errorMensaje != null) Text(errorMensaje) },
                     minLines = 3,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -175,8 +190,9 @@ fun SolicitudScreen(
                 Button(
                     onClick = {
                         intentoEnviar = true
-                        val completo = nombre.isNotBlank() && telefono.isNotBlank() &&
-                                (if (esVisita) fechaValida && hora.isNotBlank() && !horaPasada else mensaje.isNotBlank())
+                        // solo se envia si ningun campo tiene error; si no, los errores salen debajo de cada campo
+                        val completo = errorNombre == null && errorTelefono == null &&
+                                (if (esVisita) fechaValida && hora.isNotBlank() && !horaPasada else errorMensaje == null)
                         if (completo) solicitudVM.enviar(id, tipo, nombre, telefono, mensaje, fecha, hora)
                     },
                     enabled = !enviando,

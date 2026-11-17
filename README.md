@@ -111,6 +111,8 @@ pendiente ──► confirmada ──► realizada
 
 - Sin conexión, la app lo avisa y nunca muestra como enviada una solicitud que el servidor no confirmó.
 - Los borradores pendientes se reintentan al abrir la app y en "Mis solicitudes".
+- Si el servidor rechaza una solicitud (400 o 409), el borrador **no se borra**: queda en Room con estado `error` y el motivo, aunque se cierre la app. El cliente lo corrige, lo reintenta o lo elimina desde "Mis solicitudes".
+- El formulario muestra cada error **debajo de su campo** (nombre, celular, fecha, hora o mensaje), no borra lo escrito y bloquea el botón mientras envía.
 - Si el servidor ya tenía esa solicitud, responde 409 y no se duplica.
 
 ## 6. Reglas de negocio (las valida el servidor)
@@ -121,6 +123,11 @@ pendiente ──► confirmada ──► realizada
 5. **Un cliente no puede tener dos solicitudes abiertas** (pendiente o confirmada) del mismo tipo para el mismo inmueble: responde 409.
 6. **Las transiciones de estado son controladas** (ver el diagrama).
 7. **No se puede eliminar** un inmueble ni un cliente que tenga solicitudes, ni el último administrador, ni el usuario con el que se inició sesión: responde 409.
+8. **Las solicitudes no se borran (trazabilidad):** `DELETE /api/cita/:id` hace una **cancelación lógica**. Una solicitud pendiente o confirmada pasa a `cancelada` y queda en el historial; una `realizada` o ya `cancelada` responde 409.
+
+**Restricciones en los modelos de Mongoose:** además de los controladores, los esquemas tienen `required`, `enum` (tipo, operación, estado y rol), `min` (precio mayor que 0; área, habitaciones y baños no negativos) e índices `unique` (código del letrero y nombre de usuario). Los `PUT` usan `runValidators: true` para que las restricciones también se revisen al actualizar. Si el modelo rechaza un dato, la API responde 400; si se repite un valor único, 409.
+
+**Un dato inválido por otro camino:** si alguien inserta directo en MongoDB (Compass o `mongosh`), Mongoose no participa, pero el **índice único** de MongoDB igual impide repetir un código o un usuario. Por eso los datos se cargan con la API o con `datos-prueba.js`, que usa los mismos valores permitidos.
 
 ## 7. API
 - **Códigos de respuesta:**
@@ -141,13 +148,16 @@ pendiente ──► confirmada ──► realizada
   - La portada se cambia con `PUT /api/inmueble/:id` enviando `imagen` (debe ser una de sus fotos).
   - `DELETE /api/inmueble/:id/imagen/:image` quita una foto; si era la portada, la siguiente queda de portada.
 - **Video de YouTube (opcional):** campo `video` en guardar y actualizar. Se acepta youtube.com/watch, youtu.be y shorts, y se guarda como `https://www.youtube.com/watch?v=ID`. En la app se reproduce dentro del detalle (WebView con el reproductor de YouTube).
-- **Actualizar:** `PUT /api/inmueble/:id` solo cambia los campos del inmueble (código, título, tipo, operación, precio, barrio, ciudad, área, habitaciones, baños, descripción, estado, video y portada); los demás campos que lleguen se ignoran.
-- **Postman:** `backend/postman/InmoConecta.postman_collection.json` tiene 62 peticiones con pruebas, incluidas la página del QR y la IP del computador. Se ejecutan en orden.
-  - Con newman pasan 113 de 116 verificaciones.
-  - Las 3 restantes son las de la foto, que necesitan elegir el archivo a mano.
+- **Actualizar:** `PUT /api/inmueble/:id` solo cambia los campos del inmueble (código, título, tipo, operación, precio, barrio, ciudad, área, habitaciones, baños, descripción, estado, video y portada); `PUT /api/cliente/:id` solo cambia nombre, teléfono y correo; `PUT /api/cita/:id` solo cambia estado y respuesta. Los demás campos que lleguen se ignoran.
+- **Validación en el servidor:** la API revisa las mismas reglas del panel y de la app (nombre mínimo 3 letras, celular de 7 a 10 números, correo válido, precio mayor que 0, valores permitidos), aunque Angular o Android ya las hayan revisado.
+- **Postman:** `backend/postman/InmoConecta.postman_collection.json` tiene 67 peticiones con pruebas, incluidas la página del QR, la IP del computador, un tipo de inmueble que no existe, un cliente con campos de más y la cancelación lógica de solicitudes. Se ejecutan en orden.
+  - Las pruebas de la foto necesitan elegir el archivo a mano.
 
 ## 8. Limitaciones conocidas
-- **Permisos:** los roles (administrador o asesor) los controla el panel; la API no verifica tokens. Por eso, el piloto se hace con **datos ficticios** en una red local.
+- **Permisos (limitación de seguridad):** los roles (administrador o asesor) los controla el panel con el guard y la sesión; **la API no verifica tokens**, porque la autenticación con tokens no se vio en el curso y quedó fuera del alcance. Eso significa que alguien en la misma red que conozca las rutas podría llamarlas directamente (por ejemplo, con Postman) sin iniciar sesión. Por eso:
+  - el piloto se hace **solo en red local** y con **datos ficticios**;
+  - no se debe publicar la API en internet ni usarla con datos reales de clientes;
+  - para producción, el siguiente paso sería que el login entregue un token y que la API lo revise en cada ruta del panel (crear, editar, borrar, usuarios y reportes).
 - **Despliegue local:** la API y MongoDB corren en el computador de la inmobiliaria o del estudiante. No hay alojamiento en internet.
 - **Actualización manual:** la app se actualiza con el botón Actualizar o al abrir la pantalla; no hay notificaciones push.
 - **Respaldo:**

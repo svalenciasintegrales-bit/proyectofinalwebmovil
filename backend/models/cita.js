@@ -8,16 +8,17 @@ var mongoose = require('mongoose'); // libreria para trabajar con MongoDB
 var Schema = mongoose.Schema; // Schema: sirve para definir la estructura de los documentos
 
 // estructura de cada documento de la coleccion 'Citas' (campo: tipo de dato)
+// RESTRICCIONES DEL ESQUEMA: Mongoose las revisa al guardar y al actualizar (runValidators: true).
 var CitaSchema = Schema({
 
-    inmueble_id: Schema.ObjectId, // id del inmueble por el que pregunta (de la coleccion 'Inmuebles')
-    cliente_id: Schema.ObjectId, // id del cliente que hace la solicitud (de la coleccion 'Clientes')
-    tipo: { type: String, default: 'visita' }, // 'visita' (agendar visita) o 'informacion' (pedir informacion)
+    inmueble_id: { type: Schema.ObjectId, required: true }, // id del inmueble por el que pregunta (de la coleccion 'Inmuebles')
+    cliente_id: { type: Schema.ObjectId, required: true }, // id del cliente que hace la solicitud (de la coleccion 'Clientes')
+    tipo: { type: String, default: 'visita', enum: ['visita', 'informacion'] }, // 'visita' (agendar visita) o 'informacion' (pedir informacion)
     fecha_cita: Date, // dia de la visita (solo cuando tipo = visita)
     hora: String, // hora de la visita (ej: 10:00 a.m.)
     observaciones: String, // mensaje o pregunta del cliente
     respuesta: String, // respuesta del administrador (el cliente la ve en la app)
-    estado: { type: String, default: 'pendiente' }, // pendiente, confirmada, realizada o cancelada
+    estado: { type: String, default: 'pendiente', enum: ['pendiente', 'confirmada', 'realizada', 'cancelada'] }, // pendiente, confirmada, realizada o cancelada
     fecha: { type: Date, default: Date.now } // fecha en que se agendo
 
 }, { timestamps: true }); // timestamps: Mongoose agrega createdAt (creado) y updatedAt (ultima modificacion)

@@ -15,7 +15,18 @@
   <i class="bi bi-exclamation-circle me-2"></i>{{ errorTabla }}
 </div>
 
-<div class="card border-0 shadow-sm">
+<!-- la lista NO se pudo cargar (API apagada o error): es distinto de "no hay clientes" -->
+<div *ngIf="errorCarga" class="alert alert-danger d-flex align-items-center justify-content-between gap-2" role="alert">
+  <span><i class="bi bi-wifi-off me-2"></i>{{ errorCarga }}</span>
+  <button class="btn btn-sm btn-outline-danger" (click)="consultar()" [disabled]="cargando">
+    <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+  </button>
+</div>
+<div *ngIf="cargando && !errorCarga" class="text-muted small mb-2">
+  <span class="spinner-border spinner-border-sm me-2"></span>Cargando clientes…
+</div>
+
+<div class="card border-0 shadow-sm" *ngIf="!errorCarga">
   <div class="table-responsive">
     <table class="table align-middle table-hover mb-0">
       <thead class="table-light">

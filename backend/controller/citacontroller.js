@@ -176,6 +176,13 @@ var controller = {
                     cita: citaStored
                 });
             } catch (err) {
+                // el modelo rechazo el dato (required, enum, min): es un error de los datos (400), no del servidor
+                if (err.name == 'ValidationError') {
+                    return res.status(400).send({
+                        status: 'error',
+                        message: 'Datos no validos en: ' + Object.keys(err.errors).join(', ') + ' !!!'
+                    });
+                }
                 return res.status(500).send({
                     status: 'error',
                     message: 'La cita no se ha guardado !!!'
@@ -388,13 +395,21 @@ var controller = {
                 if (params.respuesta != undefined) {
                     cambios.respuesta = String(params.respuesta).trim();
                 }
-                const citaUpdated = await Cita.findOneAndUpdate({ _id: citaId }, cambios, { returnDocument: 'after' });
+                // runValidators: true -> tambien se revisan las restricciones del modelo (enum de estado)
+                const citaUpdated = await Cita.findOneAndUpdate({ _id: citaId }, cambios, { returnDocument: 'after', runValidators: true });
 
                 return res.status(200).send({
                     status: 'success',
                     cita: citaUpdated
                 });
             } catch (err) {
+                // el modelo rechazo el dato (required, enum, min): es un error de los datos (400), no del servidor
+                if (err.name == 'ValidationError') {
+                    return res.status(400).send({
+                        status: 'error',
+                        message: 'Datos no validos en: ' + Object.keys(err.errors).join(', ') + ' !!!'
+                    });
+                }
                 return res.status(500).send({
                     status: 'error',
                     message: 'Error al actualizar la cita !!!'
@@ -409,6 +424,12 @@ var controller = {
     },
 
     // ---------------- METODO ELIMINAR CITA (DELETE /api/cita/:id) ----------------
+    // TRAZABILIDAD: una solicitud NO se borra de la base de datos (antes se usaba findOneAndDelete y se
+    // perdia el historial). Ahora se hace una CANCELACION LOGICA: la solicitud queda guardada con estado
+    // "cancelada", y el panel, los reportes y la app del cliente la siguen viendo.
+    // - pendiente o confirmada -> pasa a cancelada (200)
+    // - realizada -> 409: ya paso, es parte del historial y no se puede quitar
+    // - cancelada -> 409: ya estaba cancelada
     delete: async (req, res) => {
         var citaId = req.params.id;
 
@@ -421,23 +442,45 @@ var controller = {
         }
 
         try {
-            const citaRemoved = await Cita.findOneAndDelete({ _id: citaId });
+            const cita = await Cita.findById(citaId);
 
-            if (!citaRemoved) {
+            if (!cita) {
                 return res.status(404).send({
                     status: 'error',
-                    message: 'No se ha borrado la cita, posiblemente no exista !!!'
+                    message: 'No existe la solicitud !!!'
                 });
             }
 
+            var actual = cita.estado || 'pendiente';
+            if (actual == 'realizada') {
+                return res.status(409).send({
+                    status: 'error',
+                    message: 'Una solicitud realizada hace parte del historial y no se puede eliminar !!!'
+                });
+            }
+            if (actual == 'cancelada') {
+                return res.status(409).send({
+                    status: 'error',
+                    message: 'La solicitud ya estaba cancelada !!!'
+                });
+            }
+
+            // se cambia el estado en vez de borrar; si no tenia respuesta se deja el motivo para el cliente
+            var cambios = { estado: 'cancelada' };
+            if (!cita.respuesta) {
+                cambios.respuesta = 'Solicitud cancelada por la inmobiliaria.';
+            }
+            const citaCancelada = await Cita.findOneAndUpdate({ _id: citaId }, cambios, { returnDocument: 'after', runValidators: true });
+
             return res.status(200).send({
                 status: 'success',
-                cita: citaRemoved
+                message: 'La solicitud se cancelo y queda en el historial',
+                cita: citaCancelada
             });
         } catch (err) {
             return res.status(500).send({
                 status: 'error',
-                message: 'Error al borrar la cita !!!'
+                message: 'Error al cancelar la solicitud !!!'
             });
         }
     }
