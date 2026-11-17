@@ -121,9 +121,9 @@ pendiente ──► confirmada ──► realizada
 3. **La visita necesita fecha y hora, y la fecha no puede ser anterior a hoy.** Si se pide información, el mensaje es obligatorio.
 4. **Solo se pueden pedir solicitudes de inmuebles que existen y están `disponible`s**, y solo de clientes que existen.
 5. **Un cliente no puede tener dos solicitudes abiertas** (pendiente o confirmada) del mismo tipo para el mismo inmueble: responde 409.
-6. **Un horario de visita solo se reserva una vez:** si **otro cliente** ya tiene una visita pendiente o confirmada para el mismo inmueble, el mismo día y a la misma hora, responde 409 ("Ese horario ya está reservado"). Tampoco se pueden **confirmar** desde el panel dos visitas del mismo inmueble en el mismo horario. Si la visita se cancela, el horario queda libre otra vez.
-7. **Las transiciones de estado son controladas** (ver el diagrama).
-8. **No se puede eliminar** un inmueble ni un cliente que tenga solicitudes, ni el último administrador, ni el usuario con el que se inició sesión: responde 409.
+6. **Las transiciones de estado son controladas** (ver el diagrama).
+7. **No se puede eliminar** un inmueble ni un cliente que tenga solicitudes, ni el último administrador, ni el usuario con el que se inició sesión: responde 409.
+8. **Un horario de visita solo se reserva una vez:** si **otro cliente** ya tiene una visita pendiente o confirmada para el mismo inmueble, el mismo día y a la misma hora, responde 409 ("Ese horario ya está reservado"). Tampoco se pueden **confirmar** desde el panel dos visitas del mismo inmueble en el mismo horario. Si la visita se cancela, el horario queda libre otra vez.
 9. **Las solicitudes no se borran (trazabilidad):** `DELETE /api/cita/:id` hace una **cancelación lógica**. Una solicitud pendiente o confirmada pasa a `cancelada` y queda en el historial; una `realizada` o ya `cancelada` responde 409.
 
 **Restricciones en los modelos de Mongoose:** además de los controladores, los esquemas tienen `required`, `enum` (tipo, operación, estado y rol), `min` (precio mayor que 0; área, habitaciones y baños no negativos) e índices `unique` (código del letrero y nombre de usuario). Los `PUT` usan `runValidators: true` para que las restricciones también se revisen al actualizar. Si el modelo rechaza un dato, la API responde 400; si se repite un valor único, 409.
