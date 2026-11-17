@@ -121,9 +121,10 @@ pendiente ──► confirmada ──► realizada
 3. **La visita necesita fecha y hora, y la fecha no puede ser anterior a hoy.** Si se pide información, el mensaje es obligatorio.
 4. **Solo se pueden pedir solicitudes de inmuebles que existen y están `disponible`s**, y solo de clientes que existen.
 5. **Un cliente no puede tener dos solicitudes abiertas** (pendiente o confirmada) del mismo tipo para el mismo inmueble: responde 409.
-6. **Las transiciones de estado son controladas** (ver el diagrama).
-7. **No se puede eliminar** un inmueble ni un cliente que tenga solicitudes, ni el último administrador, ni el usuario con el que se inició sesión: responde 409.
-8. **Las solicitudes no se borran (trazabilidad):** `DELETE /api/cita/:id` hace una **cancelación lógica**. Una solicitud pendiente o confirmada pasa a `cancelada` y queda en el historial; una `realizada` o ya `cancelada` responde 409.
+6. **Un horario de visita solo se reserva una vez:** si **otro cliente** ya tiene una visita pendiente o confirmada para el mismo inmueble, el mismo día y a la misma hora, responde 409 ("Ese horario ya está reservado"). Tampoco se pueden **confirmar** desde el panel dos visitas del mismo inmueble en el mismo horario. Si la visita se cancela, el horario queda libre otra vez.
+7. **Las transiciones de estado son controladas** (ver el diagrama).
+8. **No se puede eliminar** un inmueble ni un cliente que tenga solicitudes, ni el último administrador, ni el usuario con el que se inició sesión: responde 409.
+9. **Las solicitudes no se borran (trazabilidad):** `DELETE /api/cita/:id` hace una **cancelación lógica**. Una solicitud pendiente o confirmada pasa a `cancelada` y queda en el historial; una `realizada` o ya `cancelada` responde 409.
 
 **Restricciones en los modelos de Mongoose:** además de los controladores, los esquemas tienen `required`, `enum` (tipo, operación, estado y rol), `min` (precio mayor que 0; área, habitaciones y baños no negativos) e índices `unique` (código del letrero y nombre de usuario). Los `PUT` usan `runValidators: true` para que las restricciones también se revisen al actualizar. Si el modelo rechaza un dato, la API responde 400; si se repite un valor único, 409.
 
@@ -150,7 +151,7 @@ pendiente ──► confirmada ──► realizada
 - **Video de YouTube (opcional):** campo `video` en guardar y actualizar. Se acepta youtube.com/watch, youtu.be y shorts, y se guarda como `https://www.youtube.com/watch?v=ID`. En la app se reproduce dentro del detalle (WebView con el reproductor de YouTube).
 - **Actualizar:** `PUT /api/inmueble/:id` solo cambia los campos del inmueble (código, título, tipo, operación, precio, barrio, ciudad, área, habitaciones, baños, descripción, estado, video y portada); `PUT /api/cliente/:id` solo cambia nombre, teléfono y correo; `PUT /api/cita/:id` solo cambia estado y respuesta. Los demás campos que lleguen se ignoran.
 - **Validación en el servidor:** la API revisa las mismas reglas del panel y de la app (nombre mínimo 3 letras, celular de 7 a 10 números, correo válido, precio mayor que 0, valores permitidos), aunque Angular o Android ya las hayan revisado.
-- **Postman:** `backend/postman/InmoConecta.postman_collection.json` tiene 67 peticiones con pruebas, incluidas la página del QR, la IP del computador, un tipo de inmueble que no existe, un cliente con campos de más y la cancelación lógica de solicitudes. Se ejecutan en orden.
+- **Postman:** `backend/postman/InmoConecta.postman_collection.json` tiene 70 peticiones con pruebas, incluidas la página del QR, la IP del computador, un tipo de inmueble que no existe, un cliente con campos de más, dos clientes que piden el mismo horario y la cancelación lógica de solicitudes. Se ejecutan en orden.
   - Las pruebas de la foto necesitan elegir el archivo a mano.
 
 ## 8. Limitaciones conocidas

@@ -151,6 +151,26 @@ var controller = {
                         cita: abierta
                     });
                 }
+
+                // REGLA: un horario de visita (inmueble + fecha + hora) solo se puede reservar UNA vez.
+                // La regla anterior solo revisa al MISMO cliente; esta revisa a TODOS: si otro cliente ya tiene
+                // una visita pendiente o confirmada para ese inmueble, ese dia y esa hora, se responde 409.
+                // No se devuelve la cita del otro cliente (es informacion de otra persona y la app la tomaria como suya).
+                if (tipo == 'visita') {
+                    const ocupada = await Cita.findOne({
+                        inmueble_id: params.inmueble_id,
+                        tipo: 'visita',
+                        fecha_cita: String(params.fecha_cita).substring(0, 10),
+                        hora: params.hora,
+                        estado: { $in: ['pendiente', 'confirmada'] }
+                    });
+                    if (ocupada) {
+                        return res.status(409).send({
+                            status: 'error',
+                            message: 'Ese horario ya esta reservado para este inmueble. Elige otra hora u otro dia !!!'
+                        });
+                    }
+                }
             } catch (err) {
                 return res.status(500).send({
                     status: 'error',
@@ -388,6 +408,25 @@ var controller = {
                         status: 'error',
                         message: 'Primero confirma la visita con el cliente antes de marcarla como realizada !!!'
                     });
+                }
+
+                // REGLA: no se pueden confirmar dos visitas del mismo inmueble el mismo dia a la misma hora
+                // (protege los datos que hubieran quedado repetidos antes de la regla del horario unico)
+                if (nuevo == 'confirmada' && actual != 'confirmada' && cita.tipo == 'visita') {
+                    const otraConfirmada = await Cita.findOne({
+                        _id: { $ne: cita._id }, // $ne = distinta de esta solicitud
+                        inmueble_id: cita.inmueble_id,
+                        tipo: 'visita',
+                        fecha_cita: cita.fecha_cita,
+                        hora: cita.hora,
+                        estado: 'confirmada'
+                    });
+                    if (otraConfirmada) {
+                        return res.status(409).send({
+                            status: 'error',
+                            message: 'Ya hay otra visita confirmada para este inmueble ese dia a esa hora. Propon otra hora al cliente !!!'
+                        });
+                    }
                 }
 
                 // solo se cambian el estado y la respuesta (el resto lo envio el cliente y no se toca)

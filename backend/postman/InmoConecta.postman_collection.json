@@ -36,6 +36,10 @@
     {
       "key": "imagen",
       "value": ""
+    },
+    {
+      "key": "id_cliente2",
+      "value": ""
     }
   ],
   "item": [
@@ -1149,6 +1153,110 @@
                 "exec": [
                   "pm.test('Responde 400', function () { pm.response.to.have.status(400); });",
                   "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05d. Registrar otro cliente (el segundo celular)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cliente",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Juan Perez\",\n    \"telefono\": \"3017778899\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });",
+                  "var json = pm.response.json(); if (json.status === 'success') { pm.collectionVariables.set('id_cliente2', json.cliente._id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05e. Otro cliente pide el MISMO inmueble, dia y hora (no se permite)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cita",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"inmueble_id\": \"{{id_inmueble}}\",\n    \"cliente_id\": \"{{id_cliente2}}\",\n    \"tipo\": \"visita\",\n    \"fecha_cita\": \"2027-01-20\",\n    \"hora\": \"10:00 a.m.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 409', function () { pm.response.to.have.status(409); });",
+                  "pm.test('status = error', function () { pm.expect(pm.response.json().status).to.eql('error'); });",
+                  "pm.test('No devuelve la cita del otro cliente', function () { pm.expect(pm.response.json().cita).to.be.undefined; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05f. Otro cliente pide el mismo inmueble y dia a OTRA hora",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{url}}/save-cita",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"inmueble_id\": \"{{id_inmueble}}\",\n    \"cliente_id\": \"{{id_cliente2}}\",\n    \"tipo\": \"visita\",\n    \"fecha_cita\": \"2027-01-20\",\n    \"hora\": \"11:00 a.m.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('status = success', function () { pm.expect(pm.response.json().status).to.eql('success'); });"
                 ]
               }
             }
