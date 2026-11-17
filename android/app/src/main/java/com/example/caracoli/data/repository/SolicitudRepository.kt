@@ -38,6 +38,13 @@ class SolicitudRepository(
 
     // ---------- ENVIAR UNA SOLICITUD ----------
     suspend fun enviar(inmuebleId: String, tipo: String, nombre: String, telefono: String, mensaje: String, fecha: String, hora: String): Envio {
+        // 0. VALIDAR antes de guardar nada.
+        // ANTES: los datos se guardaban en DataStore y el borrador en Room aunque vinieran vacios;
+        // sin internet ese borrador vacio quedaba guardado y se intentaba enviar despues.
+        // AHORA: si falta un dato o esta mal escrito se responde ERROR y no se guarda nada.
+        val error = validar(inmuebleId, tipo, nombre, telefono, mensaje, fecha, hora)
+        if (error != null) return Envio(ResultadoEnvio.ERROR, error)
+
         // los datos del cliente quedan en el celular para no escribirlos otra vez
         manager.guardarDatos(nombre, telefono)
 
@@ -67,6 +74,31 @@ class SolicitudRepository(
             // ej: la direccion del servidor esta mal escrita y responde otra cosa
             Envio(ResultadoEnvio.SIN_CONEXION, "")
         }
+    }
+
+    // Revisa los datos de la solicitud (las mismas reglas revisa la API). Devuelve null si todo esta bien
+    // o el mensaje que vera el cliente en el dialogo.
+    private fun validar(inmuebleId: String, tipo: String, nombre: String, telefono: String, mensaje: String, fecha: String, hora: String): String? {
+        val nom = nombre.trim()
+        val tel = telefono.trim()
+        if (inmuebleId.isBlank()) return "No se encontró el inmueble. Vuelve al catálogo e inténtalo otra vez."
+        if (tipo != "visita" && tipo != "informacion") return "El tipo de solicitud no es válido."
+        // nombre: minimo 3 letras y sin numeros ("   " no vale)
+        if (nom.length < 3 || !nom.all { it.isLetter() || it == ' ' || it == '.' || it == '-' || it == '\'' })
+            return "Escribe tu nombre completo (mínimo 3 letras y sin números)."
+        // celular: solo numeros, de 7 a 10
+        if (tel.length !in 7..10 || !tel.all { it.isDigit() })
+            return "Escribe un celular válido: solo números, de 7 a 10."
+        if (tipo == "visita") {
+            // fecha AAAA-MM-DD (la elige el calendario) y una hora de la lista
+            val f = fecha.trim()
+            if (f.length != 10 || f[4] != '-' || f[7] != '-' || !f.replace("-", "").all { it.isDigit() })
+                return "Elige la fecha de la visita."
+            if (hora.isBlank()) return "Elige la hora de la visita."
+        } else if (mensaje.isBlank()) {
+            return "Escribe qué quieres saber del inmueble."
+        }
+        return null
     }
 
     // Envia un borrador a la API. Devuelve null si el servidor lo guardo, o el mensaje de error de la API.
@@ -165,7 +197,13 @@ class SolicitudRepository(
             try {
                 val servidor = manager.servidor.first()
                 val r = ApiClient.get("$servidor/citas-cliente/$clienteId")
-                val datos = if (r.optString("status") == "success") r.getJSONArray("citas") else JSONArray()
+                val status = r.optString("status")
+                // ANTES: cualquier respuesta que no fuera "success" (ej: error 500) se tomaba como lista vacia
+                // y se BORRABA la copia de Room. AHORA solo se vacia si la API dice que de verdad no tiene solicitudes;
+                // con otra respuesta se lanza error y se muestra la copia guardada (catch).
+                val sinSolicitudes = status == "error" && r.optString("message").startsWith("Este cliente no tiene solicitudes")
+                if (status != "success" && !sinSolicitudes) throw IllegalStateException("Respuesta no valida del servidor")
+                val datos = if (status == "success") r.optJSONArray("citas") ?: JSONArray() else JSONArray()
                 val filas = mutableListOf<SolicitudEntity>()
                 for (i in 0 until datos.length()) {
                     filas.add(solicitudParaTabla(ApiClient.solicitudDesdeJson(datos.getJSONObject(i), porEnviar = false)))
