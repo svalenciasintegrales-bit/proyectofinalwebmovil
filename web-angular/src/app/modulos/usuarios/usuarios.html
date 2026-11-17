@@ -20,7 +20,15 @@
     <i class="bi bi-exclamation-circle me-2"></i>{{ errorTabla }}
   </div>
 
-  <div class="tarjeta">
+  <!-- los datos NO se pudieron cargar (API apagada o error): es distinto de "no hay datos" -->
+  <div *ngIf="errorCarga" class="alert alert-danger d-flex align-items-center justify-content-between gap-2" role="alert">
+    <span><i class="bi bi-wifi-off me-2"></i>{{ errorCarga }}</span>
+    <button class="btn btn-sm btn-outline-danger" (click)="cargar()" [disabled]="cargando">
+      <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+    </button>
+  </div>
+
+  <div class="tarjeta" *ngIf="!errorCarga">
     <div class="table-responsive">
       <table class="table align-middle table-hover mb-0">
         <thead>

@@ -13,6 +13,13 @@
 </div>
 
 <div *ngIf="error" class="alert alert-danger no-imprimir"><i class="bi bi-exclamation-circle me-2"></i>{{ error }}</div>
+<!-- los datos NO se pudieron cargar (API apagada o error): es distinto de "no hay datos" -->
+<div *ngIf="errorCarga" class="alert alert-danger no-imprimir d-flex align-items-center justify-content-between gap-2" role="alert">
+  <span><i class="bi bi-wifi-off me-2"></i>{{ errorCarga }}</span>
+  <button class="btn btn-sm btn-outline-danger" (click)="cargar()" [disabled]="cargando">
+    <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+  </button>
+</div>
 
 <div *ngIf="inmueble" class="ayuda no-imprimir">
   <i class="bi bi-info-circle me-1"></i>

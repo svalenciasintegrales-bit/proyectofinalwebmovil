@@ -20,6 +20,8 @@ export class Usuarios implements OnInit {
   enviando: boolean = false; // bloquea el boton mientras la api responde
   errorTabla: string = '';
   esAdministrador: boolean = false;
+  cargando: boolean = false; // mientras llega la lista
+  errorCarga: string = ''; // la lista NO se pudo cargar (distinto de 'no hay usuarios')
   idActual: string = '';
 
   constructor(private susuario: Usuario, private cdr: ChangeDetectorRef) { }
@@ -27,17 +29,31 @@ export class Usuarios implements OnInit {
   ngOnInit(): void {
     this.esAdministrador = sessionStorage.getItem('rol') === 'administrador';
     this.idActual = sessionStorage.getItem('id') || '';
-    if (this.esAdministrador) this.consultar();
+    if (this.esAdministrador) this.cargar();
+  }
+
+  // el boton Reintentar vuelve a pedir la lista
+  cargar() {
+    this.consultar();
   }
 
   consultar() {
+    this.cargando = true;
+    this.errorCarga = '';
     this.susuario.consulta().subscribe({
       next: (res: any) => {
         this.usuarios = res.usuarios;
+        this.cargando = false;
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.usuarios = [];
+      error: (err: any) => {
+        // 404 = la API respondio que no hay usuarios (vacio de verdad); otro error = sin conexion
+        if (err.status === 404) {
+          this.usuarios = [];
+        } else {
+          this.errorCarga = 'No se pudieron cargar los usuarios: no hay conexión con el servidor.';
+        }
+        this.cargando = false;
         this.cdr.detectChanges();
       }
     });

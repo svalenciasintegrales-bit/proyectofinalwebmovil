@@ -34,6 +34,9 @@ export class Reportes implements OnInit {
   rapido: string = 'mes'; // boton de rango rapido elegido: '7', '30', 'mes', 'anio' o '' (a mano)
   error: string = '';
   generado: boolean = false;
+  cargando: boolean = false; // mientras llegan los datos
+  errorCarga: string = ''; // los datos NO se pudieron cargar (distinto de 'no hay solicitudes')
+  respuestas: number = 0; // cuantas consultas a la api ya respondieron (son 3)
   filas: any[] = [];
   totales: any = { total: 0, visitas: 0, informacion: 0, pendiente: 0, confirmada: 0, realizada: 0, cancelada: 0 };
   anterior: any = { total: 0, visitas: 0, informacion: 0, clientes: 0, atencion: 0 }; // periodo anterior del mismo largo
@@ -103,18 +106,34 @@ export class Reportes implements OnInit {
 
     this.rango('mes'); // por defecto: el mes actual
 
-    let respuestas = 0;
-    const listo = () => {
-      respuestas++;
-      if (respuestas === 3) {
-        this.generar();
-        this.armarInventario();
-        this.cdr.detectChanges();
-      }
-    };
-    this.scita.consulta().subscribe({ next: (r: any) => { this.solicitudes = r.citas; listo(); }, error: () => { this.solicitudes = []; listo(); } });
-    this.sinmueble.consulta().subscribe({ next: (r: any) => { this.inmuebles = r.inmuebles; listo(); }, error: () => { this.inmuebles = []; listo(); } });
-    this.scliente.consulta().subscribe({ next: (r: any) => { this.clientes = r.clientes; listo(); }, error: () => { this.clientes = []; listo(); } });
+    this.cargar();
+  }
+
+  // se piden los 3 listados; cuando llegan los 3 se arman los reportes (tambien lo usa el boton Reintentar)
+  cargar() {
+    this.cargando = true;
+    this.errorCarga = '';
+    this.respuestas = 0;
+    this.scita.consulta().subscribe({ next: (r: any) => { this.solicitudes = r.citas; this.listo(); }, error: (err: any) => { this.solicitudes = []; this.fallo(err); this.listo(); } });
+    this.sinmueble.consulta().subscribe({ next: (r: any) => { this.inmuebles = r.inmuebles; this.listo(); }, error: (err: any) => { this.inmuebles = []; this.fallo(err); this.listo(); } });
+    this.scliente.consulta().subscribe({ next: (r: any) => { this.clientes = r.clientes; this.listo(); }, error: (err: any) => { this.clientes = []; this.fallo(err); this.listo(); } });
+  }
+
+  // 404 = la API respondio que no hay registros (vacio de verdad); otro error = sin conexion:
+  // no se arman los reportes (dirian "No hay solicitudes") y se muestra el aviso con Reintentar.
+  fallo(err: any) {
+    if (err.status !== 404) this.errorCarga = 'No se pudieron cargar los reportes: no hay conexión con el servidor.';
+  }
+
+  listo() {
+    this.respuestas++;
+    if (this.respuestas < 3) return;
+    if (!this.errorCarga) {
+      this.generar();
+      this.armarInventario();
+    }
+    this.cargando = false;
+    this.cdr.detectChanges();
   }
 
   textoFecha(fecha: Date) {

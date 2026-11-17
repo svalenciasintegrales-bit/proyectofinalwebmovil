@@ -19,6 +19,8 @@ import QRCode from 'qrcode';
 export class Aviso implements OnInit {
   inmueble: any = null;
   error: string = '';
+  cargando: boolean = false;
+  errorCarga: string = ''; // sin conexion (distinto de 'no existe el inmueble')
   servidorQr: string = ''; // IP o nombre del computador donde corre la api (lo que va dentro del QR)
   enlaceQr: string = '';   // direccion completa que lleva el QR
   imagenQr: string = '';   // el QR como imagen (data:image/png;base64,...)
@@ -32,15 +34,30 @@ export class Aviso implements OnInit {
   constructor(private route: ActivatedRoute, public sinmueble: Inmueble, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
+    this.cargar();
+  }
+
+  // tambien lo usa el boton Reintentar
+  cargar() {
     const id = this.route.snapshot.paramMap.get('id') || '';
+    this.cargando = true;
+    this.error = '';
+    this.errorCarga = '';
     this.sinmueble.consultaUno(id).subscribe({
       next: (res: any) => {
         this.inmueble = res.inmueble;
+        this.cargando = false;
         this.cdr.detectChanges();
         this.buscarServidor();
       },
-      error: () => {
-        this.error = 'No se encontró el inmueble.';
+      error: (err: any) => {
+        // 404 / 400 = ese inmueble no existe; otro error = sin conexion (se ofrece Reintentar)
+        if (err.status === 404 || err.status === 400) {
+          this.error = 'No se encontró el inmueble.';
+        } else {
+          this.errorCarga = 'No se pudo cargar el inmueble: no hay conexión con el servidor.';
+        }
+        this.cargando = false;
         this.cdr.detectChanges();
       }
     });

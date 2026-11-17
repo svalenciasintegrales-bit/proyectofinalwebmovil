@@ -12,15 +12,26 @@
       <button [class.activo]="pestana === 'inventario'" (click)="pestana = 'inventario'"><i class="bi bi-buildings"></i>Inventario</button>
     </div>
     <div class="d-flex gap-2">
-      <button class="btn btn-success" (click)="descargar()" [disabled]="pestana === 'solicitudes' && !generado">
+      <button class="btn btn-success" (click)="descargar()" [disabled]="(pestana === 'solicitudes' && !generado) || !!errorCarga">
         <i class="bi bi-file-earmark-excel me-2"></i>Descargar Excel
       </button>
       <button class="btn btn-negro" (click)="imprimir()"><i class="bi bi-printer me-2"></i>Imprimir / PDF</button>
     </div>
   </div>
 
+  <!-- los datos NO se pudieron cargar (API apagada o error): es distinto de "no hay datos" -->
+  <div *ngIf="errorCarga" class="alert alert-danger d-flex align-items-center justify-content-between gap-2" role="alert">
+    <span><i class="bi bi-wifi-off me-2"></i>{{ errorCarga }}</span>
+    <button class="btn btn-sm btn-outline-danger" (click)="cargar()" [disabled]="cargando">
+      <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+    </button>
+  </div>
+  <div *ngIf="cargando && !errorCarga" class="text-muted small mb-2 no-imprimir">
+    <span class="spinner-border spinner-border-sm me-2"></span>Cargando los datos de los reportes…
+  </div>
+
   <!-- ===================== REPORTE 1: SOLICITUDES ===================== -->
-  <div class="reporte" *ngIf="pestana === 'solicitudes'">
+  <div class="reporte" *ngIf="pestana === 'solicitudes' && !errorCarga">
     <div class="filtros no-imprimir">
       <div class="rapidos">
         <span class="rotulo">Periodo</span>
@@ -174,7 +185,7 @@
   </div>
 
   <!-- ===================== REPORTE 2: INVENTARIO ===================== -->
-  <div class="reporte" *ngIf="pestana === 'inventario'">
+  <div class="reporte" *ngIf="pestana === 'inventario' && !errorCarga">
     <div class="encabezado-reporte">
       <img src="img/logo.png" alt="Caracoli Inmobiliaria">
       <div>

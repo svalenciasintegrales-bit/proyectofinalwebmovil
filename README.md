@@ -159,6 +159,7 @@ pendiente ──► confirmada ──► realizada
   - el piloto se hace **solo en red local** y con **datos ficticios**;
   - no se debe publicar la API en internet ni usarla con datos reales de clientes;
   - para producción, el siguiente paso sería que el login entregue un token y que la API lo revise en cada ruta del panel (crear, editar, borrar, usuarios y reportes).
+- **Horario único (regla 8):** se revisa en el controlador. Si dos solicitudes del mismo inmueble, día y hora llegan exactamente en el mismo instante, las dos podrían guardarse; aun así no se pueden confirmar las dos, porque la regla se revisa otra vez al confirmar. Para producción se agregaría un índice único en MongoDB sobre inmueble + fecha + hora de las visitas abiertas.
 - **Despliegue local:** la API y MongoDB corren en el computador de la inmobiliaria o del estudiante. No hay alojamiento en internet.
 - **Actualización manual:** la app se actualiza con el botón Actualizar o al abrir la pantalla; no hay notificaciones push.
 - **Respaldo:**

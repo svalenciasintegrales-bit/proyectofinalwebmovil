@@ -22,6 +22,7 @@ export class Tablero implements OnInit {
   clientes: any[] = [];
   cargando: boolean = true;
   respuestas: number = 0; // cuantas consultas a la api ya respondieron (son 3)
+  errorCarga: string = ''; // los datos NO se pudieron cargar (distinto de 'no hay datos')
   nombre: string = '';
   saludo: string = '';
 
@@ -91,25 +92,39 @@ export class Tablero implements OnInit {
     const hora = new Date().getHours();
     this.saludo = hora < 12 ? 'Buenos días' : (hora < 19 ? 'Buenas tardes' : 'Buenas noches');
 
-    // se piden los 3 listados; cuando llegan los 3 se calcula el tablero
+    this.cargar();
+  }
+
+  // se piden los 3 listados; cuando llegan los 3 se calcula el tablero (tambien lo usa el boton Reintentar)
+  cargar() {
+    this.cargando = true;
+    this.errorCarga = '';
+    this.respuestas = 0;
     this.sinmueble.consulta().subscribe({
       next: (res: any) => { this.inmuebles = res.inmuebles; this.listo(); },
-      error: () => { this.inmuebles = []; this.listo(); }
+      error: (err: any) => { this.inmuebles = []; this.fallo(err); this.listo(); }
     });
     this.scita.consulta().subscribe({
       next: (res: any) => { this.solicitudes = res.citas; this.listo(); },
-      error: () => { this.solicitudes = []; this.listo(); }
+      error: (err: any) => { this.solicitudes = []; this.fallo(err); this.listo(); }
     });
     this.scliente.consulta().subscribe({
       next: (res: any) => { this.clientes = res.clientes; this.listo(); },
-      error: () => { this.clientes = []; this.listo(); }
+      error: (err: any) => { this.clientes = []; this.fallo(err); this.listo(); }
     });
+  }
+
+  // 404 = la API respondio que no hay registros: es una lista VACIA de verdad.
+  // Cualquier otro error (API apagada = status 0, error 500) NO es una lista vacia:
+  // si se calculara el tablero saldria todo en 0, por eso se muestra el aviso con Reintentar.
+  fallo(err: any) {
+    if (err.status !== 404) this.errorCarga = 'No se pudo cargar el tablero: no hay conexión con el servidor.';
   }
 
   listo() {
     this.respuestas++;
     if (this.respuestas < 3) return;
-    this.calcular();
+    if (!this.errorCarga) this.calcular();
     this.cargando = false;
     this.cdr.detectChanges();
   }
